@@ -12,12 +12,13 @@ var SITIOS=[
  {g:'Pliegues',n:'Muslo frontal',u:'mm',prev:13,s6:1,c:'Sentado, en el punto medio entre el pliegue inguinal y el borde superior de la rótula, cara anterior. Pliegue vertical.',x:27.3,y:61.3},
  {g:'Pliegues',n:'Pantorrilla medial',u:'mm',prev:7,s6:1,c:'Pie apoyado en un cajón con la rodilla a 90°. Cara medial de la pierna, a la altura del perímetro máximo. Pliegue vertical.',x:28,y:72.7},
  {g:'Perímetros',n:'Brazo relajado',u:'cm',prev:35.5,c:'Brazo colgando relajado, a la altura del punto medio acromiale-radiale, con la cinta perpendicular al eje del brazo.',x:22.1,y:31.4},
- {g:'Perímetros',n:'Brazo flexionado y contraído',u:'cm',prev:38,c:'Brazo al frente a la horizontal, codo a unos 45° y bíceps contraído al máximo. Perímetro máximo.',x:23.2,y:28.9},
+ {g:'Perímetros',n:'Brazo flexionado',u:'cm',prev:38,c:'Flexionado y contraído. Brazo al frente a la horizontal, codo a unos 45° y bíceps contraído al máximo. Perímetro máximo.',x:23.2,y:28.9},
  {g:'Perímetros',n:'Cintura',u:'cm',prev:83.5,c:'Punto más estrecho entre el borde costal inferior y la cresta ilíaca, al final de una espiración normal.',x:31.2,y:39},
- {g:'Perímetros',n:'Glúteo (cadera)',u:'cm',prev:98,c:'De pie con los pies juntos, a la altura de la máxima protuberancia posterior de los glúteos.',x:68.9,y:50.8},
+ {g:'Perímetros',n:'Cadera',u:'cm',prev:98,c:'Perímetro glúteo (máximo). De pie con los pies juntos, a la altura de la máxima protuberancia posterior de los glúteos.',x:68.9,y:50.8},
  {g:'Perímetros',n:'Pantorrilla',u:'cm',prev:38,c:'Perímetro máximo de la pierna, de pie con el peso repartido en ambos pies.',x:72.9,y:69.1},
- {g:'Diámetros',n:'Húmero (biepicondilar)',u:'cm',prev:7.1,c:'Brazo al frente a la horizontal y codo a 90°. Distancia entre epicóndilo y epitróclea, con presión firme.',x:21.1,y:36.6},
- {g:'Diámetros',n:'Fémur (biepicondilar)',u:'cm',prev:9.9,c:'Sentado con la rodilla a 90°. Distancia entre los epicóndilos del fémur, con presión firme.',x:26.6,y:67}];
+ {g:'Diámetros',n:'Húmero',u:'cm',prev:7.1,c:'Biepicondilar. Brazo al frente a la horizontal y codo a 90°. Distancia entre epicóndilo y epitróclea, con presión firme.',x:21.1,y:36.6},
+ {g:'Diámetros',n:'Biestiloideo',u:'cm',prev:5.6,c:'Muñeca. Antebrazo apoyado y mano flexionada a unos 90°. Distancia entre las apófisis estiloides del radio y del cúbito, con presión firme.',x:17.2,y:47.4},
+ {g:'Diámetros',n:'Fémur',u:'cm',prev:9.9,c:'Biepicondilar. Sentado con la rodilla a 90°. Distancia entre los epicóndilos del fémur, con presión firme.',x:26.6,y:67}];
 SITIOS.forEach(function(s){s.v=[null,null,null];});
 var GRUPOS_SING={'Básicas':'Básica','Pliegues':'Pliegue','Perímetros':'Perímetro','Diámetros':'Diámetro'};
 /* ISAK: se mide todo una vez (1ª vuelta), después todo de nuevo (2ª vuelta) y la 3ª sólo donde las dos primeras difieren más de 5 % (pliegues) o 1 % (resto) */

@@ -26,7 +26,7 @@ function mandarNota(){var h=U.hoja,e=BLQ[h.b].ej[h.k],tags=NTAGS.map(function(t)
  if(!tags.length&&!txt){toast('Elegí qué pasó o escribí algo');return false;}
  if(h.tags.dolor&&!h.zona){toast('Contanos dónde te dolió');return false;}
  var n={tags:tags,zona:h.tags.dolor?h.zona:'',int:h.tags.dolor?(h.int||''):'',txt:txt,t:Date.now(),serie:hechasEj(h.b,h.k)};NOTAS[e.id]=n;guardarNotas();
- cola('Nota · '+e.n+' · '+resNota(n));toast('Nota enviada a tu entrenador');
+ cola('Nota · '+e.n+' · '+resNota(n),paq('nota',{dia:DIA_SES,ejercicio:ejRef(e),tags:n.tags,zona:n.zona||null,intensidad:n.int||null,texto:n.txt||'',serie:n.serie}));toast('Nota enviada a tu entrenador');
  var rut={quien:NOMBRE,dia:'Brazos',ej:[]};BLQ.forEach(function(bb){bb.ej.forEach(function(x){rut.ej.push({id:x.id,n:x.n,pauta:(/(\d+ × \d+)/.exec(x.o)||['',''])[1]+' · '+co(x.p[0][0])+(x.u==='pl'?' pl':' kg')});});});
  var hist=null;try{var hx=PROG.histEj(e.id),lu=lunes(new Date());hist=[];for(var k=45;k<=51;k++){var o=hx[k],dd=new Date(lu.getTime()-(52-k)*7*864e5);hist.push({lab:dd.getDate()+'/'+(dd.getMonth()+1),w:o?o.w:null,r:o?o.r[0]:null,no:!o||!!o.de});}var sa=semActual(e.id);hist.push({lab:'Hoy',w:sa.w,r:sa.r[0],no:false});}catch(x){}
  try{window.parent.postMessage({am:'nota',id:e.id,uni:e.u==='pl'?'placas':'kg',rutina:rut,hist:hist,quien:NOMBRE,ej:e.n,res:resNota(n),txt:txt,dolor:tags.indexOf('dolor')>=0,fuerte:n.int==='Fuerte',serie:n.serie,t:n.t},'*');}catch(x){}

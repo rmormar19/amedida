@@ -40,11 +40,11 @@ def aplicar(s, D):
  case 'tipRe':ponLS('am.tip.ses','0');U.hoja=null;toast('La ayuda aparece al empezar la sesión');break;
  case 'volverSes':U.pila=['sesion'];irArriba();break;
  case 'irBlq':if(!U.ses.on){U.ses.on=true;U.ses.t0=Date.now();}U.ses.b=+v;U.tab='hoy';U.pila=['sesion'];U.hoja=null;pedirPantalla();irArriba();break;
- case 'repAyer':var ay=AYER[U.hoja.i];if(ay){NUT.com[U.hoja.i].it.push(ay.slice());cola('Comida · '+ay[0]);toast('Agregado: '+ay[0]);}U.hoja=null;break;
- case 'copiaDia':var nc=0;AYER.forEach(function(ay,i){if(ay&&!NUT.com[i].it.length){NUT.com[i].it.push(ay.slice());nc++;}});cola('Copió el día de ayer · '+nc+' comidas');toast(nc?'Copiado: '+nc+' comidas de ayer':'Ya tenés esas comidas anotadas');U.hoja=null;break;
+ case 'repAyer':var ay=AYER[U.hoja.i];if(ay){NUT.com[U.hoja.i].it.push(ay.slice());cola('Comida · '+ay[0],paq('comida',{comida:NUT.com[U.hoja.i].n,texto:ay[0],p:ay[1],c:ay[2],g:ay[3]}));toast('Agregado: '+ay[0]);}U.hoja=null;break;
+ case 'copiaDia':var nc=0;AYER.forEach(function(ay,i){if(ay&&!NUT.com[i].it.length){NUT.com[i].it.push(ay.slice());nc++;cola('Comida · '+ay[0],paq('comida',{comida:NUT.com[i].n,texto:ay[0],p:ay[1],c:ay[2],g:ay[3]}));}});toast(nc?'Copiado: '+nc+' comidas de ayer':'Ya tenés esas comidas anotadas');U.hoja=null;break;
  case 'pesoHoy':U.hoja={t:'peso',v:78.5};break;
  case 'pesoD':var pi=document.getElementById('pIn'),pv=num(pi.value)||U.hoja.v;U.hoja.v=Math.round((pv+(+v)*0.1)*10)/10;break;
- case 'pesoOk':var pv2=num(document.getElementById('pIn').value);if(!(pv2>30&&pv2<300)){toast('Revisá el peso');return;}cola('Peso · '+co(pv2)+' kg');toast('Peso anotado: '+co(pv2)+' kg');U.hoja=null;break;
+ case 'pesoOk':var pv2=num(document.getElementById('pIn').value);if(!(pv2>30&&pv2<300)){toast('Revisá el peso');return;}cola('Peso · '+co(pv2)+' kg',paq('medidas',{filas:[{nombre:'Masa corporal',valor:co(pv2),u:'kg'}]}));toast('Peso anotado: '+co(pv2)+' kg');U.hoja=null;break;
  case 'objetivos':U.hoja={t:'obj'};break;
  case 'perfil':U.hoja={t:'perfil'};break;
  case 'modo':U.hoja=null;var tm=document.getElementById('tMod');if(tm)tm.click();break;""")

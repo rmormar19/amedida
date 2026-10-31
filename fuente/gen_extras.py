@@ -35,7 +35,7 @@ def aplicar(s, D):
  case 'comTab':U.hoja.tab=v;break;
  case 'sumarMis':U.hoja.okm=U.hoja.okm||{};if(U.hoja.okm[v])return;var mm=MISCOM[+v];NUT.com[U.hoja.i].it.push([mm[0],mm[1],mm[2],mm[3]]);U.hoja.okm[v]=true;break;
  case 'nuevaMis':var nm=['nmN','nmP','nmC','nmG'].map(function(id){return document.getElementById(id).value.trim();});if(!nm[0]){toast('Poné el nombre de la comida');return;}
-  var nn=[nm[0],Math.round(num(nm[1]||'0'))||0,Math.round(num(nm[2]||'0'))||0,Math.round(num(nm[3]||'0'))||0];MISCOM.unshift(nn);U.hoja.okm={};cola('Comida nueva guardada · '+nn[0]);toast('Guardada en Mis comidas');break;""")
+  var nn=[nm[0],Math.round(num(nm[1]||'0'))||0,Math.round(num(nm[2]||'0'))||0,Math.round(num(nm[3]||'0'))||0];MISCOM.unshift(nn);U.hoja.okm={};toast('Guardada en Mis comidas');break;""")
     # hoja de Agregar: pestañas reales (Recientes / Mis comidas)
     rep("""<div class="seg sm" style="margin-top:12px"><button type="button" aria-pressed="true">Recientes</button><button type="button" aria-pressed="false">Más usadas</button><button type="button" aria-pressed="false">Plantillas</button></div><div class="lista">'+""",
         """<div class="seg sm" style="margin-top:12px"><button type="button" data-a="comTab" data-v="rec" aria-pressed="'+(h.tab!=='mis')+'">Recientes</button><button type="button" data-a="comTab" data-v="mis" aria-pressed="'+(h.tab==='mis')+'">Mis comidas · '+MISCOM.length+'</button></div>'+(h.tab==='mis'?listaMis(h):'<div class="lista">'+""")
