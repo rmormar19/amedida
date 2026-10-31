@@ -420,6 +420,8 @@ import gen_nota
 s = gen_nota.aplicar(s, D)
 import gen_cliente
 s = gen_cliente.aplicar(s, D)
+import gen_heat
+s = gen_heat.aplicar(s, D)
 import gen_isak
 s = gen_isak.aplicar(s, D)
 import gen_simple
