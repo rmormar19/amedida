@@ -1,4 +1,4 @@
-# AMedida
+# A medida · Entrenamiento integral
 
 App instalable (PWA) de registro de entrenamiento, macros y medidas.
 

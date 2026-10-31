@@ -7,15 +7,15 @@ assert '"../' not in s
 def rep(a, b):
     global s
     assert s.count(a) == 1, (s.count(a), a[:70]); s = s.replace(a, b, 1)
-rep('<title>AMedida · app completa</title>', '''<title>AMedida</title>
-<meta name="description" content="Tu entrenamiento, macros y medidas con Ricky.">
+rep('<title>A medida · Entrenamiento integral</title>', '''<title>A medida · Entrenamiento integral</title>
+<meta name="description" content="A medida · Entrenamiento integral. Tu entrenamiento, macros y medidas con Ricky.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b1524" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f3f5f9" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="AMedida">
+<meta name="apple-mobile-web-app-title" content="A medida">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">''')
 rep('/* ================= render ================= */', open(os.path.join(P, 'pwa.js')).read() + '\n/* ================= render ================= */')
@@ -43,6 +43,7 @@ rep('</style></head>', """
 </style></head>""")
 if os.path.exists(OUT): shutil.rmtree(OUT)
 os.makedirs(OUT + '/icons')
+s = s.replace('AMedida', 'A medida')
 open(OUT + '/index.html', 'w').write(s)
 for d in ['cuerpo', 'laminas', 'laminas_mp4']:
     shutil.copytree(os.path.join(D, d), os.path.join(OUT, d), ignore=shutil.ignore_patterns('brazos.webp','espalda.webp','pecho.webp'))
@@ -50,7 +51,7 @@ ver = time.strftime('%Y%m%d%H%M')
 extra = ['./cuerpo/' + os.path.basename(f) for f in sorted(glob.glob(OUT + '/cuerpo/*.webp'))] + ['./laminas/' + os.path.basename(f) for f in sorted(glob.glob(OUT + '/laminas/*.webp'))]
 sw = open(os.path.join(P, 'sw.js')).read().replace('__VER__', ver).replace('__EXTRA__', json.dumps(extra))
 open(OUT + '/sw.js', 'w').write(sw)
-man = {"name": "AMedida", "short_name": "AMedida", "description": "Tu entrenamiento, macros y medidas con Ricky.",
+man = {"name": "A medida · Entrenamiento integral", "short_name": "A medida", "description": "Entrenamiento integral: tu entrenamiento, macros y medidas con Ricky.",
        "lang": "es", "dir": "ltr", "id": "./", "start_url": "./", "scope": "./", "display": "standalone", "orientation": "portrait",
        "background_color": "#0b1524", "theme_color": "#0b1524", "categories": ["health", "fitness", "sports"],
        "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},

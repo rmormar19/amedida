@@ -426,5 +426,21 @@ import gen_simple
 s = gen_simple.aplicar(s, D)
 import gen_movil
 s = gen_movil.aplicar(s, D)
+
+# ---------- marca: «A medida» · Entrenamiento integral ----------
+s = s.replace("""<span class="logo"><i>'+LOGO+'</i>AMedida</span>""", """<span class="logo"><i>'+LOGO+'</i><span class="lg2"><b>A medida</b><small>Entrenamiento integral</small></span></span>""", 1)
+s = s.replace('<b>AMedida</b><span>REGISTRO DE ENTRENAMIENTO</span>', '<b>A medida</b><span>ENTRENAMIENTO INTEGRAL</span>', 1)
+s = s.replace(""">AMedida</p>';}""", """>A medida · Entrenamiento integral</p>';}""", 1)
+s = s.replace('<title>AMedida · app completa</title>', '<title>A medida · Entrenamiento integral</title>', 1)
+s = s.replace('AMedida', 'A medida')
+s = s.replace('</style></head>', """
+.logo .lg2{display:flex;flex-direction:column;line-height:1.05}
+.logo .lg2 b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.logo .lg2 small{font-size:10.5px;font-weight:600;color:var(--tx3);letter-spacing:.01em;margin-top:2px;white-space:nowrap}
+.top #tMod{display:none}
+.top{gap:6px}
+.sp-wm span{letter-spacing:3.5px;padding-left:3.5px;font-size:11.5px;white-space:nowrap}
+@media (max-width:360px){.logo .lg2 small{font-size:9.5px}.top .ib{width:36px;height:36px}}
+</style></head>""", 1)
 open(os.path.join(D, 'bocetos', 'rediseno.html'), 'w').write(s)
 print('ok app', len(s))

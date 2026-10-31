@@ -1,22 +1,22 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AMedida</title>
-<meta name="description" content="Tu entrenamiento, macros y medidas con Ricky.">
+<title>A medida · Entrenamiento integral</title>
+<meta name="description" content="A medida · Entrenamiento integral. Tu entrenamiento, macros y medidas con Ricky.">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0b1524" media="(prefers-color-scheme: dark)">
 <meta name="theme-color" content="#f3f5f9" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="AMedida">
+<meta name="apple-mobile-web-app-title" content="A medida">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <script>(function(){var m=null;try{m=localStorage.getItem('am.modo');}catch(e){}if(!m)m=(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches)?'claro':'oscuro';document.documentElement.classList.toggle('claro',m==='claro');})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* Rediseño AMedida: misma paleta Monitor, una sola gramática visual.
+/* Rediseño A medida: misma paleta Monitor, una sola gramática visual.
    Título grande por pantalla · tarjetas de 22 px · números tabulares · un solo color de acción · estados con color semántico. */
 :root{color-scheme:dark;
   --bg:#0b1524;--surf:#101d30;--surf2:#15243a;--surf3:#1b2c45;--line:#1f3049;--line2:#2a3f5f;
@@ -1009,6 +1009,14 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 [data-a="medT"]{min-height:36px;display:inline-flex;align-items:center}
 .cs{padding:4px 0}
 
+.logo .lg2{display:flex;flex-direction:column;line-height:1.05}
+.logo .lg2 b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+.logo .lg2 small{font-size:10.5px;font-weight:600;color:var(--tx3);letter-spacing:.01em;margin-top:2px;white-space:nowrap}
+.top #tMod{display:none}
+.top{gap:6px}
+.sp-wm span{letter-spacing:3.5px;padding-left:3.5px;font-size:11.5px;white-space:nowrap}
+@media (max-width:360px){.logo .lg2 small{font-size:9.5px}.top .ib{width:36px;height:36px}}
+
 /* ---------- app instalada ---------- */
 .inst{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;margin:0 0 14px;padding:14px;border-radius:20px;background:linear-gradient(135deg,rgba(var(--a1rgb),.18),rgba(79,209,230,.08));border:1px solid rgba(var(--a1rgb),.35);animation:entra .4s both}
 .inst .ii{width:44px;height:44px;border-radius:12px;background:#0b1524;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -6px rgba(0,0,0,.6)}
@@ -1026,7 +1034,7 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .notifb{top:calc(8px + env(safe-area-inset-top,0px))}
 @media (display-mode: standalone){html.claro body::before{background:#0e1a2b}}
 </style></head><body>
-<div class="splash" id="splash" aria-hidden="true"><div class="in"><div class="sp-tile"><svg viewBox="0 0 100 100"><defs><linearGradient id="gSp" x1="0" y1="1" x2="1" y2="0"><stop offset="0" style="stop-color:var(--a1)"/><stop offset="1" style="stop-color:var(--cya)"/></linearGradient></defs><path class="sp-draw" d="M20 80 L50 22 L80 80 M32 63 L44 56 L54 61 L68 51" fill="none" stroke="url(#gSp)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="sp-wm"><b>AMedida</b><span>REGISTRO DE ENTRENAMIENTO</span></div></div></div>
+<div class="splash" id="splash" aria-hidden="true"><div class="in"><div class="sp-tile"><svg viewBox="0 0 100 100"><defs><linearGradient id="gSp" x1="0" y1="1" x2="1" y2="0"><stop offset="0" style="stop-color:var(--a1)"/><stop offset="1" style="stop-color:var(--cya)"/></linearGradient></defs><path class="sp-draw" d="M20 80 L50 22 L80 80 M32 63 L44 56 L54 61 L68 51" fill="none" stroke="url(#gSp)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="sp-wm"><b>A medida</b><span>ENTRENAMIENTO INTEGRAL</span></div></div></div>
 
 <header class="top" id="top"></header>
 <main class="main" id="view"></main>
@@ -1491,7 +1499,7 @@ window.AM_NOTIF=function(d){d=d||{};var ej=d.ejercicios||[],n={t:Date.now(),titu
  var b=document.getElementById('notifB');
  if(!b){document.body.insertAdjacentHTML('beforeend','<button type="button" class="notifb" id="notifB" aria-live="polite"></button>');b=document.getElementById('notifB');
   b.addEventListener('click',function(){b.classList.remove('on');if(NOTIFS[0])NOTIFS[0].leida=true;U.hoja=null;U.rn=0;U.pila=['rnueva'];irArriba();render();});}
- b.innerHTML='<span class="nbi">'+LOGO+'</span><span class="nbt"><span class="nbh"><b>AMedida</b><small>ahora</small></span><b>'+n.titulo+'</b><span>'+n.cuerpo+'</span></span>';
+ b.innerHTML='<span class="nbi">'+LOGO+'</span><span class="nbt"><span class="nbh"><b>A medida</b><small>ahora</small></span><b>'+n.titulo+'</b><span>'+n.cuerpo+'</span></span>';
  b.classList.remove('on');void b.offsetWidth;b.classList.add('on');try{if(navigator.vibrate)navigator.vibrate(60);}catch(e){}
  clearTimeout(window.__nbT);window.__nbT=setTimeout(function(){b.classList.remove('on');},7000);render();};
 function vRnueva(){var n=NOTIFS[U.rn]||NOTIFS[0];if(!n)return '<p class="sub">Sin notificaciones.</p>';
@@ -1666,7 +1674,7 @@ function hojasCliente(h){var s='';
   '<button type="button" class="fila" data-a="modo"><span class="ico">'+(cl?I.luna:I.sol)+'</span><span><b>Modo '+(cl?'oscuro':'claro')+'</b><span class="s">Ahora estás en modo '+(cl?'claro':'oscuro')+'</span></span><span></span></button>'+
   '<button type="button" class="fila" data-a="tipRe"><span class="ico">'+I.chk+'</span><span><b>Cómo se registra una sesión</b><span class="s">Vuelve a mostrar la ayuda</span></span><span></span></button>'+
   ((window.PWA&&!PWA.sola)?'<button type="button" class="fila" data-a="instalar"><span class="ico">'+I.mas+'</span><span><b>Instalar la app</b><span class="s">Ícono en el inicio, sin internet</span></span>'+I.der+'</button>':'')+
-  '</div><p class="sub" style="text-align:center;margin-top:14px">AMedida</p>';}
+  '</div><p class="sub" style="text-align:center;margin-top:14px">A medida · Entrenamiento integral</p>';}
  return s;}
 
 /* ================= celular: atrás del sistema, hojas que se cierran deslizando, teclado ================= */
@@ -1702,18 +1710,18 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
  var recargado=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(recargado)return;recargado=true;location.reload();});});
 }
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();PWA.evt=e;if(U.tab==='hoy'&&!U.pila.length)render();});
-window.addEventListener('appinstalled',function(){PWA.evt=null;PWA.sola=true;toast('AMedida quedó instalada');render();});
+window.addEventListener('appinstalled',function(){PWA.evt=null;PWA.sola=true;toast('A medida quedó instalada');render();});
 function avisoVersion(){if(document.getElementById('nver'))return;document.body.insertAdjacentHTML('beforeend','<div class="nver" id="nver" role="status"><span><b>Hay una versión nueva</b>Se actualiza en un segundo.</span><button type="button" id="nverOk">Actualizar</button></div>');
  document.getElementById('nverOk').addEventListener('click',function(){if(PWA.nueva)PWA.nueva.postMessage('saltar');});}
 /* tarjeta en Hoy: sólo si todavía no está instalada */
 function instalarCard(){if(PWA.sola||noInst())return '';if(!PWA.evt&&!PWA.ios)return '';
- return '<div class="inst"><span class="ii">'+LOGO+'</span><span><b>Instalá AMedida en tu celular</b><span class="s">Queda con su ícono en el inicio, se abre a pantalla completa y funciona sin internet.</span></span><div class="ib2"><button type="button" class="pri" data-a="instalar">Instalar</button><button type="button" class="sec" data-a="instNo">Ahora no</button></div></div>';}
+ return '<div class="inst"><span class="ii">'+LOGO+'</span><span><b>Instalá A medida en tu celular</b><span class="s">Queda con su ícono en el inicio, se abre a pantalla completa y funciona sin internet.</span></span><div class="ib2"><button type="button" class="pri" data-a="instalar">Instalar</button><button type="button" class="sec" data-a="instNo">Ahora no</button></div></div>';}
 var ICSHARE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg>';
 var ICPLUSQ='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
-function hojaInstalar(){return '<h2>Instalá AMedida</h2><p class="sub">En iPhone se instala desde Safari, en tres toques.</p><ol class="ipa">'+
+function hojaInstalar(){return '<h2>Instalá A medida</h2><p class="sub">En iPhone se instala desde Safari, en tres toques.</p><ol class="ipa">'+
  '<li><span>1</span><div>Tocá <b>Compartir</b> '+ICSHARE+' en la barra de Safari.</div></li>'+
  '<li><span>2</span><div>Bajá y elegí <b>Agregar a inicio</b> '+ICPLUSQ+'.</div></li>'+
- '<li><span>3</span><div>Tocá <b>Agregar</b>. El ícono de AMedida queda en tu pantalla de inicio.</div></li></ol>'+
+ '<li><span>3</span><div>Tocá <b>Agregar</b>. El ícono de A medida queda en tu pantalla de inicio.</div></li></ol>'+
  '<p class="sub" style="margin-top:10px">Si no ves la opción, abrí este link en Safari (no desde WhatsApp o Instagram).</p><button type="button" class="pri full" style="margin-top:12px" data-a="cerrar">Entendido</button>';}
 (function(){var _a=avisoHoy;avisoHoy=function(){return instalarCard()+_a();};})();
 /* atajos del ícono (mantener apretado): abre directo en una sección */
@@ -1725,7 +1733,7 @@ function render(){
  var top=document.getElementById('top'),v=document.getElementById('view'),nav=document.getElementById('nav');
  if(push){var tt={sesion:'Brazos',resumen:'Sesión terminada',toma:'Nueva toma',rnueva:'Rutina nueva'}[push];var vol={sesion:TITULO[U.tab],resumen:'',toma:'Medidas',rnueva:TITULO[U.tab]}[push];
   top.innerHTML=(vol?'<button type="button" class="atras" data-a="volver">'+I.atras+vol+'</button>':'<span style="width:40px"></span>')+'<span class="tt">'+tt+'</span>'+(push==='sesion'?'<button type="button" class="ib" data-a="hojaVar" aria-label="Opciones de la sesión" style="visibility:hidden"></button>':'<span style="width:38px"></span>')+modoBtn();
- }else{top.innerHTML='<span class="logo"><i>'+LOGO+'</i>AMedida</span><span class="sp"></span><button type="button" class="ib'+(COLA.length?' sync':'')+'" data-a="sync" aria-label="'+(COLA.length?COLA.length+' cambios sin mandar al panel':'Sin cambios pendientes')+'">'+I.nube+'</button><button type="button" class="ib campb" data-a="notifs" aria-label="Notificaciones'+(noLeidas()?', '+noLeidas()+' sin leer':'')+'">'+I.campana+(noLeidas()?'<i class="bdg">'+noLeidas()+'</i>':'')+'</button>'+modoBtn()+'<button type="button" class="yo" data-a="perfil" aria-label="Tu perfil">'+NOMBRE.charAt(0)+'</button>';}
+ }else{top.innerHTML='<span class="logo"><i>'+LOGO+'</i><span class="lg2"><b>A medida</b><small>Entrenamiento integral</small></span></span><span class="sp"></span><button type="button" class="ib'+(COLA.length?' sync':'')+'" data-a="sync" aria-label="'+(COLA.length?COLA.length+' cambios sin mandar al panel':'Sin cambios pendientes')+'">'+I.nube+'</button><button type="button" class="ib campb" data-a="notifs" aria-label="Notificaciones'+(noLeidas()?', '+noLeidas()+' sin leer':'')+'">'+I.campana+(noLeidas()?'<i class="bdg">'+noLeidas()+'</i>':'')+'</button>'+modoBtn()+'<button type="button" class="yo" data-a="perfil" aria-label="Tu perfil">'+NOMBRE.charAt(0)+'</button>';}
  nav.hidden=!!push&&push!=='toma';
  if(push==='toma') nav.hidden=true;
  v.className='main'+(nav.hidden?' sinnav':'')+(U.ses.on&&!push?' conmini':'');
