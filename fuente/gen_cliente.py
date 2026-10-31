@@ -12,7 +12,7 @@ def aplicar(s, D):
     rep("""var s='<div class="prog">""", """var s=tipSesion()+'<div class="prog">""")
     # terminar con series pendientes: pregunta antes
     rep("case 'terminar':soltarPantalla();", "case 'terminar':var hp=hechas();if(hp[0]<hp[1]&&v!=='1'){U.hoja={t:'term',f:hp[1]-hp[0]};break;}U.hoja=null;soltarPantalla();")
-    rep("case 'sesion':U.hoja=null;pedirPantalla();", "case 'sesion':U.hoja=null;pedirPantalla();if(!U.ses.on||!U.ses.t0)U.ses.t0=Date.now();")
+    rep("case 'sesion':U.hoja=null;pedirPantalla();", "case 'sesion':U.hoja=null;pedirPantalla();if(!U.ses.on){U.esf=null;}if(!U.ses.on||!U.ses.t0)U.ses.t0=Date.now();")
     # descanso por reloj: sigue bien aunque bloquees el celular o cambies de app
     rep("U.t={on:true,s:T,T:T,txt:txt};clearInterval(iv);iv=setInterval(function(){U.t.s--;", "U.t={on:true,s:T,T:T,txt:txt,fin:Date.now()+T*1000};clearInterval(iv);iv=setInterval(function(){U.t.s=Math.max(0,Math.ceil((U.t.fin-Date.now())/1000));")
     rep("case 'mas15':U.t.s+=15;", "case 'mas15':U.t.fin+=15000;U.t.s+=15;")
@@ -49,6 +49,10 @@ def aplicar(s, D):
  case 'perfil':U.hoja={t:'perfil'};break;
  case 'modo':U.hoja=null;var tm=document.getElementById('tMod');if(tm)tm.click();break;""")
     rep("function despues(){", "function despues(){\n guardarSes2();")
+    rep("case 'esf':U.esf=+v;break;", "case 'esf':U.esf=v;break;")
+    rep("case 'guardarSes':U.pila=[];", "case 'guardarSes':if(!U.esf){toast('Elegí cómo sentiste el entrenamiento');return;}U.ses.on=false;U.ses.fin=true;U.t.on=false;clearInterval(iv);soltarPantalla();U.pila=[];")
+    rep("var btn=U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):'Empezar sesión';", "var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):'Empezar sesión';")
+    rep("data-a=\"'+(U.ses.on&&h[0]===h[1]?'resumen':'sesion')+'\"", "data-a=\"'+(U.ses.fin||(U.ses.on&&h[0]===h[1])?'resumen':'sesion')+'\"")
     rep('</style></head>', CSS + '</style></head>')
     return s
 
@@ -60,6 +64,13 @@ CSS = """
 .bajo .pri svg,.pri.full svg{width:17px;height:17px;margin-right:6px;vertical-align:-3px}
 .bajo .sec{flex:0 0 auto;padding:0 16px}
 .cmp b.dn{color:var(--red)}
+.esf3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.esf3 button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:12px 6px 11px;border-radius:16px;border:1.5px solid var(--line2);background:var(--surf2);color:var(--tx);font:inherit;text-align:center;transition:transform .15s,border-color .2s,background .2s}
+.esf3 button:active{transform:scale(.96)}
+.esf3 i svg{width:26px;height:26px;fill:currentColor}
+.esf3 b{font-size:15px}.esf3 span{font-size:11px;font-weight:500;color:var(--tx3);line-height:1.25}
+.esf3 i{color:var(--a1)}
+.esf3 button[aria-pressed="true"]{border-color:var(--a1);background:rgba(var(--a1rgb),.16)}
 .srch input{flex:1;min-width:0;height:100%;border:0;background:transparent;color:var(--tx);font:inherit;outline:none;-webkit-appearance:none;appearance:none}
 .srch input::-webkit-search-cancel-button{-webkit-appearance:none}
 .fast button[disabled]{opacity:.45}

@@ -1,10 +1,17 @@
 /* ================= mejoras desde el uso de un cliente ================= */
 var WA='https://wa.me/59899095446';
+/* esfuerzo de la sesión: lo marca el cliente al terminar (subjetivo) */
+var ESF=[['liviano','Liviano','<svg viewBox="0 0 24 24"><rect x="4" y="14" width="4" height="6" rx="1.5"/><rect x="10" y="10" width="4" height="10" rx="1.5" opacity=".25"/><rect x="16" y="5" width="4" height="15" rx="1.5" opacity=".25"/></svg>','Me sobró energía'],
+ ['moderado','Moderado','<svg viewBox="0 0 24 24"><rect x="4" y="14" width="4" height="6" rx="1.5"/><rect x="10" y="10" width="4" height="10" rx="1.5"/><rect x="16" y="5" width="4" height="15" rx="1.5" opacity=".25"/></svg>','Exigente, pero bien'],
+ ['duro','Duro','<svg viewBox="0 0 24 24"><rect x="4" y="14" width="4" height="6" rx="1.5"/><rect x="10" y="10" width="4" height="10" rx="1.5"/><rect x="16" y="5" width="4" height="15" rx="1.5"/></svg>','Terminé al límite']];
+var ESF_LV={liviano:1,moderado:2,duro:3};
+if(typeof U.esf!=='string'||!ESF_LV[U.esf])U.esf=null;
 var leeLS=function(k){try{return localStorage.getItem(k);}catch(e){return null;}},ponLS=function(k,v){try{localStorage.setItem(k,v);}catch(e){}};
 I.wa=P('<path d="M4 20l1.3-3.8A8 8 0 1 1 8 19z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1.3-1.4-2-1-1 .8a4 4 0 0 1-2.2-2.2l.8-1-1-2z"/>');
 /* sesión: dónde quedó (bloque y hora de inicio) sobrevive si se cierra la app */
-(function(){if(!GUARDA)return;try{var d=JSON.parse(leeLS('amedida-ses-v1')||'null');if(d&&U.ses.on){U.ses.b=d.b||0;U.ses.t0=d.t0||null;}}catch(e){}})();
-function guardarSes2(){if(GUARDA)ponLS('amedida-ses-v1',JSON.stringify({b:U.ses.b,t0:U.ses.t0}));}
+(function(){if(!GUARDA)return;try{var d=JSON.parse(leeLS('amedida-ses-v1')||'null');if(d&&U.ses.on){U.ses.b=d.b||0;U.ses.t0=d.t0||null;}if(d&&d.fin&&d.dia===kdC0()){U.ses.fin=true;U.ses.on=false;if(d.esf)U.esf=d.esf;}}catch(e){}})();
+function kdC0(){var d=new Date();return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();}
+function guardarSes2(){if(GUARDA)ponLS('amedida-ses-v1',JSON.stringify({b:U.ses.b,t0:U.ses.t0,fin:!!U.ses.fin,esf:U.esf,dia:kdC0()}));}
 /* ayuda de la sesión: una vez, corta y descartable (antes era un párrafo fijo en cada bloque) */
 function tipSesion(){if(leeLS('am.tip.ses')==='1')return '';
  return '<div class="tip"><b>Cómo se registra</b><ul><li><b>Gris</b> = lo que te toca hoy. Si coincide, tocá ✓ sin escribir.</li><li>Tocá el <b>peso</b> para subir o bajar con − y +.</li><li>Tocá la <b>lámina</b> para ver cómo se hace.</li></ul><button type="button" data-a="tipOk">Entendido</button></div>';}
@@ -27,7 +34,7 @@ function vResumen2(){var hp=hechas(),hec=[],ej={},volH=0,volA=0,repH=0,repA=0,du
    var top=topReps(e);if(o.x.length===e.p.length&&o.x.every(function(z){return z[0][1]>=top;}))L.push([I.flecha,'','La próxima: '+e.n.toLowerCase()+' a '+co(Math.round((mw+incDe(e))*100)/100)+u,'Llegaste al tope del rango ('+top+' reps) en todas las series.']);});
   if(L.length)s+='<section class="card lista" style="padding:4px 16px">'+L.slice(0,4).map(function(l){return '<div class="fila"><span class="ico '+l[1]+'">'+l[0]+'</span><span><b>'+l[2]+'</b><span class="s">'+l[3]+'</span></span><span></span></div>';}).join('')+'</section>';}
  else s+='<section class="card"><p class="sub" style="margin:0">No marcaste ninguna serie. Si entrenaste, volvé y tildá lo que hiciste para que tu entrenador lo vea.</p><button type="button" class="sec full" style="margin-top:12px" data-a="volverSes">Volver a la sesión</button></section>';
- s+='<section class="card"><h3>¿Qué tan dura fue la sesión?</h3><p class="sub">Del 1 al 10, la sesión entera.</p><div class="esf">'+[4,5,6,7,8].map(function(n){return '<button type="button" data-a="esf" data-v="'+n+'" aria-pressed="'+(U.esf===n)+'">'+n+'<span>'+({4:'fácil',6:'dura',8:'muy dura'}[n]||'&nbsp;')+'</span></button>';}).join('')+'</div>'+
+ s+='<section class="card"><h3>¿Cómo sentiste el entrenamiento?</h3><p class="sub">Tu sensación de esfuerzo de toda la sesión. Le sirve a tu entrenador para ajustar la próxima.</p><div class="esf3">'+ESF.map(function(e){return '<button type="button" class="'+e[0]+'" data-a="esf" data-v="'+e[0]+'" aria-pressed="'+(U.esf===e[0])+'"><i>'+e[2]+'</i><b>'+e[1]+'</b><span>'+e[3]+'</span></button>';}).join('')+'</div>'+
   '<textarea aria-label="Nota de la sesión" placeholder="¿Algo para contarle a tu entrenador? (opcional)"></textarea><button type="button" class="pri full" style="margin-top:14px" data-a="guardarSes">Guardar y mandar a tu entrenador</button></section>';
  return s;}
 /* comidas: lo de ayer (ejemplo) */

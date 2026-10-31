@@ -67,7 +67,7 @@ var HOJAS_EXTRA=function(h){var s='';
 /* lo que se anota en la cola: corre después del manejador principal */
 function anotar(ev){var b=ev.target.closest&&ev.target.closest('[data-a]');if(!b)return;var a=b.dataset.a,v=b.dataset.v,antes=COLA.length;
  if(a==='serie'){var q=v.split('-'),bl=BLQ[U.ses.b],x=bl&&bl.h[+q[0]][+q[1]],e=bl&&bl.ej[+q[1]];if(x)cola('Serie hecha · '+e.n+' · '+co(x[0])+(e.u==='pl'?' pl':' kg')+' × '+x[1]+' · RIR '+x[2]);}
- if(a==='guardarSes')cola('Sesión de Brazos terminada · esfuerzo '+U.esf+'/10');
+ if(a==='guardarSes'&&U.esf&&U.pila[U.pila.length-1]!=='resumen')cola('Sesión de Brazos terminada · esfuerzo: '+U.esf);
  if(a==='sumar'){var r=RECIENTES[+v];if(r)cola('Comida · '+r[0]);}
  if(a==='sumarMis'){var r2=MISCOM[+v];if(r2)cola('Comida · '+r2[0]);}
  if(a==='guardarToma')cola('Toma de medidas guardada');

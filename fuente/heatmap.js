@@ -15,12 +15,12 @@ function diasAnio(Y){if(CST_CACHE[Y])return CST_CACHE[Y];var out={},SEP1=+new Da
   var base=kk>=0&&kk<=51?PROG.H.ser[kk]/maxS:.55+hh(kk)*.3;
   dd.forEach(function(d,i){var t=+d,x=inf[i],k=kdC(d),o;
    if(t>hoy)o={e:x.g?'pl':'de',g:x.g};
-   else if(t===hoy)o={e:U.ses.on?'ok':(x.g?'hoy':'de'),g:x.g,lv:U.ses.on?2:0,cur:U.ses.on};
+   else if(t===hoy){var hz=U.ses.on||U.ses.fin;o={e:hz?'ok':(x.g?'hoy':'de'),g:x.g,lv:hz?(ESF_LV[U.esf]||2):0,cur:U.ses.on};}
    else if(!x.g)o={e:x.libre?'de':'de'};
    else if(x.e==='au')o={e:'au',g:x.g,o:x.o};
    else if(hechos){o=hechos.indexOf(i)>=0?{e:'ok',g:x.g}:{e:'fa',g:x.g};}
    else o={e:x.e==='ok'?'ok':'fa',g:x.g,o:x.o};
-   if(o.e==='ok'&&!o.lv){var r=base*3+(hh(t/864e5+7)-.5)*1.1+(x.g==='Pierna'?.4:0);o.lv=Math.max(1,Math.min(4,1+Math.floor(r)));}
+   if(o.e==='ok'&&!o.lv){var r=base*3+(hh(t/864e5+7)-.5)*1.1+(x.g==='Pierna'?.4:0);o.lv=Math.max(1,Math.min(3,1+Math.floor(r*.75)));}
    o.d=new Date(d);o.ser=kk>=0&&kk<=51&&o.e==='ok'?Math.round(PROG.H.ser[kk]/Math.max(1,PROG.H.dias[kk])):null;out[k]=o;});
   m0.setDate(m0.getDate()+7);}
  return (CST_CACHE[Y]=out);}
@@ -34,7 +34,7 @@ function rachasAnio(Y){var S=semanasAnio(Y),seg=[],cur=null;S.forEach(function(s
  var actual=seg.filter(function(s){return s.b===ultCer;})[0]||null;return {S:S,seg:seg,best:best,actual:actual};}
 function resumenAnio(Y){var D=diasAnio(Y),he=0,pl=0,lim=new Date(HOYC);lim.setFullYear(Y);
  Object.keys(D).forEach(function(k){var o=D[k];if(o.d.getFullYear()!==Y||+o.d>+lim)return;if(o.e==='ok')he++;if(o.e==='ok'||o.e==='fa')pl++;});return {he:he,pl:pl,p:pl?he/pl:0};}
-function constanciaHM(){var Y=U.cstY||2026,D=diasAnio(Y),R=rachasAnio(Y),A=resumenAnio(Y),B=resumenAnio(Y-1),S=R.S;
+function constanciaHM(){CST_CACHE={};var Y=U.cstY||2026,D=diasAnio(Y),R=rachasAnio(Y),A=resumenAnio(Y),B=resumenAnio(Y-1),S=R.S;
  var cerr=S.filter(function(s){return s.cerrada&&s.m.getFullYear()<=Y;}),prom=cerr.length?cerr.reduce(function(a,s){return a+s.he;},0)/cerr.length:0;
  var ptos=Math.round((A.p-B.p)*100);
  var s='<section class="card hm"><div class="ct"><h3>Constancia</h3><div class="hmy">'+[2026,2025].map(function(y){return '<button type="button" data-a="cstY" data-v="'+y+'" aria-pressed="'+(y===Y)+'">'+y+'</button>';}).join('')+'</div></div>';
@@ -44,13 +44,13 @@ function constanciaHM(){var Y=U.cstY||2026,D=diasAnio(Y),R=rachasAnio(Y),A=resum
   for(var fila=0;fila<7;fila++)cols.forEach(function(cm,ci){var d=new Date(cm);d.setDate(cm.getDate()+fila);var dentro=+d>=+ini&&+d<=+fin,o=D[kdC(d)];
    if(!dentro||!o){celdas+='<i class="hq nx"></i>';return;}
    var cl=o.e==='ok'?'l'+o.lv:o.e==='fa'?'fa':o.e==='au'?'au':o.e==='pl'?'pl':o.e==='hoy'?'hoy':'de';
-   var txt=DIAS_C[d.getDay()]+' '+d.getDate()+' '+MESES_L[d.getMonth()].slice(0,3)+' · '+(o.e==='ok'?(o.cur?'en curso · ':'')+o.g+(o.ser?' · '+o.ser+' series':'')+' · '+['','liviano','moderado','duro','muy duro'][o.lv]:o.e==='fa'?'faltó a '+o.g.toLowerCase():o.e==='au'?'viaje'+(o.o?' · '+o.o:''):o.e==='pl'?'planificado: '+o.g:o.e==='hoy'?'hoy toca '+o.g:'descanso');
+   var txt=DIAS_C[d.getDay()]+' '+d.getDate()+' '+MESES_L[d.getMonth()].slice(0,3)+' · '+(o.e==='ok'?(o.cur?'en curso · ':'')+o.g+(o.ser?' · '+o.ser+' series':'')+' · '+['','liviano','moderado','duro'][o.lv]:o.e==='fa'?'faltó a '+o.g.toLowerCase():o.e==='au'?'viaje'+(o.o?' · '+o.o:''):o.e==='pl'?'planificado: '+o.g:o.e==='hoy'?'hoy toca '+o.g:'descanso');
    celdas+='<i class="hq '+cl+(+d===+HOYC?' hy':'')+'" data-t="'+txt+'" style="grid-row:'+(fila+1)+';grid-column:'+(ci+1)+';--d:'+(ci*14)+'ms"></i>';});
   var cOf=function(i){var sm=S[i].m;return Math.round((+sm-+m0)/(7*864e5));};
   R.seg.forEach(function(sg){var a=Math.max(0,cOf(sg.a)),b=Math.min(N-1,cOf(sg.b));if(b<0||a>N-1||b<a)return;var tipo=sg===R.best?'best':sg===R.actual?'act':'';
    barras+='<b class="'+tipo+'" style="left:calc('+(a/N*100)+'% + 1px);width:calc('+((b-a+1)/N*100)+'% - 3px)"></b>';});
   s+='<div class="hmb"><div class="hmm" style="grid-template-columns:repeat('+N+',1fr)">'+meses+'</div><div class="hmg" style="grid-template-columns:repeat('+N+',1fr)">'+celdas+'</div><div class="hmr">'+barras+'</div></div>';});
- s+='<div class="hml"><span><i class="fa"></i>Faltó</span><span class="sp"></span>Liviano<i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i>Duro</div>';
+ s+='<div class="hml"><span><i class="fa"></i>Faltó</span><span class="sp"></span><i class="l1"></i>Liviano<i class="l2"></i>Moderado<i class="l3"></i>Duro</div>';
  s+='<p id="hqInfo" class="hqi">Tocá un día para ver qué hiciste.</p>';
  s+='<div class="hmt"><span class="lbl">Días entrenados</span><div class="hmn"><b data-cu="'+A.he+'">'+A.he+'</b><span>de '+A.pl+'<small>planificados</small></span><em>'+Math.round(A.p*100)+' %<small>'+(B.pl?(ptos>=0?'+':'')+ptos+' vs '+(Y-1):'')+'</small></em></div></div>';
  s+='<div class="hmk"><div><span class="lbl">Racha</span><b class="ra">'+(R.actual?R.actual.b-R.actual.a+1:0)+'<small>sem</small></b></div><div><span class="lbl">Mejor</span><b class="be">'+(R.best?R.best.b-R.best.a+1:0)+'<small>sem</small></b></div><div><span class="lbl">Promedio</span><b>'+co(r1C(prom))+'<small>días/sem</small></b></div></div>';

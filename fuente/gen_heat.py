@@ -29,8 +29,8 @@ CSS = """
 .hq.au{background:rgba(79,209,230,.28)}
 .hq.pl{background:transparent;box-shadow:inset 0 0 0 1px rgba(var(--fg),.16)}
 .hq.hoy{background:transparent;box-shadow:inset 0 0 0 1.5px var(--a1)}
-.hq.l1{background:#1e3a66}.hq.l2{background:#2a5aa8}.hq.l3{background:#3a80e0}.hq.l4{background:#5fb0ff}
-html.claro .hq.l1{background:#c5d6f6}html.claro .hq.l2{background:#86a8ec}html.claro .hq.l3{background:#4371dc}html.claro .hq.l4{background:#1c46c4}
+.hq.l1{background:#22477e}.hq.l2{background:#3a80e0}.hq.l3{background:#6fbcff}
+html.claro .hq.l1{background:#a9c3f2}html.claro .hq.l2{background:#4a7be0}html.claro .hq.l3{background:#1a3fb8}
 .hq.hy{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--a1)}
 .hq.on{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--tx);position:relative;z-index:1}
 .hmr{position:relative;height:3px;margin-top:8px;border-radius:2px;background:rgba(var(--fg),.08)}
@@ -44,7 +44,8 @@ html.claro .hmr b.best{background:#c99a1e}
 .hml .sp{flex:1;margin:0}
 .hml i{width:10px;height:10px;border-radius:2.5px}
 .hml i.fa{background:rgba(229,96,74,.32)}
-.hml i.l1{background:#1e3a66}.hml i.l2{background:#2a5aa8}.hml i.l3{background:#3a80e0}.hml i.l4{background:#5fb0ff}
+.hml i{margin-left:6px}.hml i.l1{background:#22477e}.hml i.l2{background:#3a80e0}.hml i.l3{background:#6fbcff}
+html.claro .hml i.l1{background:#a9c3f2}html.claro .hml i.l2{background:#4a7be0}html.claro .hml i.l3{background:#1a3fb8}
 .hqi{min-height:18px;margin:10px 0 0;font-size:12.5px;color:var(--tx3)}.hqi.vis{color:var(--tx);font-weight:600}
 .hmt{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 .hmn{display:flex;align-items:baseline;gap:8px;margin-top:4px}
