@@ -1740,6 +1740,15 @@ function hojasCliente(h){var s='';
   ((window.PWA&&!PWA.sola)?'<button type="button" class="fila" data-a="instalar"><span class="ico">'+I.mas+'</span><span><b>Instalar la app</b><span class="s">Ícono en el inicio, sin internet</span></span>'+I.der+'</button>':'')+
   '</div><p class="sub" style="text-align:center;margin-top:14px">A medida · Entrenamiento integral</p>';}
  return s;}
+/* al guardar la sesión: lo que recibe el Monitor (por ahora, la simulación al lado del iPhone) */
+function mandarSesionMonitor(){try{var hp=hechas(),rirs=[];BLQ.forEach(function(b){b.h.forEach(function(r){r.forEach(function(x){if(x)rirs.push(x[2]);});});});
+ var rut={quien:NOMBRE,dia:'Brazos',ej:[]};BLQ.forEach(function(bb){bb.ej.forEach(function(x){rut.ej.push({id:x.id,n:x.n,pauta:(/(\d+ × \d+)/.exec(x.o)||['',''])[1]+' · '+co(x.p[0][0])+(x.u==='pl'?' pl':' kg')});});});
+ var H=PROG.H,lu=lunes(new Date()),sem=[],SENS=['liviano','moderado','duro'];
+ for(var k=45;k<=51;k++){var dd=new Date(lu.getTime()-(52-k)*7*864e5),n=H.dias[k],r=H.rir[k],ss=[];for(var j=0;j<n;j++){var z=(2.2-r)*1.1+(Math.sin((k*7+j)*12.9898)*43758.5453%1+1)%1*.9;ss.push(SENS[Math.max(0,Math.min(2,Math.floor(z+.6)))]);}
+  sem.push({lab:dd.getDate()+'/'+(dd.getMonth()+1),rir:r,s:ss});}
+ var rirH=rirs.length?rirs.reduce(function(a,b){return a+b;},0)/rirs.length:null;
+ sem.push({lab:'Esta sem.',rir:rirH,s:['moderado','duro',U.esf],hoy:true});
+ window.parent.postMessage({am:'sesion',quien:NOMBRE,dia:'Brazos',esf:U.esf,series:hp[0],total:hp[1],rir:rirH,rutina:rut,sem:sem,t:Date.now()},'*');}catch(e){}}
 
 /* ================= Constancia: mapa de calor diario (un cuadrado por día, columnas = semanas) ================= */
 var DIAS_C=['dom','lun','mar','mié','jue','vie','sáb'];
@@ -2208,7 +2217,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
   break;
  case 'terminar':var hp=hechas();if(hp[0]<hp[1]&&v!=='1'){U.hoja={t:'term',f:hp[1]-hp[0]};break;}U.hoja=null;soltarPantalla();U.pila=['resumen'];U.t.on=false;clearInterval(iv);irArriba();break;
  case 'esf':U.esf=v;break;
- case 'guardarSes':if(!U.esf){toast('Elegí cómo sentiste el entrenamiento');return;}U.ses.on=false;U.ses.fin=true;U.t.on=false;clearInterval(iv);soltarPantalla();U.pila=[];U.tab='hoy';toast('Sesión guardada · lista para mandar al panel');break;
+ case 'guardarSes':if(!U.esf){toast('Elegí cómo sentiste el entrenamiento');return;}U.ses.on=false;U.ses.fin=true;U.t.on=false;clearInterval(iv);soltarPantalla();mandarSesionMonitor();U.pila=[];U.tab='hoy';toast('Sesión guardada · lista para mandar al panel');break;
  case 'hojaVar':if(!v)return;var r=v.split('-');U.hoja={t:'var',b:+r[0],k:+r[1]};break;
  case 'varSel':var z=v.split('|'),e=BLQ[U.hoja.b].ej[U.hoja.k];e.v[z[0]]=z[1];break;
  case 'mas15':U.t.fin+=15000;U.t.s+=15;U.t.T=Math.max(U.t.T,U.t.s);pintarTimer();return;

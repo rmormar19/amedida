@@ -58,3 +58,12 @@ function hojasCliente(h){var s='';
   ((window.PWA&&!PWA.sola)?'<button type="button" class="fila" data-a="instalar"><span class="ico">'+I.mas+'</span><span><b>Instalar la app</b><span class="s">Ícono en el inicio, sin internet</span></span>'+I.der+'</button>':'')+
   '</div><p class="sub" style="text-align:center;margin-top:14px">AMedida</p>';}
  return s;}
+/* al guardar la sesión: lo que recibe el Monitor (por ahora, la simulación al lado del iPhone) */
+function mandarSesionMonitor(){try{var hp=hechas(),rirs=[];BLQ.forEach(function(b){b.h.forEach(function(r){r.forEach(function(x){if(x)rirs.push(x[2]);});});});
+ var rut={quien:NOMBRE,dia:'Brazos',ej:[]};BLQ.forEach(function(bb){bb.ej.forEach(function(x){rut.ej.push({id:x.id,n:x.n,pauta:(/(\d+ × \d+)/.exec(x.o)||['',''])[1]+' · '+co(x.p[0][0])+(x.u==='pl'?' pl':' kg')});});});
+ var H=PROG.H,lu=lunes(new Date()),sem=[],SENS=['liviano','moderado','duro'];
+ for(var k=45;k<=51;k++){var dd=new Date(lu.getTime()-(52-k)*7*864e5),n=H.dias[k],r=H.rir[k],ss=[];for(var j=0;j<n;j++){var z=(2.2-r)*1.1+(Math.sin((k*7+j)*12.9898)*43758.5453%1+1)%1*.9;ss.push(SENS[Math.max(0,Math.min(2,Math.floor(z+.6)))]);}
+  sem.push({lab:dd.getDate()+'/'+(dd.getMonth()+1),rir:r,s:ss});}
+ var rirH=rirs.length?rirs.reduce(function(a,b){return a+b;},0)/rirs.length:null;
+ sem.push({lab:'Esta sem.',rir:rirH,s:['moderado','duro',U.esf],hoy:true});
+ window.parent.postMessage({am:'sesion',quien:NOMBRE,dia:'Brazos',esf:U.esf,series:hp[0],total:hp[1],rir:rirH,rutina:rut,sem:sem,t:Date.now()},'*');}catch(e){}}

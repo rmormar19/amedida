@@ -50,7 +50,7 @@ def aplicar(s, D):
  case 'modo':U.hoja=null;var tm=document.getElementById('tMod');if(tm)tm.click();break;""")
     rep("function despues(){", "function despues(){\n guardarSes2();")
     rep("case 'esf':U.esf=+v;break;", "case 'esf':U.esf=v;break;")
-    rep("case 'guardarSes':U.pila=[];", "case 'guardarSes':if(!U.esf){toast('Elegí cómo sentiste el entrenamiento');return;}U.ses.on=false;U.ses.fin=true;U.t.on=false;clearInterval(iv);soltarPantalla();U.pila=[];")
+    rep("case 'guardarSes':U.pila=[];", "case 'guardarSes':if(!U.esf){toast('Elegí cómo sentiste el entrenamiento');return;}U.ses.on=false;U.ses.fin=true;U.t.on=false;clearInterval(iv);soltarPantalla();mandarSesionMonitor();U.pila=[];")
     rep("var btn=U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):'Empezar sesión';", "var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):'Empezar sesión';")
     rep("data-a=\"'+(U.ses.on&&h[0]===h[1]?'resumen':'sesion')+'\"", "data-a=\"'+(U.ses.fin||(U.ses.on&&h[0]===h[1])?'resumen':'sesion')+'\"")
     rep('</style></head>', CSS + '</style></head>')
