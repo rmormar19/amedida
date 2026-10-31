@@ -418,5 +418,7 @@ import gen_ficha
 s = gen_ficha.aplicar(s, D)
 import gen_nota
 s = gen_nota.aplicar(s, D)
+import gen_movil
+s = gen_movil.aplicar(s, D)
 open(os.path.join(D, 'bocetos', 'rediseno.html'), 'w').write(s)
 print('ok app', len(s))
