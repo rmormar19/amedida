@@ -17,6 +17,11 @@ def aplicar(s, D):
 
 CSS = """
 /* ---------- celular ---------- */
+/* app instalada en iPhone: el contenido empieza debajo de la barra de estado (antes el título quedaba tapado por la barra de arriba) */
+body{padding-top:env(safe-area-inset-top,0px)}
+.main{padding-bottom:calc(var(--navh) + 40px + env(safe-area-inset-bottom,0px))}
+.main.conmini{padding-bottom:calc(var(--navh) + 130px + env(safe-area-inset-bottom,0px))}
+#mini{bottom:calc(var(--navh) + 28px + env(safe-area-inset-bottom,0px))}
 body{overflow-x:hidden}
 .main{overflow-x:clip}
 button,[data-a],a,input,label{touch-action:manipulation}
