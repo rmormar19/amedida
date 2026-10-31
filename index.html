@@ -956,6 +956,23 @@ a.fila{color:inherit;text-decoration:none}
 .wab{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:14px;text-decoration:none;min-height:46px}
 .wab svg{width:18px;height:18px}
 
+/* ---------- Mi progreso ---------- */
+.mp1 .mpk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.mpk div{padding:12px 6px;border-radius:14px;background:var(--surf2);text-align:center}
+.mpk b{display:block;font-size:28px;line-height:1.05;letter-spacing:-.02em}
+.mpk span{display:block;margin-top:4px;font-size:11.5px;color:var(--tx3);line-height:1.25}
+.mpt{margin:12px 0 0;font-size:14.5px;font-weight:600;line-height:1.4}
+.mpr{display:grid;grid-template-columns:1fr 70px auto;gap:10px;align-items:center;width:100%;padding:12px 0;border:0;border-top:1px solid var(--line);background:transparent;color:inherit;font:inherit;text-align:left}
+.mpr:first-child{border-top:0}
+.mpr b{display:block;font-size:14.5px;line-height:1.3}.mpr .s{display:block;font-size:12.5px;color:var(--tx3);margin-top:2px}
+.mpr svg{width:70px;height:26px}
+.mpn{margin:6px 4px 0;font-size:12px;color:var(--tx4)}
+.mpc{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:end}
+.mpc b{display:block;font-size:32px;line-height:1}.mpc span{display:block;font-size:12px;color:var(--tx3);margin-top:4px}
+.mpb{display:flex;align-items:flex-end;gap:4px;height:52px}
+.mpb i{flex:1;border-radius:4px 4px 2px 2px;background:var(--a1);opacity:.8;animation:crece .6s both}
+.mpb i.ok{background:var(--grn);opacity:1}.mpb i.lo{background:var(--line2)}
+
 /* ---------- celular ---------- */
 body{overflow-x:hidden}
 .main{overflow-x:clip}
@@ -1090,7 +1107,7 @@ var hd=function(ey,t,p){return '<div class="hd"><span class="ey">'+ey+'</span><h
 var per=function(sel,a){return '<div class="per">'+['4 sem','6 sem','3 m','6 m','1 año'].map(function(x){return '<button type="button" data-a="'+(a||'p_per')+'" data-v="'+x+'" aria-pressed="'+(sel===x)+'">'+x+'</button>';}).join('')+'</div>';};
 var zc=function(v){return v>=10?(v>20?'var(--vio)':'var(--grn)'):'var(--yel)';};
 
-U={tab:'carga',per:'6 sem',met:'ser',gmode:'sem',gsem:51,gsel:null,abre:{},ejGm:'Todos',ejSel:'PPB',ejv:'juntas'};
+U={tab:'yo',per:'6 sem',met:'ser',gmode:'sem',gsem:51,gsel:null,abre:{},ejGm:'Todos',ejSel:'PPB',ejv:'juntas'};
 var PER={'4 sem':4,'6 sem':6,'3 m':13,'6 m':26,'1 año':52};
 var MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 /* 52 semanas de historia de ejemplo: las últimas 6 son las reales del panel */
@@ -1326,10 +1343,26 @@ function ejercicios(){var gm=U.ejGm||'Todos',grupos=Object.keys(GMAC).filter(fun
  s+='</section>';
  return s;}
 
+/* ---------- Mi progreso: la versión simple para el cliente (el detalle igual al panel queda en las otras pestañas) ---------- */
+function miProgreso(){var n=PER[U.per],ini=52-n,txtP=n===52?'el último año':n>=13?'los últimos '+Math.round(n/4.33)+' meses':'las últimas '+n+' semanas';
+ var dias=H.dias.slice(ini),ses=dias.reduce(function(a,b){return a+b;},0),prom=avg(dias);
+ var L=EJLIST.map(function(x){var h=histEj(x.id),a=null,b=null;for(var k=ini;k<52;k++){var o=h[k];if(o&&!o.de){if(a==null)a=k;b=k;}}if(a==null||a===b)return null;
+  var fa=h[a].w*(1+h[a].r[0]/30),fb=h[b].w*(1+h[b].r[0]/30);return {x:x,u:x.e[3]==='pl'?'placas':'kg',wa:h[a].w,wb:h[b].w,ra:h[a].r[0],rb:h[b].r[0],p:(fb-fa)/fa,h:h,a:a,b:b};}).filter(Boolean);
+ var sub=L.filter(function(o){return o.wb>o.wa;}),mas=L.filter(function(o){return o.wb===o.wa&&o.rb>o.ra;}),top=L.slice().sort(function(m,q){return q.p-m.p;}).filter(function(o){return o.p>0;}).slice(0,3);
+ var est=EJLIST.map(function(x){var r=resumenEj(x);return r.est.t==='Estancado'?{x:x,r:r}:null;}).filter(Boolean).slice(0,2);
+ var s='<section class="card mp1 sube"><span class="lbl">En '+txtP+'</span><div class="mpk"><div><b data-cu="'+ses+'">'+ses+'</b><span>entrenamientos</span></div><div><b data-cu="'+sub.length+'">'+sub.length+'</b><span>ejercicios con más peso</span></div><div><b data-cu="'+mas.length+'">'+mas.length+'</b><span>con más repeticiones</span></div></div>'+
+  '<p class="mpt">'+(sub.length+mas.length>=L.length/2?'Vas muy bien: estás más fuerte en la mayoría de tus ejercicios.':sub.length+mas.length>0?'Vas progresando. Seguí sumando de a poco.':'Estas semanas fueron de mantener. Es normal: el progreso no es en línea recta.')+'</p></section>';
+ if(top.length)s+='<div class="sh"><h2>Dónde más mejoraste</h2></div><section class="card lista sube" style="padding:4px 16px">'+top.map(function(o){var pts=[];for(var k=o.a;k<=o.b;k++){var q=o.h[k];if(q&&!q.de)pts.push(q.w*(1+q.r[0]/30));}
+  return '<button type="button" class="mpr" data-a="p_mpEj" data-v="'+o.x.id+'"><span><b>'+o.x.e[1]+'</b><span class="s">'+(o.wb>o.wa?'De '+co(o.wa)+' a '+co(o.wb)+' '+o.u:co(o.wb)+' '+o.u+': de '+o.ra+' a '+o.rb+' repeticiones')+'</span></span>'+spark(pts,'var(--grn)',70,26)+'<span class="dc up">'+(o.wb>o.wa?'+'+co(r1(o.wb-o.wa))+(o.u==='placas'?' pl':' kg'):'+'+(o.rb-o.ra)+' reps')+'</span></button>';}).join('')+'</section>';
+ s+='<div class="sh"><h2>Constancia</h2></div><section class="card sube"><div class="mpc"><div><b>'+co(r1(prom))+'</b><span>días por semana</span></div><div class="mpb">'+dias.slice(-Math.min(dias.length,13)).map(function(d){return '<i style="height:'+Math.max(8,d/5*100)+'%" class="'+(d>=4?'ok':d>=3?'':'lo')+'"></i>';}).join('')+'</div></div><p class="sub" style="margin:8px 0 0">'+(prom>=3.5?'Muy constante: así se ven los resultados.':prom>=2.5?'Bien. Si podés sumar un día más, se nota.':'Pocas semanas completas. Hablá con tu entrenador si necesitás ajustar los días.')+'</p></section>';
+ if(est.length)s+='<div class="sh"><h2>Para seguir mejorando</h2></div><section class="card lista sube" style="padding:4px 16px">'+est.map(function(o){return '<div class="fila"><span class="ico wa">'+I.igual+'</span><span><b>'+o.x.e[1]+'</b><span class="s">'+o.r.igual+' semanas igual. Probá sumar una repetición por serie antes de subir peso.</span></span><span></span></div>';}).join('')+'</section>';
+ s+='<button type="button" class="sec full" style="margin-top:14px" data-a="p_tab" data-v="carga">Ver todo en detalle</button>';
+ return s;}
 function vista(){
  var s=hd('Tu evolución','Progreso');
- s+='<div class="seg" style="margin-bottom:10px"><button type="button" data-a="p_tab" data-v="carga" aria-pressed="'+(U.tab==='carga')+'">Carga de trabajo</button><button type="button" data-a="p_tab" data-v="ej" aria-pressed="'+(U.tab==='ej')+'">Por ejercicio</button></div>';
+ s+='<div class="seg" style="margin-bottom:10px"><button type="button" data-a="p_tab" data-v="yo" aria-pressed="'+(U.tab==='yo')+'">Mi progreso</button><button type="button" data-a="p_tab" data-v="carga" aria-pressed="'+(U.tab==='carga')+'">Carga</button><button type="button" data-a="p_tab" data-v="ej" aria-pressed="'+(U.tab==='ej')+'">Ejercicios</button></div>';
  s+='<div class="stk">'+per(U.per)+'</div>';
+ if(U.tab==='yo')return s+miProgreso();
  if(U.tab==='ej')return s+'<div id="sEj">'+ejercicios()+'</div>';
  s+='<div id="sKpi" class="sube">'+kpis()+'</div>';
  s+='<div class="sh"><h2>Carga de trabajo · semana a semana</h2></div><section class="card sube" id="sCarga">'+carga()+'</section>';
@@ -1339,7 +1372,8 @@ function pintar(){document.getElementById('view').innerHTML=vista();contar();}
 function parcial(id,fn){var el=document.getElementById(id);if(el){el.innerHTML=fn();}}
 function accion(a,v){
  if(a==='per'){U.per=v;pintar();return;}
- if(a==='tab'){U.tab=v;pintar();return;}
+ if(a==='tab'){U.tab=v;pintar();window.scrollTo(0,0);return;}
+ if(a==='mpEj'){U.tab='ej';U.ejSel=v;pintar();window.scrollTo(0,0);return;}
  if(a==='met'){U.met=v;parcial('sCarga',carga);return;}
  if(a==='abre'){U.abre[v]=!U.abre[v];if(v==='x1')parcial('sCarga',carga);else parcial('sGr',grupos);return;}
  if(a==='gmode'){U.gmode=v;parcial('sGr',grupos);return;}
@@ -1354,7 +1388,7 @@ return {vista:vista,accion:accion,contar:contar,histEj:histEj,PLANX:PLANX,H:H};
 })();
 /* ================= estado ================= */
 var U={tab:'hoy',pila:[],ses:{on:false,b:0,t0:null},t:{on:false,s:0,T:90,txt:''},
- cal:{sel:'2026-9-30',mes:9,w:0,mx:9},pro:{vista:'carga',per:'6 sem',met:'vol',sem:52,abre:{}},mac:{dia:4},med:{graf:'s6',per:'6 m',tabla:false},toma:{i:0},hoja:null,esf:7};
+ cal:{sel:'2026-9-30',mes:9,w:0,mx:9},pro:{vista:'carga',per:'6 sem',met:'vol',sem:52,abre:{}},mac:{dia:4},med:{graf:'peso',per:'6 m',tabla:false},toma:{i:0},hoja:null,esf:7};
 var TITULO={hoy:'Hoy',cal:'Calendario',pro:'Progreso',mac:'Macros',med:'Medidas'};
 
 /* ================= extras (30 oct): guardado en el celular, cola para el panel, notificaciones, sesión de gimnasio ================= */
@@ -1678,7 +1712,7 @@ function vHoy(){var t=tot(),h=hechas(),fal={p:NUT.obj.p-t.p};
   '<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Macros</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>'+
   '<button type="button" class="tile" data-a="tab" data-v="cal"><span class="lbl">Semana</span><div class="big">2<small>de 4 días</small></div><div class="dots">'+[['L','ok'],['M','ok'],['M',''],['J',''],['V','hoy'],['S','pl'],['D','']].map(function(d){return '<span class="'+d[1]+'"><i></i>'+d[0]+'</span>';}).join('')+'</div></button>'+
   '<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Peso</span><div class="big">78,5<small>kg</small></div><div class="s"><span class="up">−0,5</span> en 3 meses</div>'+spark([79,79,79,79,78.5,78.5],'var(--vio)',130,30)+'</button>'+
-  '<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Σ 6 pliegues</span><div class="big">70,5<small>mm</small></div><div class="s"><span class="up">−8 mm</span> desde junio</div>'+spark(SERIE.s6,'var(--cya)',130,30)+'</button></div>'+
+  '<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Cintura</span><div class="big">83,5<small>cm</small></div><div class="s"><span class="up">−1 cm</span> desde junio</div>'+spark(SERIE.cint,'var(--cya)',130,30)+'</button></div>'+
  '<div class="sh"><h2>Para hoy</h2></div><section class="card lista" style="padding:2px 16px">'+
   aviso('flecha','','Curl en banco inclinado: subí a 14 kg','La semana pasada hiciste 12 kg × 10 en las 3 series con RIR 2.','b3')+
   aviso('igual','wa','Extensión abajo-arriba: 3 semanas igual','4 placas × 12. Probá sumar una rep por serie antes de subir peso.','b2')+
@@ -1913,12 +1947,12 @@ function vMac(){var t=tot(),o=NUT.obj,f={p:Math.max(0,o.p-t.p),c:Math.max(0,o.c-
  return s;}
 
 /* ---------- Medidas ---------- */
-function vMed(){var m=U.med,s='<div class="hd"><div class="row"><div><span class="ey">Antropometría</span><h1>Medidas</h1></div></div><p>14 tomas · última el 25 oct · próxima el 22 nov</p></div>';
+function vMed(){var m=U.med,s='<div class="hd"><div class="row"><div><span class="ey">Tu cuerpo</span><h1>Medidas</h1></div></div><p>14 tomas · última el 25 oct · próxima el 22 nov</p></div>';
  s+='<div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Mi peso</button><button type="button" class="sec" data-a="toma">'+I.regla+'Toma completa</button></div>';
- var T=[['Σ 6 pliegues','70,5','mm','−1,5','s6'],['Peso','78,5','kg','0','peso'],['Cintura','83,5','cm','−0,5','cint'],['Brazo','35,5','cm','0','brazo']];
+ var T=[['Peso','78,5','kg','0','peso'],['Cintura','83,5','cm','−0,5','cint'],['Brazo','35,5','cm','0','brazo'],['Pliegues','70,5','mm','−1,5','s6']];
  s+='<div class="tk">'+T.map(function(t){var est=t[3]==='0';return '<button type="button" class="tile" data-a="medG" data-v="'+t[4]+'" style="'+(m.graf===t[4]?'border-color:var(--a1)':'')+'"><span class="lbl">'+t[0]+'</span><b>'+t[1]+'<small>'+t[2]+'</small></b><div class="s">'+(est?'<span class="chip">estable</span>':'<span class="chip ok">'+t[3]+'</span>')+' vs. anterior</div></button>';}).join('')+'</div>';
- var nom={s6:'Σ 6 pliegues',peso:'Peso',cint:'Cintura',brazo:'Brazo'}[m.graf],u={s6:'mm',peso:'kg',cint:'cm',brazo:'cm'}[m.graf];
- s+='<div class="sh"><h2>Evolución</h2></div><section class="card"><h3>'+nom+'</h3><p class="sub">Toma a toma, en '+u+'.</p><div class="per">'+['3 m','6 m','1 año'].map(function(x){return '<button type="button" data-a="medP" data-v="'+x+'" aria-pressed="'+(m.per===x)+'">'+x+'</button>';}).join('')+'</div><div style="margin-top:8px">'+linea(SERIE[m.graf],TOMAS,{col:m.graf==='s6'?'var(--cya)':'var(--a1)',aria:'Evolución de '+nom})+'</div>'+(m.graf==='s6'?'<p class="sub">En 6 meses: <b class="up">−8 mm</b> ≈ 1,6 kg de grasa menos (estimación de campo: 5 mm de Σ6 ≈ 1 kg).</p>':'')+'</section>';
+ var nom={s6:'Pliegues (suma de 6)',peso:'Peso',cint:'Cintura',brazo:'Brazo'}[m.graf],u={s6:'mm',peso:'kg',cint:'cm',brazo:'cm'}[m.graf];
+ s+='<div class="sh"><h2>Evolución</h2></div><section class="card"><h3>'+nom+'</h3><p class="sub">Toma a toma, en '+u+'.</p><div class="per">'+['3 m','6 m','1 año'].map(function(x){return '<button type="button" data-a="medP" data-v="'+x+'" aria-pressed="'+(m.per===x)+'">'+x+'</button>';}).join('')+'</div><div style="margin-top:8px">'+linea(SERIE[m.graf],TOMAS,{col:m.graf==='s6'?'var(--cya)':'var(--a1)',aria:'Evolución de '+nom})+'</div>'+(m.graf==='s6'?'<p class="sub">Los pliegues miden la grasa debajo de la piel. Bajaron <b class="up">8 mm</b> en 6 meses: estás perdiendo grasa. Los toma tu entrenador.</p>':m.graf==='peso'?'<p class="sub">El peso sube y baja día a día. Mirá la tendencia de varias semanas, no un día solo.</p>':'')+'</section>';
  s+='<div class="sh"><h2>Todas las medidas</h2><button type="button" data-a="medT">'+(m.tabla?'Ocultar':'Ver tabla')+'</button></div>';
  if(m.tabla){var cols=['30 ago','27 sep','25 oct'];var F=[['g','Pliegues (mm)'],['','Tríceps',[10,10,10]],['','Subescapular',[12.5,12,12]],['','Suprailíaco',[13,13,12.5]],['','Abdominal',[16.5,16.5,16]],['','Pectoral',[8.5,8,7.5]],['','Abductor',[13,12.5,12.5]],['t','Σ 6',[73.5,72,70.5]],['g','Perímetros (cm)'],['','Cintura',[84,83.5,83.5]],['','Cadera',[98,98,98]],['','Brazo',[35.5,35.5,35.5]],['','Pierna',[58,58,58]],['','Pantorrilla',[38,38,38]]];
   s+='<section class="card" style="padding:6px 16px 10px"><table class="tabla"><thead><tr><th>Medida</th>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr></thead><tbody>'+F.map(function(r){return r[0]==='g'?'<tr class="g"><td colspan="4">'+r[1]+'</td></tr>':'<tr class="'+r[0]+'"><td>'+r[1]+'</td>'+r[2].map(function(v){return '<td>'+co(v)+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></section>';}

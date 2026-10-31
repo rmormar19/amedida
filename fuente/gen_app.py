@@ -420,6 +420,8 @@ import gen_nota
 s = gen_nota.aplicar(s, D)
 import gen_cliente
 s = gen_cliente.aplicar(s, D)
+import gen_simple
+s = gen_simple.aplicar(s, D)
 import gen_movil
 s = gen_movil.aplicar(s, D)
 open(os.path.join(D, 'bocetos', 'rediseno.html'), 'w').write(s)
