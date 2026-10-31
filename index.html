@@ -1172,7 +1172,7 @@ var CAL={2:['Brazos','ok'],3:['Faltó','fa'],5:['Pecho','ok'],6:['Espalda','ok']
 var DETALLE={Pecho:['Pecho, hombro y tríceps',18,'5.690 kg','1,4'],Espalda:['Espalda, bíceps y abdomen',18,'4.980 kg','1,5'],Brazos:['Brazos',18,'4.050 kg','1,3'],Pierna:['Pierna y abdomen',22,'11.200 kg','1,6']};
 /* medidas */
 var TOMAS=['7 jun','5 jul','2 ago','30 ago','27 sep','25 oct'];
-var SERIE={s6:[78.5,74,75,73.5,72,70.5],peso:[79,79,79,79,78.5,78.5],cint:[84.5,84,84,84,83.5,83.5],brazo:[35.5,35.5,35.5,35.5,35.5,35.5]};
+var SERIE={s6:[100.5,95,96,94.5,92.5,90.5],peso:[79,79,79,79,78.5,78.5],cint:[84.5,84,84,84,83.5,83.5],brazo:[35.5,35.5,35.5,35.5,35.5,35.5]};
 /* ================= toma de medidas: perfil restringido ISAK nivel 1 ================= */
 /* lado derecho del cuerpo; en la vista de frente el lado derecho queda a la izquierda de la imagen y en la de espalda, a la derecha */
 var SITIOS=[
@@ -1205,8 +1205,8 @@ function vToma2(){var P=PASOS(),i=U.toma.i,n=P.length;
  if(i>=n){var s='<div class="hd"><span class="ey">Toma del 30 de octubre · ISAK</span><h1>Revisá y guardá</h1></div><section class="card" style="padding:6px 16px 10px"><table class="tabla"><thead><tr><th>Sitio</th><th>Hoy</th><th>25 oct</th></tr></thead><tbody>',g='';
   SITIOS.forEach(function(x){var e=evalSitio(x);if(x.g!==g){g=x.g;s+='<tr class="g"><td colspan="3">'+g+'</td></tr>';}s+='<tr><td>'+x.n+'</td><td><b>'+(e.m==null?'—':co(e.m))+'</b></td><td class="mu">'+co(x.prev)+'</td></tr>';});
   var s6=sumaPl(true),s8=sumaPl(false);
-  s+='<tr class="t"><td>Σ 6 pliegues</td><td>'+(s6==null?'—':co(s6))+'</td><td class="mu">70,5</td></tr><tr class="t"><td>Σ 8 pliegues</td><td>'+(s8==null?'—':co(s8))+'</td><td class="mu">90,5</td></tr></tbody></table></section>'+
-   '<p class="sub" style="margin:8px 2px 0">Σ 6: tríceps, subescapular, supraespinal, abdominal, muslo frontal y pantorrilla medial. Σ 8 suma bíceps y cresta ilíaca.</p>'+
+  s+='<tr class="t"><td>Σ 8 pliegues</td><td>'+(s8==null?'—':co(s8))+'</td><td class="mu">90,5</td></tr></tbody></table></section>'+
+   '<p class="sub" style="margin:8px 2px 0">Σ 8: la suma de los 8 pliegues del perfil ISAK. Es la misma que mira tu entrenador para seguir la grasa.</p>'+
    '<div class="nav2"><button type="button" class="sec" data-a="tomaI" data-v="'+(n-1)+'">'+I.atras+'</button><button type="button" class="pri" data-a="guardarToma">Guardar toma</button></div>';return s;}
  var q=P[i],k=q[0],vu=q[1],x=SITIOS[k],e=evalSitio(x),mismos=SITIOS.filter(function(y){return y.g===x.g;}),gIdx=mismos.indexOf(x)+1;
  var enV=P.filter(function(z){return z[1]===vu;}),posV=enV.indexOf(q)+1;
@@ -1677,11 +1677,16 @@ function mandarNota(){var h=U.hoja,e=BLQ[h.b].ej[h.k],tags=NTAGS.map(function(t)
  if(!tags.length&&!txt){toast('Elegí qué pasó o escribí algo');return false;}
  if(h.tags.dolor&&!h.zona){toast('Contanos dónde te dolió');return false;}
  var n={tags:tags,zona:h.tags.dolor?h.zona:'',int:h.tags.dolor?(h.int||''):'',txt:txt,t:Date.now(),serie:hechasEj(h.b,h.k)};NOTAS[e.id]=n;guardarNotas();
- cola('Nota · '+e.n+' · '+resNota(n),paq('nota',{dia:DIA_SES,ejercicio:ejRef(e),tags:n.tags,zona:n.zona||null,intensidad:n.int||null,texto:n.txt||'',serie:n.serie}));toast('Nota enviada a tu entrenador');
+ cola('Nota · '+e.n+' · '+resNota(n),paq('nota',{dia:DIA_SES,ejercicio:ejRef(e),observacion:obsEj(e,n),tags:n.tags,zona:n.zona||null,intensidad:n.int||null,serie:n.serie}));toast('Nota enviada a tu entrenador');
  var rut={quien:NOMBRE,dia:'Brazos',ej:[]};BLQ.forEach(function(bb){bb.ej.forEach(function(x){rut.ej.push({id:x.id,n:x.n,pauta:(/(\d+ × \d+)/.exec(x.o)||['',''])[1]+' · '+co(x.p[0][0])+(x.u==='pl'?' pl':' kg')});});});
  var hist=null;try{var hx=PROG.histEj(e.id),lu=lunes(new Date());hist=[];for(var k=45;k<=51;k++){var o=hx[k],dd=new Date(lu.getTime()-(52-k)*7*864e5);hist.push({lab:dd.getDate()+'/'+(dd.getMonth()+1),w:o?o.w:null,r:o?o.r[0]:null,no:!o||!!o.de});}var sa=semActual(e.id);hist.push({lab:'Hoy',w:sa.w,r:sa.r[0],no:false});}catch(x){}
  try{window.parent.postMessage({am:'nota',id:e.id,uni:e.u==='pl'?'placas':'kg',rutina:rut,hist:hist,quien:NOMBRE,ej:e.n,res:resNota(n),txt:txt,dolor:tags.indexOf('dolor')>=0,fuerte:n.int==='Fuerte',serie:n.serie,t:n.t},'*');}catch(x){}
  return true;}
+/* en el Monitor la nota entra como observación por ejercicio: "Obs ej: <ejercicio> | <Motivo> — <texto>", con la fecha del día */
+var NMOT={dolor:'Lesión',liviano:'Listo para subir peso',tecnica:'Ajuste técnico'};
+function obsEj(e,n){var k=['dolor','liviano','tecnica'].filter(function(t){return n.tags.indexOf(t)>=0;})[0],mot=k?NMOT[k]:'Otro';
+ var det=resNota(n)+(n.serie?' (en la serie '+n.serie+')':'')+(n.txt?'. '+n.txt:'')+'. Desde la app.';
+ return {texto:'Obs ej: '+e.n+' | '+mot+' — '+det,fecha:hoyISO()};}
 function hechasEj(b,k){var c=0;BLQ[b].h.forEach(function(r){if(r[k])c++;});return c;}
 
 function semNota(t){return 52-Math.round((lunes(new Date()).getTime()-lunes(new Date(t)).getTime())/(7*864e5));}
@@ -1781,13 +1786,13 @@ function anotarDato(ev){var b=ev.target.closest&&ev.target.closest('[data-a]');i
  if(a==='serie'){var q=v.split('-'),bl=BLQ[PRE.b],x=bl&&bl.h[+q[0]][+q[1]],e=bl&&bl.ej[+q[1]];
   if(x)cola('Serie hecha · '+e.n+' · '+pesoTxt(e,x[0])+' × '+x[1]+' · RIR '+x[2],paq('serie',{dia:DIA_SES,ejercicio:ejRef(e),n:+q[0]+1,ss:bl.ss?bl.k:null,serie:{peso:pesoTxt(e,x[0]),reps:String(x[1]),rir:String(x[2]),tipo:bl.drop&&+q[0]===2?'drop':''}}));}
  if(a==='guardarSes'&&U.esf&&U.ses.fin&&!U.pila.length){var hp=hechas(),rr=[];BLQ.forEach(function(bb){bb.h.forEach(function(r){r.forEach(function(x){if(x)rr.push(x[2]);});});});
-  cola('Sesión de '+DIA_SES+' terminada · esfuerzo: '+U.esf,paq('sesion',{dia:DIA_SES,esfuerzo:U.esf,series:hp[0],total:hp[1],rirMedio:rr.length?Math.round(rr.reduce(function(s,y){return s+y;},0)/rr.length*10)/10:null,estado:'Entrené',nota:PRE.notaSes||''}));}
+  cola('Sesión de '+DIA_SES+' terminada · esfuerzo: '+U.esf,paq('sesion',{dia:DIA_SES,esfuerzo:U.esf,series:hp[0],total:hp[1],rirMedio:rr.length?Math.round(rr.reduce(function(s,y){return s+y;},0)/rr.length*10)/10:null,estado:'verde',nota:PRE.notaSes||''}));}
  if(a==='sumar'&&PRE.hoja){var r=RECIENTES[+v],m=NUT.com[PRE.hoja.i];if(r&&!PRE.hoja.ok[v])cola('Comida · '+r[0],paq('comida',{comida:m.n,texto:r[0],p:r[1],c:r[2],g:r[3]}));}
  if(a==='sumarMis'&&PRE.hoja){var r2=MISCOM[+v],m2=NUT.com[PRE.hoja.i];if(r2&&!(PRE.hoja.okm&&PRE.hoja.okm[v]))cola('Comida · '+r2[0],paq('comida',{comida:m2.n,texto:r2[0],p:r2[1],c:r2[2],g:r2[3]}));}
  if(a==='confMover'&&PRE.hoja){var de=dk(PRE.hoja.k),aK=U.cal.sel,aD=dk(aK),g=(MOVS[aK]||{}).g;
   cola('Entreno movido · '+(GFULL[g]||g||'')+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate(),paq('obs',{texto:'Movió '+(GFULL[g]||g||'el entreno')+' del '+DSEM[de.getDay()].toLowerCase()+' '+de.getDate()+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate()+' (desde la app).',mover:{de:PRE.hoja.k,a:aK,grupo:g}}));}
- if(a==='libre'){var dl=dk(v);cola('Día libre · '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate(),paq('obs',{texto:'No va a entrenar el '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate()+'/'+(dl.getMonth()+1)+' (lo marcó desde la app).',fechaDia:v}));}
- if(a==='varSel'&&PRE.hoja){var ev2=BLQ[PRE.hoja.b].ej[PRE.hoja.k];cola('Opción de ejercicio · '+ev2.n+' · '+v.split('|')[1],paq('variante',{ejercicio:ejRef(ev2),variante:JSON.parse(JSON.stringify(ev2.v))}));}
+ if(a==='libre'){var dl=dk(v);cola('Día libre · '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate(),paq('libre',{dia:DSEM[dl.getDay()],fechaDia:v,libre:true,observacion:{texto:'No va a entrenar el '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate()+'/'+(dl.getMonth()+1)+' (lo marcó desde la app).',fecha:hoyISO()}}));}
+ if(a==='varSel'&&PRE.hoja){var ev2=BLQ[PRE.hoja.b].ej[PRE.hoja.k];cola('Opción de ejercicio · '+ev2.n+' · '+v.split('|')[1],paq('variante',{ejercicio:ejRef(ev2),agarre:ev2.v.agarre||'',lateralidad:ev2.v.lado||'',banco:ev2.v.banco||''}));}
  if(COLA.length){var t=document.querySelector('[data-a="sync"]');if(t){t.classList.add('sync');t.setAttribute('aria-label',COLA.length+' cambios sin mandar al panel');}}}
 /* lo que manda el panel: un día de rutina en el formato de Base Panel → lo que muestra la app */
 function numPeso(p){var m=String(p||'').replace(',','.').match(/[\d.]+/);return m?parseFloat(m[0]):null;}
@@ -2199,12 +2204,12 @@ function vMac(){var t=tot(),o=NUT.obj,f={p:Math.max(0,o.p-t.p),c:Math.max(0,o.c-
 /* ---------- Medidas ---------- */
 function vMed(){var m=U.med,s='<div class="hd"><div class="row"><div><span class="ey">Tu cuerpo</span><h1>Medidas</h1></div></div><p>Protocolo ISAK · 14 tomas · última el 25 oct · próxima el 22 nov</p></div>';
  s+='<div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Mi peso</button><button type="button" class="sec" data-a="toma">'+I.regla+'Toma completa</button></div>';
- var T=[['Peso','78,5','kg','0','peso'],['Cintura','83,5','cm','−0,5','cint'],['Brazo','35,5','cm','0','brazo'],['Pliegues','70,5','mm','−1,5','s6']];
+ var T=[['Peso','78,5','kg','0','peso'],['Cintura','83,5','cm','−0,5','cint'],['Brazo','35,5','cm','0','brazo'],['Pliegues','90,5','mm','−2','s6']];
  s+='<div class="tk">'+T.map(function(t){var est=t[3]==='0';return '<button type="button" class="tile" data-a="medG" data-v="'+t[4]+'" style="'+(m.graf===t[4]?'border-color:var(--a1)':'')+'"><span class="lbl">'+t[0]+'</span><b>'+t[1]+'<small>'+t[2]+'</small></b><div class="s">'+(est?'<span class="chip">estable</span>':'<span class="chip ok">'+t[3]+'</span>')+' vs. anterior</div></button>';}).join('')+'</div>';
- var nom={s6:'Pliegues (suma de 6)',peso:'Peso',cint:'Cintura',brazo:'Brazo'}[m.graf],u={s6:'mm',peso:'kg',cint:'cm',brazo:'cm'}[m.graf];
- s+='<div class="sh"><h2>Evolución</h2></div><section class="card"><h3>'+nom+'</h3><p class="sub">Toma a toma, en '+u+'.</p><div class="per">'+['3 m','6 m','1 año'].map(function(x){return '<button type="button" data-a="medP" data-v="'+x+'" aria-pressed="'+(m.per===x)+'">'+x+'</button>';}).join('')+'</div><div style="margin-top:8px">'+linea(SERIE[m.graf],TOMAS,{col:m.graf==='s6'?'var(--cya)':'var(--a1)',aria:'Evolución de '+nom})+'</div>'+(m.graf==='s6'?'<p class="sub">Los pliegues miden la grasa debajo de la piel. Bajaron <b class="up">8 mm</b> en 6 meses: estás perdiendo grasa. Los toma tu entrenador.</p>':m.graf==='peso'?'<p class="sub">El peso sube y baja día a día. Mirá la tendencia de varias semanas, no un día solo.</p>':'')+'</section>';
+ var nom={s6:'Pliegues (suma de 8)',peso:'Peso',cint:'Cintura',brazo:'Brazo'}[m.graf],u={s6:'mm',peso:'kg',cint:'cm',brazo:'cm'}[m.graf];
+ s+='<div class="sh"><h2>Evolución</h2></div><section class="card"><h3>'+nom+'</h3><p class="sub">Toma a toma, en '+u+'.</p><div class="per">'+['3 m','6 m','1 año'].map(function(x){return '<button type="button" data-a="medP" data-v="'+x+'" aria-pressed="'+(m.per===x)+'">'+x+'</button>';}).join('')+'</div><div style="margin-top:8px">'+linea(SERIE[m.graf],TOMAS,{col:m.graf==='s6'?'var(--cya)':'var(--a1)',aria:'Evolución de '+nom})+'</div>'+(m.graf==='s6'?'<p class="sub">Los pliegues miden la grasa debajo de la piel. Bajaron <b class="up">10 mm</b> en 6 meses: estás perdiendo grasa. Los toma tu entrenador.</p>':m.graf==='peso'?'<p class="sub">El peso sube y baja día a día. Mirá la tendencia de varias semanas, no un día solo.</p>':'')+'</section>';
  s+='<div class="sh"><h2>Todas las medidas</h2><button type="button" data-a="medT">'+(m.tabla?'Ocultar':'Ver tabla')+'</button></div>';
- if(m.tabla){var cols=['30 ago','27 sep','25 oct'];var F=[['g','Básicas'],['','Masa corporal (kg)',[79,78.5,78.5]],['','Talla (cm)',[176,176,176]],['g','Pliegues (mm)'],['','Tríceps',[10.5,10,10]],['','Subescapular',[12.5,12,12]],['','Bíceps',[5,5,5]],['','Cresta ilíaca',[16,15.5,15]],['','Supraespinal',[13,13,12.5]],['','Abdominal',[16.5,16.5,16]],['','Muslo frontal',[13.5,13.5,13]],['','Pantorrilla medial',[7.5,7,7]],['t','Σ 6',[73.5,72,70.5]],['t','Σ 8',[94.5,92.5,90.5]],['g','Perímetros (cm)'],['','Brazo relajado',[35.5,35.5,35.5]],['','Brazo flexionado',[37.5,37.5,38]],['','Cintura',[84,83.5,83.5]],['','Cadera',[98,98,98]],['','Pantorrilla',[38,38,38]],['g','Diámetros (cm)'],['','Húmero',[7.1,7.1,7.1]],['','Biestiloideo',[5.6,5.6,5.6]],['','Fémur',[9.9,9.9,9.9]]];
+ if(m.tabla){var cols=['30 ago','27 sep','25 oct'];var F=[['g','Básicas'],['','Masa corporal (kg)',[79,78.5,78.5]],['','Talla (cm)',[176,176,176]],['g','Pliegues (mm)'],['','Tríceps',[10.5,10,10]],['','Subescapular',[12.5,12,12]],['','Bíceps',[5,5,5]],['','Cresta ilíaca',[16,15.5,15]],['','Supraespinal',[13,13,12.5]],['','Abdominal',[16.5,16.5,16]],['','Muslo frontal',[13.5,13.5,13]],['','Pantorrilla medial',[7.5,7,7]],['t','Σ 8',[94.5,92.5,90.5]],['g','Perímetros (cm)'],['','Brazo relajado',[35.5,35.5,35.5]],['','Brazo flexionado',[37.5,37.5,38]],['','Cintura',[84,83.5,83.5]],['','Cadera',[98,98,98]],['','Pantorrilla',[38,38,38]],['g','Diámetros (cm)'],['','Húmero',[7.1,7.1,7.1]],['','Biestiloideo',[5.6,5.6,5.6]],['','Fémur',[9.9,9.9,9.9]]];
   s+='<section class="card" style="padding:6px 16px 10px"><table class="tabla"><thead><tr><th>Medida</th>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr></thead><tbody>'+F.map(function(r){return r[0]==='g'?'<tr class="g"><td colspan="4">'+r[1]+'</td></tr>':'<tr class="'+r[0]+'"><td>'+r[1]+'</td>'+r[2].map(function(v){return '<td>'+co(v)+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></section>';}
  return s;}
 
@@ -2334,7 +2339,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  case 'medG':U.med.graf=v;break; case 'medP':U.med.per=v;break; case 'medT':U.med.tabla=!U.med.tabla;break;
  case 'toma':U.tab='med';U.pila=['toma'];U.toma.i=0;irArriba();break;
  case 'tomaI':U.toma.i=+v;irArriba();break;
- case 'guardarToma':U.pila=[];cola('Toma ISAK · Σ6 '+(sumaPl(true)==null?'incompleta':co(sumaPl(true))+' mm'),paq('medidas',{protocolo:'ISAK restringido',filas:SITIOS.map(function(x){var e=evalSitio(x);return {nombre:x.n,valor:e.m==null?'':co(e.m),u:x.u};}).filter(function(f){return f.valor!=='';})}));toast('Toma guardada · Σ6 y Σ8 recalculadas');irArriba();break;
+ case 'guardarToma':U.pila=[];cola('Toma ISAK · Σ8 '+(sumaPl(false)==null?'incompleta':co(sumaPl(false))+' mm'),paq('medidas',{protocolo:'ISAK restringido',filas:SITIOS.map(function(x){var e=evalSitio(x);return {nombre:x.n,valor:e.m==null?'':co(e.m),u:x.u};}).filter(function(f){return f.valor!=='';})}));toast('Toma guardada · Σ8 recalculada');irArriba();break;
  case 'sync':U.hoja={t:'cola'};break;
  }
  render();});

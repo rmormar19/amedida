@@ -16,13 +16,13 @@ function anotarDato(ev){var b=ev.target.closest&&ev.target.closest('[data-a]');i
  if(a==='serie'){var q=v.split('-'),bl=BLQ[PRE.b],x=bl&&bl.h[+q[0]][+q[1]],e=bl&&bl.ej[+q[1]];
   if(x)cola('Serie hecha · '+e.n+' · '+pesoTxt(e,x[0])+' × '+x[1]+' · RIR '+x[2],paq('serie',{dia:DIA_SES,ejercicio:ejRef(e),n:+q[0]+1,ss:bl.ss?bl.k:null,serie:{peso:pesoTxt(e,x[0]),reps:String(x[1]),rir:String(x[2]),tipo:bl.drop&&+q[0]===2?'drop':''}}));}
  if(a==='guardarSes'&&U.esf&&U.ses.fin&&!U.pila.length){var hp=hechas(),rr=[];BLQ.forEach(function(bb){bb.h.forEach(function(r){r.forEach(function(x){if(x)rr.push(x[2]);});});});
-  cola('Sesión de '+DIA_SES+' terminada · esfuerzo: '+U.esf,paq('sesion',{dia:DIA_SES,esfuerzo:U.esf,series:hp[0],total:hp[1],rirMedio:rr.length?Math.round(rr.reduce(function(s,y){return s+y;},0)/rr.length*10)/10:null,estado:'Entrené',nota:PRE.notaSes||''}));}
+  cola('Sesión de '+DIA_SES+' terminada · esfuerzo: '+U.esf,paq('sesion',{dia:DIA_SES,esfuerzo:U.esf,series:hp[0],total:hp[1],rirMedio:rr.length?Math.round(rr.reduce(function(s,y){return s+y;},0)/rr.length*10)/10:null,estado:'verde',nota:PRE.notaSes||''}));}
  if(a==='sumar'&&PRE.hoja){var r=RECIENTES[+v],m=NUT.com[PRE.hoja.i];if(r&&!PRE.hoja.ok[v])cola('Comida · '+r[0],paq('comida',{comida:m.n,texto:r[0],p:r[1],c:r[2],g:r[3]}));}
  if(a==='sumarMis'&&PRE.hoja){var r2=MISCOM[+v],m2=NUT.com[PRE.hoja.i];if(r2&&!(PRE.hoja.okm&&PRE.hoja.okm[v]))cola('Comida · '+r2[0],paq('comida',{comida:m2.n,texto:r2[0],p:r2[1],c:r2[2],g:r2[3]}));}
  if(a==='confMover'&&PRE.hoja){var de=dk(PRE.hoja.k),aK=U.cal.sel,aD=dk(aK),g=(MOVS[aK]||{}).g;
   cola('Entreno movido · '+(GFULL[g]||g||'')+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate(),paq('obs',{texto:'Movió '+(GFULL[g]||g||'el entreno')+' del '+DSEM[de.getDay()].toLowerCase()+' '+de.getDate()+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate()+' (desde la app).',mover:{de:PRE.hoja.k,a:aK,grupo:g}}));}
- if(a==='libre'){var dl=dk(v);cola('Día libre · '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate(),paq('obs',{texto:'No va a entrenar el '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate()+'/'+(dl.getMonth()+1)+' (lo marcó desde la app).',fechaDia:v}));}
- if(a==='varSel'&&PRE.hoja){var ev2=BLQ[PRE.hoja.b].ej[PRE.hoja.k];cola('Opción de ejercicio · '+ev2.n+' · '+v.split('|')[1],paq('variante',{ejercicio:ejRef(ev2),variante:JSON.parse(JSON.stringify(ev2.v))}));}
+ if(a==='libre'){var dl=dk(v);cola('Día libre · '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate(),paq('libre',{dia:DSEM[dl.getDay()],fechaDia:v,libre:true,observacion:{texto:'No va a entrenar el '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate()+'/'+(dl.getMonth()+1)+' (lo marcó desde la app).',fecha:hoyISO()}}));}
+ if(a==='varSel'&&PRE.hoja){var ev2=BLQ[PRE.hoja.b].ej[PRE.hoja.k];cola('Opción de ejercicio · '+ev2.n+' · '+v.split('|')[1],paq('variante',{ejercicio:ejRef(ev2),agarre:ev2.v.agarre||'',lateralidad:ev2.v.lado||'',banco:ev2.v.banco||''}));}
  if(COLA.length){var t=document.querySelector('[data-a="sync"]');if(t){t.classList.add('sync');t.setAttribute('aria-label',COLA.length+' cambios sin mandar al panel');}}}
 /* lo que manda el panel: un día de rutina en el formato de Base Panel → lo que muestra la app */
 function numPeso(p){var m=String(p||'').replace(',','.').match(/[\d.]+/);return m?parseFloat(m[0]):null;}
