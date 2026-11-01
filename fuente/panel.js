@@ -232,3 +232,7 @@ FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almoha
 function txtEj(e){if(e.txt)return e.txt;if(!PANEL)return '';var n=nrmP(e.n||e.nombre||''),r='';
  (PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n){var ep=ejP(x);r=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso||!(numP((seriesP(x)[0]||{}).peso)>0)?'':' · '+co(ep.p[0][0])+' '+(ep.u==='pl'?'placas':ep.u));}});});
  return r;}
+/* ficha abierta desde un aviso: series × reps, peso y RIR salen de la rutina del panel */
+function ejPanelDe(nom){if(!PANEL)return null;var n=nrmP(nom||''),r=null;(PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n)r=x;});});return r;}
+function fichaN(x){var e=ejPanelDe(x.n||x.nombre);if(!e)return null;var ep=ejP(e),ss=seriesP(e),w=numP((ss[0]||{}).peso),rir=/RIR (\d+)/.exec(ep.o),r0=(ss[0]||{}).rir;
+ return [[ep.o.replace(/ · drop en la última/,'').split(' · ')[0],'series × reps'],[ep.sinPeso||!(w>0)?'—':co(ep.p[0][0]),ep.u==='pl'?'placas':(ep.u||'kg')],['RIR '+(rir?rir[1]:(r0!==''&&r0!=null?r0:'—')),'esfuerzo']];}

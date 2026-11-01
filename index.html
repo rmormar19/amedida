@@ -1654,7 +1654,7 @@ function FICHA(h){var q=h.v.split('|'),f=q[0],ref=q[1]||'',D=FICHAS[f]||{},nom='
  if(ref.charAt(0)==='s'){var r=ref.slice(1).split('-'),b=BLQ[+r[0]],e=b.ej[+r[1]],m=/(\d+) × (\d+)/.exec(e.o),rir=/RIR (\d+)/.exec(e.o);nom=e.n;vari=resVar(e);drop=!!b.drop;
   pres=[[e.rr?e.o.split(' · ')[0]:(m?m[1]+' × '+m[2]:e.o),'series × reps'],[e.sinPeso?'—':co(sugerido(e,0)),e.u==='pl'?'placas':'kg'],['RIR '+(rir?rir[1]:'—'),'esfuerzo'],[mmss(b.d),b.ss?'al final de la vuelta':'descanso']];}
  else if(ref.charAt(0)==='n'){var r2=ref.slice(1).split('-'),x=(NOTIFS[+r2[0]]||{ejercicios:[]}).ejercicios[+r2[1]]||{};nom=x.n||'';
-  pres=[[x.s+' × '+x.r,'series × reps'],[co(x.kg),x.u||'kg'],['RIR '+x.rir,'esfuerzo']];}
+  pres=fichaN(x)||[[x.s+' × '+x.r,'series × reps'],[co(x.kg),x.u||'kg'],['RIR '+x.rir,'esfuerzo']];}
  var red=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,an=esAnim(f);
  var s='<div class="fv'+(an?'':' fija')+'">'+(an?'<video src="laminas_mp4/'+f+'.mp4" '+(red?'':'autoplay ')+'loop muted playsinline preload="auto" aria-label="Animación: cómo se hace '+nom+'"></video>':'<img src="laminas/'+f+'.webp" alt="Lámina: '+nom+'">')+
   '<span class="fvt">'+(an?'<i></i>Animación':'Lámina fija')+'</span>'+
@@ -2637,6 +2637,10 @@ FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almoha
 function txtEj(e){if(e.txt)return e.txt;if(!PANEL)return '';var n=nrmP(e.n||e.nombre||''),r='';
  (PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n){var ep=ejP(x);r=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso||!(numP((seriesP(x)[0]||{}).peso)>0)?'':' · '+co(ep.p[0][0])+' '+(ep.u==='pl'?'placas':ep.u));}});});
  return r;}
+/* ficha abierta desde un aviso: series × reps, peso y RIR salen de la rutina del panel */
+function ejPanelDe(nom){if(!PANEL)return null;var n=nrmP(nom||''),r=null;(PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n)r=x;});});return r;}
+function fichaN(x){var e=ejPanelDe(x.n||x.nombre);if(!e)return null;var ep=ejP(e),ss=seriesP(e),w=numP((ss[0]||{}).peso),rir=/RIR (\d+)/.exec(ep.o),r0=(ss[0]||{}).rir;
+ return [[ep.o.replace(/ · drop en la última/,'').split(' · ')[0],'series × reps'],[ep.sinPeso||!(w>0)?'—':co(ep.p[0][0]),ep.u==='pl'?'placas':(ep.u||'kg')],['RIR '+(rir?rir[1]:(r0!==''&&r0!=null?r0:'—')),'esfuerzo']];}
 
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */
