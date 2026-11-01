@@ -2611,8 +2611,10 @@ lamina=(function(l0){return function(f,a){return f?l0(f,a):'<div class="lam lam0
 /* sin lámina: no se abre una ficha vacía */
 lamBtn=(function(l0){return function(f,n,ref){return f?l0(f,n,ref):'<span class="lamb">'+lamina('',n)+'</span>';};})(lamBtn);
 document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-a="ficha"]');if(b&&/^\|/.test(b.dataset.v||'')){ev.stopImmediatePropagation();ev.preventDefault();}},true);
-/* gemelos en prensa no es la prensa 45°: mientras no haya lámina propia, no se muestra ninguna */
-LAMDE.unshift([/(gemelo|pantorrilla).*prensa|prensa.*(gemelo|pantorrilla)/i,'']);
+/* gemelos en prensa: lámina propia (no es la prensa 45°) */
+LAMDE.unshift([/(gemelo|pantorrilla).*prensa|prensa.*(gemelo|pantorrilla)/i,'gemelosprensa']);
+if(ANIM.indexOf('gemelosprensa')<0)ANIM.push('gemelosprensa');
+FICHAS.gemelosprensa={m:['Gemelos','Sóleo'],p:['Espalda apoyada y piernas casi estiradas, sin trabar las rodillas.','Apoyá sólo la parte delantera de los pies en el borde de abajo de la plataforma; los talones quedan en el aire.','Bajá los talones hasta sentir el estiramiento y empujá con la punta de los pies lo más alto que puedas. Las rodillas no se mueven.'],x:['Doblar las rodillas para ayudarte: el movimiento es sólo del tobillo.','Rebotar abajo: frená un instante en el estiramiento.']};
 
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */
