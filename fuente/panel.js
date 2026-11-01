@@ -215,3 +215,5 @@ lamina=(function(l0){return function(f,a){return f?l0(f,a):'<div class="lam lam0
 /* sin lámina: no se abre una ficha vacía */
 lamBtn=(function(l0){return function(f,n,ref){return f?l0(f,n,ref):'<span class="lamb">'+lamina('',n)+'</span>';};})(lamBtn);
 document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-a="ficha"]');if(b&&/^\|/.test(b.dataset.v||'')){ev.stopImmediatePropagation();ev.preventDefault();}},true);
+/* gemelos en prensa no es la prensa 45°: mientras no haya lámina propia, no se muestra ninguna */
+LAMDE.unshift([/(gemelo|pantorrilla).*prensa|prensa.*(gemelo|pantorrilla)/i,'']);
