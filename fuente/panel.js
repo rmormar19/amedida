@@ -222,7 +222,7 @@ if(ANIM.indexOf('gemelosprensa')<0)ANIM.push('gemelosprensa');
 FICHAS.gemelosprensa={m:['Gemelos','Sóleo'],p:['Espalda apoyada y piernas casi estiradas, sin trabar las rodillas.','Apoyá sólo la parte delantera de los pies en el borde de abajo de la plataforma; los talones quedan en el aire.','Bajá los talones hasta sentir el estiramiento y empujá con la punta de los pies lo más alto que puedas. Las rodillas no se mueven.'],x:['Doblar las rodillas para ayudarte: el movimiento es sólo del tobillo.','Rebotar abajo: frená un instante en el estiramiento.']};
 
 /* rutina que llega del panel (pantalla «Rutina nueva»): series y repeticiones tal como las cargó el entrenador */
-rutinaDesdePanel=(function(r0){return function(d){var o=r0(d);(o.ejercicios||[]).forEach(function(e,i){var x=(d.ejercicios||[])[i];if(!x)return;var ep=ejP(x);e.txt=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso?'':' · '+co(ep.p[0][0])+' '+(ep.u==='pl'?'placas':ep.u));e.u=ep.u==='pl'?'placas':ep.u;});return o;};})(rutinaDesdePanel);
+rutinaDesdePanel=(function(r0){return function(d){var o=r0(d);(o.ejercicios||[]).forEach(function(e,i){var x=(d.ejercicios||[])[i];if(!x)return;var ep=ejP(x);e.txt=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso||!(pesoEj(ep)>0)?'':' · '+co(pesoEj(ep))+' '+(ep.u==='pl'?'placas':ep.u));e.u=ep.u==='pl'?'placas':ep.u;});return o;};})(rutinaDesdePanel);
 /* lista de ejercicios de un día planificado (calendario) */
 function planLista(dt){if(!PANEL)return '';var L=sesDe(null,dt);if(!L.length)return '';return '<div class="lista" style="margin-top:6px">'+L.map(function(x){return '<div class="sx"><span>'+x.n+'</span><b>'+(x.txt||x.plan[2]+' × '+x.plan[1])+'</b><span></span></div>';}).join('')+'</div>';}
 /* aductores: lámina animada propia (antes mostraba la de abductores) */
@@ -230,9 +230,11 @@ if(ANIM.indexOf('aductores')<0)ANIM.push('aductores');
 FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almohadillas por dentro de las rodillas.','Arrancá con las piernas abiertas hasta donde te resulte cómodo y sostené 2 segundos.','Cerrá las piernas juntando las almohadillas, sostené 2 segundos y volvé despacio.'],x:['Soltar el peso de golpe al abrir.','Despegar la espalda o la cadera del asiento para ayudarte.']};
 /* texto series × reps de un ejercicio de un aviso guardado: si el aviso es viejo (sin txt) se busca en la rutina del panel */
 function txtEj(e){if(e.txt)return e.txt;if(!PANEL)return '';var n=nrmP(e.n||e.nombre||''),r='';
- (PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n){var ep=ejP(x);r=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso||!(numP((seriesP(x)[0]||{}).peso)>0)?'':' · '+co(ep.p[0][0])+' '+(ep.u==='pl'?'placas':ep.u));}});});
+ (PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n){var ep=ejP(x);r=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso||!(pesoEj(ep)>0)?'':' · '+co(pesoEj(ep))+' '+(ep.u==='pl'?'placas':ep.u));}});});
  return r;}
 /* ficha abierta desde un aviso: series × reps, peso y RIR salen de la rutina del panel */
 function ejPanelDe(nom){if(!PANEL)return null;var n=nrmP(nom||''),r=null;(PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n)r=x;});});return r;}
 function fichaN(x){var e=ejPanelDe(x.n||x.nombre);if(!e)return null;var ep=ejP(e),ss=seriesP(e),w=numP((ss[0]||{}).peso),rir=/RIR (\d+)/.exec(ep.o),r0=(ss[0]||{}).rir;
- return [[ep.o.replace(/ · drop en la última/,'').split(' · ')[0],'series × reps'],[ep.sinPeso||!(w>0)?'—':co(ep.p[0][0]),ep.u==='pl'?'placas':(ep.u||'kg')],['RIR '+(rir?rir[1]:(r0!==''&&r0!=null?r0:'—')),'esfuerzo']];}
+ return [[ep.o.replace(/ · drop en la última/,'').split(' · ')[0],'series × reps'],[ep.sinPeso||!(pesoEj(ep)>0)?'—':co(pesoEj(ep)),ep.u==='pl'?'placas':(ep.u||'kg')],['RIR '+(rir?rir[1]:(r0!==''&&r0!=null?r0:'—')),'esfuerzo']];}
+
+function pesoEj(ep){for(var i=0;i<ep.p.length;i++)if(ep.p[i][0]>0)return ep.p[i][0];return 0;}
