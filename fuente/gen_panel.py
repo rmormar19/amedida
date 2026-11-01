@@ -39,6 +39,7 @@ def aplicar(s, D):
 CSS = '''
 /* ---------- modelos mujer: lo que todavía no tiene versión mujer no se muestra ---------- */
 .sin-modelo{visibility:hidden!important}
+.hoyl{margin:2px 0 14px}.hoyl .sx{font-size:13.5px}.hoyl .sx b{white-space:nowrap;font-weight:600}
 .lam0{background:var(--surf2)}
 .ent .img:has(img.sin-modelo),.mapa:has(img.sin-modelo){display:none}
 /* ---------- progreso y medidas del cliente ---------- */

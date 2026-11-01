@@ -121,6 +121,7 @@ vHoy=function(){if(!PANEL)return vHoy0();
   var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(PANEL.hoy?'Empezar sesión':'Adelantar sesión');
   s+='<section class="card ent"><div class="img"><img src="../cuerpo/'+imgG(ses.grupo)+'.webp" alt="Músculos de la sesión resaltados en azul"><span class="chip">'+(PANEL.hoy?'Entreno de hoy':'Próximo · '+ses.dia)+'</span></div><div class="in"><h2>'+(ses.grupo||'Entreno')+'</h2><div class="meta">'+
    top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+'</span>';}).join('')+'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span><span class="chip">~'+Math.round(ns*3)+' min</span></div>'+
+   '<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+ep.o.replace(/ · drop en la última/,'')+'</b><span></span></div>';}).join('')+'</div>'+
    '<button type="button" class="pri full" data-a="'+(U.ses.fin||(U.ses.on&&h[0]===h[1])?'resumen':'sesion')+'">'+btn+'</button></div></section>';}
  else s+='<section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.reloj+'</span><span><b>Hoy descansás</b><span class="s">No tenés más entrenos pendientes esta semana.</span></span><span></span></div></section>';
  /* semana */
