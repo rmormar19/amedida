@@ -30,16 +30,30 @@ def aplicar(s, D):
     rep("if(x)rr.push(x[2])", "if(x&&x[2]!=='')rr.push(+x[2])")
     rep("if(x)rirs.push(x[2])", "if(x&&x[2]!=='')rirs.push(+x[2])")
     rep("pres=[[x.s+' × '+x.r,'series × reps'],[co(x.kg),x.u||'kg'],['RIR '+x.rir,'esfuerzo']];", "pres=fichaN(x)||(x.s?[[x.s+' × '+x.r,'series × reps'],[co(x.kg),x.u||'kg'],['RIR '+x.rir,'esfuerzo']]:[]);")
-    rep("pres=[[m?m[1]+' × '+m[2]:e.o,'series × reps'],[co(sugerido(e,0)),", "pres=[[e.rr?e.o.split(' · ')[0]:(m?m[1]+' × '+m[2]:e.o),'series × reps'],[e.sinPeso?'—':co(sugerido(e,0)),")
+    rep("pres=[[m?m[1]+' × '+m[2]:e.o,'series × reps'],[co(sugerido(e,0)),", "pres=[[e.rr?e.o.split(' · ')[0]:(m?m[1]+' × '+m[2]:e.o),'series × reps'],[e.sinPeso?'—':co(sugerido(e,efIdx(e))),")
     rep("<span class=\"s\">'+e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir+'</span>", "<span class=\"s\">'+(txtEj(e)||(e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir))+'</span>")
     rep("(f.desc?Math.max(1,Math.round(x.plan[2]/2))+' × '+x.plan[1]:x.plan[2]+' × '+x.plan[1])+' · '+(o?co(o.w)+' '+x.u:'')", "(f.desc?Math.max(1,Math.round(x.plan[2]/2))+' × '+x.plan[1]:(x.txt||x.plan[2]+' × '+x.plan[1]))+(o?' · '+co(o.w)+' '+x.u:'')")
     rep("if(f.e==='pl')return '<h3>'+tit+'</h3><p class=\"sub\">Planificado: '+GFULL[f.g]+(f.desc?' · semana de descarga':'')+'.</p>';", "if(f.e==='pl')return '<h3>'+tit+'</h3><p class=\"sub\">Planificado: '+GFULL[f.g]+(f.desc?' · semana de descarga':'')+'.</p>'+planLista(dt);")
+    # ---- tipos de serie: aproximación, rest-pause, drop set y superserie, fila por fila ----
+    rep("<span class=\"n\">'+(b.ss?b.k+(k+1):(i+1))+'</span>", "<span class=\"n\">'+rowN(b,e,k,i)+'</span>")
+    rep("<div class=\"vh\">'+(b.ss?'Vuelta '+(i+1):'Serie '+(i+1))+'<span>", "<div class=\"vh\">'+rowH(b,i)+'<span>")
+    rep("'<div class=\"sr'+(x?' h':'')", "'<div class=\"sr'+rowSr(e,i)+(x?' h':'')")
+    rep("var x=b.h[i][k],p=e.p[i],id=i*b.ej.length+k;if(!x&&sig<0)sig=id;", "var x=b.h[i][k],p=e.p[i],id=i*b.ej.length+k;if(x&&x.na)return '<div class=\"sr na\"><span class=\"n\">'+(b.ss?b.k+(k+1):'')+'</span><span class=\"nax\">no lleva esta vuelta</span></div>';if(!x&&sig<0)sig=id;")
+    rep("var nx=i<bl.h.length-1?(bl.ss?'Vuelta '+(i+2)+' · '+bl.k+'1 '+bl.ej[0].p[i+1][0]+' '+bl.ej[0].u+' × '+bl.ej[0].p[i+1][1]:'Serie '+(i+2)+' · '+bl.ej[0].p[i+1][0]+' '+bl.ej[0].u+' × '+bl.ej[0].p[i+1][1]):'Sigue: '+(BLQ[U.ses.b+1]?BLQ[U.ses.b+1].n:'terminar');arrancar(bl.d,nx);}}",
+        "var nx=PANEL?sigTxt(bl,i):(i<bl.h.length-1?(bl.ss?'Vuelta '+(i+2)+' · '+bl.k+'1 '+bl.ej[0].p[i+1][0]+' '+bl.ej[0].u+' × '+bl.ej[0].p[i+1][1]:'Serie '+(i+2)+' · '+bl.ej[0].p[i+1][0]+' '+bl.ej[0].u+' × '+bl.ej[0].p[i+1][1]):'Sigue: '+(BLQ[U.ses.b+1]?BLQ[U.ses.b+1].n:'terminar'));var dz=PANEL?descRow(bl,i):bl.d;if(dz>0)arrancar(dz,nx);else toast(nx);}}")
+    rep("n:+q[0]+1,ss:bl.ss?bl.k:null,serie:{peso:pesoTxt(e,x[0]),reps:String(x[1]),rir:String(x[2]),tipo:bl.drop&&+q[0]===2?'drop':''}}",
+        "n:serN(e,+q[0]),sub:serSub(e,+q[0]),ss:bl.ss?bl.k:null,serie:{peso:pesoTxt(e,x[0]),reps:String(x[1]),rir:String(x[2]),tipo:''}}")
     rep('</style></head>', CSS + '</style></head>')
     return s
 
 CSS = '''
 /* ---------- modelos mujer: lo que todavía no tiene versión mujer no se muestra ---------- */
 .sin-modelo{visibility:hidden!important}
+.sr.t-ap .n{border:1px dashed var(--line2);background:transparent;color:var(--tx3);font-size:11px}
+.sr.t-d,.sr.t-p{position:relative}.sr.t-d .n,.sr.t-p .n{font-size:11.5px;font-weight:800}
+.sr.t-d .n{color:var(--ora,#e8933a)}.sr.t-p .n{color:var(--vio,#8b6fe0)}
+.sr .n small{font-size:10px;font-weight:800;margin-left:2px;opacity:.8}
+.sr.na{opacity:.55}.sr.na .nax{grid-column:2/-1;font-size:12.5px;color:var(--tx4)}
 .hoyl{margin:2px 0 14px}.hoyl .sx{font-size:13.5px}.hoyl .sx b{white-space:nowrap;font-weight:600}
 .lam0{background:var(--surf2)}
 .ent .img:has(img.sin-modelo),.mapa:has(img.sin-modelo){display:none}

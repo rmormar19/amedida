@@ -30,18 +30,52 @@ function ejP(x){var ss=seriesP(x),p=ss.map(function(s){return [numP(s.peso)||0,p
  var rr=ss.map(function(s){return String(s.reps||'').trim().replace(/\s*-\s*/,'–');}),gr=[];rr.forEach(function(r){var g=gr[gr.length-1];if(g&&g.r===r)g.n++;else gr.push({n:1,r:r||'—'});});
  var drop=ss.some(function(s){return s.tipo==='drop'||(s.drops&&s.drops.length);});
  var v={lado:/uni/i.test(x.lateralidad||'')?'unilateral':'bilateral'};if(x.agarre)v.agarre=String(x.agarre).toLowerCase();
- return {id:slugP(x.nombre),n:x.nombre,lam:lamDe(x.nombre)||'',u:u,g:x.grupo||musculoP(x.nombre),rr:rr,sinPeso:!conPeso,o:gr.map(function(g){return g.n+' × '+g.r;}).join(' + ')+(conRir?' · RIR '+p[0][2]:'')+(drop?' · drop en la última':''),p:p,v:v};}
-function phSer(e,i,j){var p=e.p[i]||e.p[e.p.length-1];if(j===1)return e.rr&&e.rr[i]?e.rr[i]:co(p[1]);if(j===0){var w=e.sinPeso?0:sugerido(e,i);return w?co(w):'—';}return e.sinPeso&&!p[2]?'—':co(p[2]);}
+ return {id:slugP(x.nombre),n:x.nombre,lam:lamDe(x.nombre)||'',u:u,g:x.grupo||musculoP(x.nombre),rr:rr,sinPeso:!conPeso,o:txtSerP(x)+(conRir?' · RIR '+p[0][2]:''),p:p,v:v};}
+function phSer(e,i,j){var p=e.p[i]||e.p[e.p.length-1],rf=filaDe(e,i);if(j===1)return e.rr&&e.rr[i]?e.rr[i]:(p[1]?co(p[1]):'—');if(j===0){var w=e.sinPeso?0:(rf&&rf.t!=='ef'&&rf.t!=='rp'?p[0]:sugerido(e,i));return w?co(w):'—';}return e.sinPeso&&!p[2]?'—':co(p[2]);}
 (function(){var c0=chipSug;chipSug=function(e){return e&&e.sinPeso?'':c0(e);};})();
 /* un día del panel → bloques de la sesión (los ejercicios seguidos con la misma superserie van juntos) */
 function blqP(dd){var ej=(dd.ejercicios||[]).filter(function(e){return e&&e.nombre&&String(e.nombre).trim();}),out=[],L=0;
  for(var i=0;i<ej.length;i++){var g=[ej[i]];if(ej[i].ss)while(i+1<ej.length&&ej[i+1].ss&&String(ej[i+1].ss)===String(ej[i].ss))g.push(ej[++i]);
   var k=String.fromCharCode(65+L++),es=g.map(ejP),ss=es.length>1,pesado=es.some(function(e){return e.u==='kg'&&e.p[0][0]>=40&&e.p[0][1]<=8;});
-  var ns=Math.max.apply(null,es.map(function(e){return e.p.length;}));es.forEach(function(e){while(e.p.length<ns)e.p.push(e.p[e.p.length-1].slice());});
-  out.push({k:k,n:ss?'Superserie '+k:corto(es[0].n),ss:ss,d:ss?90:(pesado?150:75),drop:es.some(function(e){return /drop/.test(e.o);}),ej:es});}
- out.forEach(function(b){b.h=b.ej[0].p.map(function(){return b.ej.map(function(){return null;});});});
+  /* cada fila de la sesión es lo que el cliente anota: aproximación, serie, pausas del rest-pause y drops */
+  var RR=g.map(function(x,j){return filasP(x,es[j].u);});
+  if(ss){/* superserie: cada serie va con su par; los drops y pausas de uno quedan frente a «no lleva» en el otro */
+   var UN=RR.map(function(R){var u=[];R.forEach(function(r){if(r.t==='d'||r.t==='p')u[u.length-1].push(r);else u.push([r]);});return u;}),nu=Math.max.apply(null,UN.map(function(u){return u.length;}));
+   RR=UN.map(function(){return [];});for(var q=0;q<nu;q++){var lq=Math.max.apply(null,UN.map(function(u){return u[q]?u[q].length:0;}));UN.forEach(function(u,j){var c=u[q]||[];for(var z=0;z<lq;z++)RR[j].push(c[z]||{t:'na',si:-1,lbl:'',h:'',p:[0,0,0],rr:''});});}}
+  es.forEach(function(e,j){var R=RR[j];e.p=R.map(function(r){return r.p;});e.rr=R.map(function(r){return r.rr;});e.rt=R;});
+  var ns=Math.max.apply(null,es.map(function(e){return e.p.length;}));es.forEach(function(e){while(e.p.length<ns){e.p.push(e.p[e.p.length-1].slice());e.rr.push('');e.rt.push({t:'na',si:-1,lbl:'',h:''});}e.rt.forEach(function(r,i){if(r.t==='na'){var lr=null;for(var z=i;z>=0&&!lr;z--)if(e.rt[z].t!=='na')lr=e.p[z];e.p[i]=(lr||[0,0,0]).slice();}});});
+  out.push({k:k,n:ss?'Superserie '+k:corto(es[0].n),ss:ss,d:ss?90:(pesado?150:75),drop:false,ej:es});}
+ out.forEach(function(b){b.h=b.ej[0].p.map(function(_,i){return b.ej.map(function(e){return e.rt[i].t==='na'?filaNA():null;});});});
  return out;}
-function firmaDia(dd){return dd?JSON.stringify([dd.grupo,(dd.ejercicios||[]).map(function(e){return [e.nombre,e.ss||'',seriesP(e).map(function(s){return [s.peso,s.reps,s.rir];})];})]):'';}
+/* tipos de serie del panel: ap = aproximación, rp = rest-pause (serie.rp = mini-series tras pausas), dr = drop set */
+function tipoSerP(s){if(!s)return 'ef';if(s.tipo==='aprox')return 'ap';if(s.tipo==='rp'||(s.rp&&s.rp.length))return 'rp';if(s.tipo==='drop'||(s.drops&&s.drops.filter(Boolean).length))return 'dr';return 'ef';}
+var TAGP={ap:' aprox',rp:' rest-pause',dr:' drop set',ef:''};
+function repsP(v){return String(v==null?'':v).trim().replace(/\s*-\s*/,'–');}
+function txtSerP(x){var gr=[];(x.series||[]).forEach(function(s){if(!s)return;var t=tipoSerP(s),r=repsP(s.reps)||'—',g=gr[gr.length-1];if(g&&g.r===r&&g.t===t)g.n++;else gr.push({n:1,r:r,t:t});});
+ return gr.map(function(g){return g.n+' × '+g.r+TAGP[g.t];}).join(' + ')||'—';}
+function filaNA(){var a=['','',''];a.na=1;return a;}
+function filasP(x,u){var R=[],n=0;(x.series||[]).forEach(function(s,si){if(!s)return;var t=tipoSerP(s),w=numP(s.peso)||0,pr=[w,parseInt(s.reps,10)||0,parseInt(s.rir,10)||0];
+  if(t==='ap'){R.push({t:'ap',si:si,p:pr,rr:repsP(s.reps),lbl:'Ap',h:'Aproximación · no cuenta en el volumen'});return;}
+  n++;R.push({t:t==='rp'?'rp':'ef',si:si,p:pr,rr:repsP(s.reps),lbl:String(n),h:'Serie '+n+(t==='rp'?' · rest-pause':t==='dr'?' · drop set':'')});
+  if(t==='rp')(s.rp&&s.rp.length?s.rp:[{reps:'',pausa:15}]).forEach(function(q,j){if(!q)return;var pz=parseInt(q.pausa,10)||15;
+   R.push({t:'p',si:si,sub:{k:'rp',j:j},pz:pz,p:[w,parseInt(q.reps,10)||0,parseInt(q.rir,10)||0],rr:repsP(q.reps),lbl:'P'+(j+1),h:'Serie '+n+' · pausa '+pz+' s y seguí con el mismo peso'});});
+  if(t==='dr')(s.drops||[]).forEach(function(q,j){if(!q)return;var dw=numP(q.peso);if(dw==null||!(dw>0))dw=w?(u==='pl'?Math.max(1,Math.round(w*0.75)):Math.round(w*0.75/2.5)*2.5):0;
+   R.push({t:'d',si:si,sub:{k:'drop',j:j},p:[dw,parseInt(q.reps,10)||0,parseInt(q.rir,10)||0],rr:repsP(q.reps),lbl:'D'+(j+1),h:'Serie '+n+' · drop '+(j+1)+': bajá el peso y seguí sin descansar'});});});
+ if(!R.length)R.push({t:'ef',si:0,p:[0,0,0],rr:'',lbl:'1',h:'Serie 1'});return R;}
+/* la sesión: etiqueta, título y descanso de cada fila */
+function filaDe(e,i){return e&&e.rt&&e.rt[i]||null;}
+function rowN(b,e,k,i){var r=filaDe(e,i);if(!r)return b.ss?b.k+(k+1):(i+1);if(b.ss)return b.k+(k+1)+(r.t==='ef'||r.t==='rp'||r.t==='na'?'':'<small>'+r.lbl+'</small>');return r.lbl;}
+function rowH(b,i){var e=b.ej.filter(function(x){var r=filaDe(x,i);return r&&r.t!=='na';})[0]||b.ej[0],r=filaDe(e,i);if(!r)return (b.ss?'Vuelta ':'Serie ')+(i+1);return b.ss?r.h.replace(/^Serie/,'Vuelta'):r.h;}
+function rowSr(e,i){var r=filaDe(e,i);return r?' t-'+r.t:'';}
+function descRow(bl,i){var e=bl.ej[0],r=filaDe(e,i),n=filaDe(e,i+1);if(bl.ss||!r)return bl.d;if(n&&n.t==='d')return 0;if(n&&n.t==='p')return n.pz||15;if(r.t==='ap')return 60;return bl.d;}
+function sigTxt(bl,i){if(i>=bl.h.length-1)return 'Sigue: '+(BLQ[U.ses.b+1]?BLQ[U.ses.b+1].n:'terminar');var e=bl.ej[0],n=filaDe(e,i+1),p=e.p[i+1]||[0,0,0];
+ var h=(n&&n.h?n.h.split(':')[0]:(bl.ss?'Vuelta ':'Serie ')+(i+2));if(bl.ss)h=h.replace(/^Serie/,'Vuelta')+' · '+bl.k+'1';
+ var rq=(e.rr&&e.rr[i+1])||(p[1]?String(p[1]):''),pq=p[0]?co(p[0])+' '+(e.u==='pl'?'pl':e.u):'';return h+(pq||rq?' · '+pq+(pq&&rq?' × ':'')+rq:'');}
+function serN(e,i){var r=filaDe(e,i);return r&&r.si>=0?r.si+1:i+1;}
+function serSub(e,i){var r=filaDe(e,i);return r&&r.sub?r.sub:null;}
+function efIdx(e){if(!e||!e.rt)return 0;for(var i=0;i<e.rt.length;i++)if(e.rt[i].t==='ef'||e.rt[i].t==='rp')return i;return 0;}
+hechas=function(){var h=0,t=0;BLQ.forEach(function(b){b.h.forEach(function(r){r.forEach(function(x){if(x&&x.na)return;t++;if(x)h++;});});});return [h,t];};
+function firmaDia(dd){return dd?JSON.stringify([dd.grupo,(dd.ejercicios||[]).map(function(e){return [e.nombre,e.ss||'',(e.series||[]).map(function(s){return s?[s.peso,s.reps,s.rir,s.tipo||'',(s.drops||[]).length,(s.rp||[]).length]:0;})];})]):'';}
 
 /* el día de la sesión: hoy si toca; si no, el próximo de la semana que esté pendiente */
 /* la semana del panel cierra el domingo 06:00: desde ese momento la rutina cargada es la de la semana que empieza el lunes */
@@ -238,3 +272,5 @@ function fichaN(x){var e=ejPanelDe(x.n||x.nombre);if(!e)return null;var ep=ejP(e
  return [[ep.o.replace(/ · drop en la última/,'').split(' · ')[0],'series × reps'],[ep.sinPeso||!(pesoEj(ep)>0)?'—':co(pesoEj(ep)),ep.u==='pl'?'placas':(ep.u||'kg')],['RIR '+(rir?rir[1]:(r0!==''&&r0!=null?r0:'—')),'esfuerzo']];}
 
 function pesoEj(ep){for(var i=0;i<ep.p.length;i++)if(ep.p[i][0]>0)return ep.p[i][0];return 0;}
+/* con datos del panel el peso lo decide el entrenador: no se sugiere subir a partir del plan */
+alTope=(function(a0){return function(e){return PANEL?false:a0(e);};})(alTope);
