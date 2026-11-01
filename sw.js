@@ -1,5 +1,5 @@
 /* AMedida · service worker: abre sin internet y se actualiza solo */
-const V = 'amedida-202610312336';
+const V = 'amedida-202611011130';
 const BASE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 const EXTRA = ["./cuerpo/mapa_brazos.webp", "./cuerpo/mapa_espalda.webp", "./cuerpo/mapa_pecho.webp", "./cuerpo/mapa_pierna.webp", "./cuerpo/pecho2.webp", "./cuerpo/pierna.webp", "./laminas/bulgara.webp", "./laminas/curl.webp", "./laminas/curlinclinado.webp", "./laminas/curlpred.webp", "./laminas/extension.webp", "./laminas/fondos.webp", "./laminas/gen_abp.webp", "./laminas/gen_adu.webp", "./laminas/gen_apc.webp", "./laminas/gen_cbp.webp", "./laminas/gen_cma.webp", "./laminas/gen_eta.webp", "./laminas/gen_etb.webp", "./laminas/gen_etp.webp", "./laminas/gen_etu.webp", "./laminas/gen_pan.webp", "./laminas/gen_ppb.webp", "./laminas/hack.webp", "./laminas/hipthrust.webp", "./laminas/jalon.webp", "./laminas/patada.webp", "./laminas/prensa45.webp", "./laminas/pressinclinado.webp", "./laminas/pressmilitar.webp", "./laminas/remopolea.webp", "./laminas/remot.webp", "./laminas/rumano.webp", "./laminas/sentadilla.webp", "./laminas/smith.webp", "./laminas/tricmanc.webp", "./laminas/vuelosmanc.webp", "./laminas/vuelospolea.webp"];
 

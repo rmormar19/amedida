@@ -4,11 +4,12 @@
    · manda lo que el cliente hace (series, notas, sesión, día libre) al buzón del puente.
    Sin link, la app sigue siendo la demo. */
 var REAL=null,CLAVE_REAL='amedida-real',CLAVE_ENV='amedida-envios',CLAVE_RC='amedida-real-c';
-(function(){var q=new URLSearchParams(location.search),c=q.get('c'),p=q.get('p');
+(function(){var q=new URLSearchParams(location.search),c=q.get('c'),p=q.get('p'),g=(q.get('g')||'').toLowerCase();
  try{var prev=JSON.parse(localStorage.getItem(CLAVE_REAL)||'null');
   if(c&&p&&/^[\w-]{20,}$/.test(c)&&/^[\w-]{20,}$/.test(p)){
    if(!prev||prev.token!==c){['amedida-nueva-v1','amedida-notas-v1','amedida-ses-v1','amedida-cardio-v1','amedida-panel-h',CLAVE_ENV,CLAVE_RC].forEach(function(k){localStorage.removeItem(k);});
-    localStorage.setItem(CLAVE_REAL,JSON.stringify({token:c,p:p}));location.reload();return;}}
+    localStorage.setItem(CLAVE_REAL,JSON.stringify({token:c,p:p,g:g}));location.reload();return;}
+   if(g&&prev.g!==g){prev.g=g;localStorage.setItem(CLAVE_REAL,JSON.stringify(prev));}}
   REAL=JSON.parse(localStorage.getItem(CLAVE_REAL)||'null');}catch(e){}})();
 function urlPuente(){return 'https://script.google.com/macros/s/'+REAL.p+'/exec';}
 function nombreReal(c){NOMBRE=String(c.nombre||'').trim().split(/\s+/)[0]||NOMBRE;}
