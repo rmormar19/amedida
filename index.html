@@ -1685,7 +1685,7 @@ function mandarNota(){var h=U.hoja,e=BLQ[h.b].ej[h.k],tags=NTAGS.map(function(t)
 /* en el Monitor la nota entra como observación por ejercicio: "Obs ej: <ejercicio> | <Motivo> — <texto>", con la fecha del día */
 var NMOT={dolor:'Lesión',liviano:'Listo para subir peso',tecnica:'Ajuste técnico'};
 function obsEj(e,n){var k=['dolor','liviano','tecnica'].filter(function(t){return n.tags.indexOf(t)>=0;})[0],mot=k?NMOT[k]:'Otro';
- var det=resNota(n)+(n.serie?' (en la serie '+n.serie+')':'')+(n.txt?'. '+n.txt:'')+'. Desde la app.';
+ var det=resNota(n)+(n.serie?' (en la serie '+n.serie+')':'')+(n.txt?'. '+n.txt:'')+' · desde la app';
  return {texto:'Obs ej: '+e.n+' | '+mot+' — '+det,fecha:hoyISO()};}
 function hechasEj(b,k){var c=0;BLQ[b].h.forEach(function(r){if(r[k])c++;});return c;}
 
