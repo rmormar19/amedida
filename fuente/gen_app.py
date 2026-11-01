@@ -432,6 +432,8 @@ import gen_movil
 s = gen_movil.aplicar(s, D)
 import gen_sigma8
 s = gen_sigma8.aplicar(s, D)
+import gen_panel
+s = gen_panel.aplicar(s, D)
 
 # ---------- marca: «A medida» · Entrenamiento integral ----------
 s = s.replace("""<span class="logo"><i>'+LOGO+'</i>AMedida</span>""", """<span class="logo"><i>'+LOGO+'</i><span class="lg2"><b>A medida</b><small>Entrenamiento integral</small></span></span>""", 1)
