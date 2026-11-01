@@ -1078,6 +1078,14 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 [data-a="medT"]{min-height:36px;display:inline-flex;align-items:center}
 .cs{padding:4px 0}
 
+/* ---------- conectar la app con el link del entrenador ---------- */
+.conx{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;padding-top:max(24px,env(safe-area-inset-top))}
+.conx-in{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
+.conx-lg b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em}.conx-lg small{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--tx3)}
+.conx h1{margin:18px 0 0;font-size:28px;letter-spacing:-.02em}.conx p{margin:0;color:var(--tx3);font-size:15px}
+.conx input{height:52px;border-radius:14px;border:1px solid var(--line2);background:var(--surf2);color:var(--tx);padding:0 14px;font:inherit;font-size:16px!important}
+.conx .conx-e{color:var(--red);font-size:14px;min-height:20px}
+
 .logo .lg2{display:flex;flex-direction:column;line-height:1.05}
 .logo .lg2 b{font-size:16px;font-weight:700;letter-spacing:-.01em}
 .logo .lg2 small{font-size:10.5px;font-weight:600;color:var(--tx3);letter-spacing:.01em;margin-top:2px;white-space:nowrap}
@@ -2408,6 +2416,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
  /* grupos del panel */
  var dias=(c.rutina||[]).filter(function(d){return (d.ejercicios||[]).some(function(e){return e.nombre;});}),gi=0;
  GRP={};var firmas={};
+ (c.historial||[]).forEach(function(h){(h.rutina||[]).forEach(function(d){var k=gKey(d.grupo);if((d.ejercicios||[]).length&&!GCOL[k]){GCOL[k]=GPAL[(gi++)%GPAL.length];GFULL[k]=d.grupo||k;GSER[k]=GSER[k]||12;GMIN[k]=GMIN[k]||40;}});});
  dias.forEach(function(d){var k=gKey(d.grupo),i=iDia(d.dia);firmas[nrmP(d.dia)]=firmaDia(d);
   if(!GCOL[k])GCOL[k]=GPAL[(gi++)%GPAL.length];GFULL[k]=d.grupo||k;
   var ns=0;(d.ejercicios||[]).forEach(function(e){ns+=seriesP(e).length;});GSER[k]=ns||GSER[k]||12;GMIN[k]=Math.round((ns||12)*3);
@@ -2430,6 +2439,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
   nuevo.forEach(function(b){b.ej.forEach(function(e,k){viejo.forEach(function(bo){bo.ej.forEach(function(eo,ko){if(eo.id===e.id)b.h.forEach(function(r,s){if(bo.h[s]&&bo.h[s][ko])r[k]=bo.h[s][ko];});});});});});}
  if(ses){BLQ.length=0;nuevo.forEach(function(b){BLQ.push(b);});if(U.ses&&U.ses.b>=BLQ.length)U.ses.b=0;DIA_SES=ses.dia;}
  PANEL={c:c,ses:ses,hoy:ds&&ds.hoy,firmas:firmas};
+ if(primera&&U.cal){U.cal.sel=kd(HOYC);U.cal.mes=HOYC.getMonth();U.cal.mx=Math.max(U.cal.mx||0,HOYC.getMonth());}
  /* medidas */
  medP(c.medidas);
  /* aviso de rutina cambiada (no en la primera carga ni en días que ya pasaron) */
@@ -2474,12 +2484,12 @@ vHoy=function(){if(!PANEL)return vHoy0();
  var sp=function(a){return a.filter(function(x){return x!=null;});},pesoS=sp(SERIE.peso),cinS=sp(SERIE.cint);
  var dlt=function(a,u){if(a.length<2)return '<span class="chip">sin comparar</span>';var d=Math.round((a[a.length-1]-a[0])*10)/10;return '<span class="'+(d<=0?'up':'')+'">'+(d>0?'+':d<0?'−':'')+co(Math.abs(d))+' '+u+'</span> desde '+TOMAS[0];};
  s+='<div class="sh"><h2>Tu día</h2></div><div class="gr2">'+
-  '<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Macros</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>'+
+  (PANEL.macros?'<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Macros</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>':'')+
   '<button type="button" class="tile" data-a="tab" data-v="cal"><span class="lbl">Semana</span><div class="big">'+he+'<small>de '+pl+' días</small></div><div class="dots">'+dots.map(function(d){return '<span class="'+d[1]+'"><i></i>'+d[0]+'</span>';}).join('')+'</div></button>'+
   (pesoS.length?'<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Peso</span><div class="big">'+co(pesoS[pesoS.length-1])+'<small>kg</small></div><div class="s">'+dlt(pesoS,'kg')+'</div>'+spark(pesoS,'var(--vio)',130,30)+'</button>':'')+
   (cinS.length?'<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Cintura</span><div class="big">'+co(cinS[cinS.length-1])+'<small>cm</small></div><div class="s">'+dlt(cinS,'cm')+'</div>'+spark(cinS,'var(--cya)',130,30)+'</button>':'')+'</div>';
- s+='<div class="sh"><h2>Para hoy</h2></div><section class="card lista" style="padding:2px 16px">'+
-  aviso('gota','cy','Proteína: te faltan '+fal.p+' g','Llevás '+t.p+' de '+NUT.obj.p+' g.','mac')+
+ if(PANEL.macros||MEDT)s+='<div class="sh"><h2>Para hoy</h2></div><section class="card lista" style="padding:2px 16px">'+
+  (PANEL.macros?aviso('gota','cy','Proteína: te faltan '+fal.p+' g','Llevás '+t.p+' de '+NUT.obj.p+' g.','mac'):'')+
   (MEDT?aviso('regla','ok','Próxima toma de medidas: '+MEDT.prox,'Cada 4 semanas. La última fue el '+MED_ULT+'.','med'):'')+'</section>';
  return s;};
 
@@ -2516,6 +2526,94 @@ vMed=function(){if(!MEDT)return vMed0();var m=U.med,s='<div class="hd"><div clas
 /* guarda las series hechas de la sesión del panel (por ejercicio), para no perderlas al recargar */
 (function(){var g0=window.guardar;if(typeof g0!=='function')return;window.guardar=function(){var r=g0.apply(this,arguments);if(PANEL&&PANEL.ses){var h={};BLQ.forEach(function(b){b.ej.forEach(function(e,k){h[e.id]=b.h.map(function(row){return row[k]||null;});});});
  try{localStorage.setItem('amedida-panel-h',JSON.stringify({fecha:hoyISO(),dia:PANEL.ses.dia,h:h}));}catch(e){}}return r;};})();
+
+/* ---------- calendario y constancia con lo registrado de verdad (no con el esquema semanal) ---------- */
+var diaInfo0=diaInfo;
+diaInfo=function(d){if(!PANEL)return diaInfo0(d);var k=kd(d),m=MOVS[k],t=+d,h=+HOYC,dd=diaDeFecha(d);
+ if(m&&m.libre)return {g:null,e:'de',libre:true};
+ if(!dd||dd.libre||!(dd.ejercicios||[]).some(function(e){return e&&e.nombre;}))return {g:null,e:'de',libre:!!(dd&&dd.libre)};
+ var g=gKey(dd.grupo),e;
+ if(t===h)e=dd.estado==='verde'?'ok':(U.ses.on?'cur':'hoy');
+ else if(t>h)e=dd.estado==='rojo'?'fa':'pl';
+ else e=dd.estado==='rojo'?'fa':(dd.estado==='verde'||!Object.prototype.hasOwnProperty.call(dd,'estado')?'ok':'fa');
+ return {g:g,e:e,o:e==='fa'?(dd.estado==='rojo'?'Faltó':'Sin registrar en la app'):'',desc:false,mov:null};};
+var diasAnio0=diasAnio;
+diasAnio=function(Y){if(!PANEL)return diasAnio0(Y);if(CST_CACHE[Y])return CST_CACHE[Y];var out={},hoy=+HOYC,m0=lunes(new Date(Y,0,1)),fin=new Date(Y,11,31);
+ while(+m0<=+fin){semDias(m0).forEach(function(d){var t=+d,x=diaInfo(d),k=kdC(d),o;
+   if(t>hoy)o={e:x.g?'pl':'de',g:x.g};
+   else if(t===hoy){var hz=U.ses.on||U.ses.fin||x.e==='ok';o={e:hz?'ok':(x.g?'hoy':'de'),g:x.g,lv:hz?(ESF_LV[U.esf]||2):0,cur:U.ses.on};}
+   else if(!x.g)o={e:'de'};
+   else{o={e:x.e==='ok'?'ok':'fa',g:x.g,o:x.o};if(o.e==='ok'){var dd=diaDeFecha(d),n=0;if(dd)(dd.ejercicios||[]).forEach(function(e){n+=seriesP(e).length;});o.lv=(dd&&ESF_LV[dd.esfuerzo])||2;o.ser=n||null;}}
+   o.d=new Date(d);out[k]=o;});m0.setDate(m0.getDate()+7);}
+ return (CST_CACHE[Y]=out);};
+
+/* ---------- Progreso: cada ejercicio de su rutina, semana a semana, con lo registrado ---------- */
+var vPro0=vPro;
+vPro=function(){if(!PANEL)return vPro0();var c=PANEL.c,sem=(c.historial||[]).slice().sort(function(a,b){return String(a.fecha).localeCompare(String(b.fecha));}).map(function(h){return {f:h.fecha,r:h.rutina||[]};});
+ sem.push({f:new Date().toISOString(),r:c.rutina||[],hoy:true});
+ var lista=[];(c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(e){if(e&&e.nombre&&!lista.some(function(x){return nrmP(x.n)===nrmP(e.nombre);}))lista.push({n:e.nombre,g:e.grupo||'',dia:d.dia});});});
+ var hechos=0;sem.slice(0,-1).forEach(function(w){w.r.forEach(function(d){if((d.ejercicios||[]).length&&(d.estado==='verde'||!Object.prototype.hasOwnProperty.call(d,'estado')))hechos++;});});
+ var s='<div class="hd"><span class="ey">Tu progreso</span><h1>Progreso</h1><p>'+(sem.length>1?hechos+' sesiones registradas en las últimas '+(sem.length-1)+' semanas.':'Todavía no hay semanas cerradas: tu progreso aparece acá a medida que entrenes.')+'</p></div>';
+ if(!lista.length)return s+'<section class="card"><p class="sub">Cuando tu entrenador te cargue la rutina, acá vas a ver cómo evoluciona cada ejercicio.</p></section>';
+ s+='<section class="card lista" style="padding:2px 16px">'+lista.map(function(x){var u='kg',pts=sem.map(function(w){var best=null;w.r.forEach(function(d){if(!w.hoy&&d.estado==='rojo')return;(d.ejercicios||[]).forEach(function(e){if(nrmP(e.nombre)!==nrmP(x.n))return;seriesP(e).forEach(function(q){var v=numP(q.peso);if(v!=null&&(best==null||v>best)){best=v;u=uniP(q.peso);}});});});return best;});
+   var v=pts.filter(function(p){return p!=null;}),ini=v[0],ult=v[v.length-1],d=v.length>1?Math.round((ult-ini)*10)/10:0,un=u==='pl'?' pl':' '+u;
+   return '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto 70px;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)"><span style="min-width:0"><b style="display:block">'+x.n+'</b><span class="s" style="display:block;font-size:12.5px;color:var(--tx3)">'+(x.g?x.g+' · ':'')+(v.length>1?'de '+co(ini)+un+' a '+co(ult)+un:(ult!=null?co(ult)+un:'sin peso cargado'))+'</span></span>'+(v.length>1?'<span class="chip'+(d>0?' ok':'')+'">'+(d>0?'+':d<0?'−':'')+(d?co(Math.abs(d))+un:'igual')+'</span>'+spark(v,'var(--a1)',70,26):'<span></span><span></span>')+'</div>';}).join('')+'</section>';
+ s+='<p class="mu" style="font-size:12.5px;margin:10px 2px 0">El peso más alto de cada semana, de lo que quedó registrado.</p>';
+ return s;};
+var vMac0=vMac;
+vMac=function(){if(!PANEL||PANEL.macros)return vMac0();
+ return '<div class="hd"><span class="ey">Nutrición</span><h1>Macros</h1></div><section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.info+'</span><span><b>Todavía no está conectado</b><span class="s">Cuando tu entrenador cargue tu plan de comidas, vas a ver acá tus objetivos y lo que llevás en el día.</span></span><span></span></div></section>';};
+
+/* ================= cliente real: la app conectada al Monitor por el puente =================
+   El link que manda Ricky trae ?c=<token>&p=<id del puente>. Con eso la app:
+   · trae del puente la rutina, las semanas anteriores y las medidas del cliente (sólo las suyas);
+   · manda lo que el cliente hace (series, notas, sesión, día libre) al buzón del puente.
+   Sin link, la app sigue siendo la demo. */
+var REAL=null,CLAVE_REAL='amedida-real',CLAVE_ENV='amedida-envios',CLAVE_RC='amedida-real-c';
+(function(){var q=new URLSearchParams(location.search),c=q.get('c'),p=q.get('p');
+ try{var prev=JSON.parse(localStorage.getItem(CLAVE_REAL)||'null');
+  if(c&&p&&/^[\w-]{20,}$/.test(c)&&/^[\w-]{20,}$/.test(p)){
+   if(!prev||prev.token!==c){['amedida-nueva-v1','amedida-notas-v1','amedida-ses-v1','amedida-cardio-v1','amedida-panel-h',CLAVE_ENV,CLAVE_RC].forEach(function(k){localStorage.removeItem(k);});
+    localStorage.setItem(CLAVE_REAL,JSON.stringify({token:c,p:p}));location.reload();return;}}
+  REAL=JSON.parse(localStorage.getItem(CLAVE_REAL)||'null');}catch(e){}})();
+function urlPuente(){return 'https://script.google.com/macros/s/'+REAL.p+'/exec';}
+function nombreReal(c){NOMBRE=String(c.nombre||'').trim().split(/\s+/)[0]||NOMBRE;}
+function linkInvalido(){toast('Tu link ya no es válido. Pedile uno nuevo a tu entrenador.');}
+/* lo que viene del puente */
+var trayendo=false;
+function traerCliente(){if(!REAL||trayendo)return;trayendo=true;
+ fetch(urlPuente()+'?accion=cliente&token='+encodeURIComponent(REAL.token),{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){trayendo=false;
+  if(!r||!r.ok){if(r&&(r.error==='link'||r.error==='cliente'))linkInvalido();return;}
+  var c=r.cliente,txt=JSON.stringify(c),ant=null;try{ant=localStorage.getItem(CLAVE_RC);}catch(e){}
+  try{localStorage.setItem(CLAVE_RC,txt);}catch(e){}
+  if(ant===txt&&PANEL)return;nombreReal(c);AM_PANEL(c,{silencio:!PANEL});}).catch(function(){trayendo=false;});}
+/* lo que sale hacia el puente: se guarda y se reintenta hasta que llega */
+var ENV=[];try{ENV=JSON.parse(localStorage.getItem(CLAVE_ENV)||'[]')||[];}catch(e){}
+function guardarEnv(){try{localStorage.setItem(CLAVE_ENV,JSON.stringify(ENV));}catch(e){}}
+var enviando=false;
+function enviarPuente(){if(!REAL||enviando||!ENV.length)return;enviando=true;var lote=ENV.slice(0,50);
+ fetch(urlPuente(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:REAL.token,items:lote})}).then(function(r){return r.json();}).then(function(r){enviando=false;
+  if(r&&r.ok){var u=r.uids||[];ENV=ENV.filter(function(x){return u.indexOf(x.uid)<0;});guardarEnv();if(ENV.length)setTimeout(enviarPuente,500);}
+  else if(r&&r.error==='link')linkInvalido();}).catch(function(){enviando=false;});}
+(function(){var c0=cola;cola=function(t,d){var r=c0.apply(this,arguments);
+ if(REAL&&d){ENV.push({uid:Date.now().toString(36)+Math.random().toString(36).slice(2,8),d:JSON.parse(JSON.stringify(d))});guardarEnv();setTimeout(enviarPuente,300);}return r;};})();
+if(REAL){
+ setTimeout(function(){var c=null;try{c=JSON.parse(localStorage.getItem(CLAVE_RC)||'null');}catch(e){}if(c){nombreReal(c);AM_PANEL(c,{silencio:true});}traerCliente();enviarPuente();},0);
+ setInterval(function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();}},120000);
+ document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();}});
+ window.addEventListener('online',enviarPuente);
+}
+/* app instalada sin link: pedir el link (en el iPhone la app instalada no comparte lo guardado en Safari) */
+(function(){var inst=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
+ var demo=false;try{demo=localStorage.getItem('amedida-demo')==='1';}catch(e){}
+ if(REAL||!inst||demo||window.top!==window)return;
+ var d=document.createElement('div');d.className='conx';d.setAttribute('role','dialog');d.setAttribute('aria-label','Conectá tu app');
+ d.innerHTML='<div class="conx-in"><span class="conx-lg"><b>A medida</b><small>Entrenamiento integral</small></span><h1>Conectá tu app</h1><p>Pegá acá el link que te mandó tu entrenador por WhatsApp.</p><input id="conxIn" type="url" inputmode="url" autocomplete="off" placeholder="https://rmormar19.github.io/amedida/?c=…" aria-label="Link de tu entrenador"><button type="button" class="pri full" id="conxOk">Conectar</button><button type="button" class="sec full" id="conxDemo">Ver la demo</button><p class="conx-e" id="conxE" role="alert"></p></div>';
+ document.body.appendChild(d);
+ document.getElementById('conxOk').onclick=function(){var v=document.getElementById('conxIn').value.trim(),m=v.match(/[?&]c=([\w-]{20,})/),n=v.match(/[?&]p=([\w-]{20,})/);
+  if(!m||!n){document.getElementById('conxE').textContent='Ese link no es el de la app. Copiá el link completo del mensaje.';return;}
+  location.href=location.pathname+'?c='+m[1]+'&p='+n[1];};
+ document.getElementById('conxDemo').onclick=function(){try{localStorage.setItem('amedida-demo','1');}catch(e){}d.remove();};})();
 
 render();
 (function(){var sp=document.getElementById('splash');if(!sp)return;var ya=false,salir=function(){if(ya)return;ya=true;sp.classList.add('out');window.__forzar=true;render();};sp.addEventListener('click',salir);setTimeout(salir,1700);})();
