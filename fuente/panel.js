@@ -115,7 +115,7 @@ function sumaPrev(){return MEDT?MEDT.sum[MEDT.sum.length-1]:90.5;}
 var vHoy0=vHoy;
 vHoy=function(){if(!PANEL)return vHoy0();
  var t=tot(),h=hechas(),fal={p:NUT.obj.p-t.p},ses=PANEL.ses,c=PANEL.c;
- var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy();
+ var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy()+(window.pushCard?pushCard():'');
  if(ses){var mus={},nej=0,ns=0;(ses.ejercicios||[]).forEach(function(e){if(!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=e.grupo||musculoP(e.nombre);mus[g]=(mus[g]||0)+n;});
   var top=Object.keys(mus).sort(function(a,b){return mus[b]-mus[a];}).slice(0,2);
   var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(PANEL.hoy?'Empezar sesión':'Adelantar sesión');

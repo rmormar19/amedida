@@ -30,3 +30,26 @@ self.addEventListener('fetch', e => {
     return hit || red;
   })));
 });
+
+/* avisos con la app cerrada: el aviso llega vacío y el texto se le pide al puente con el link del cliente */
+self.addEventListener('push', e => {
+  e.waitUntil((async () => {
+    let t = 'A medida', b = 'Tu entrenador actualizó tu rutina. Tocá para verla.';
+    try {
+      const R = await (await caches.open('am-real')).match('./__real.json');
+      if (R) {
+        const real = await R.json();
+        const res = await Promise.race([fetch('https://script.google.com/macros/s/' + real.p + '/exec?accion=aviso&token=' + encodeURIComponent(real.token)), new Promise((_, no) => setTimeout(() => no(new Error('t')), 6000))]);
+        const j = await res.json(); if (j && j.ok && j.aviso) { t = j.aviso.titulo || t; b = j.aviso.cuerpo || b; }
+      }
+    } catch (err) {}
+    await self.registration.showNotification(t, { body: b, icon: './icons/icon-192.png', badge: './icons/icon-192.png', tag: 'amedida-rutina', renotify: true, data: { url: './?aviso=1' } });
+  })());
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(ws => {
+    for (const w of ws) { if ('focus' in w) { w.postMessage('am-aviso'); return w.focus(); } }
+    return self.clients.openWindow((e.notification.data && e.notification.data.url) || './');
+  }));
+});

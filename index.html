@@ -2511,7 +2511,7 @@ function sumaPrev(){return MEDT?MEDT.sum[MEDT.sum.length-1]:90.5;}
 var vHoy0=vHoy;
 vHoy=function(){if(!PANEL)return vHoy0();
  var t=tot(),h=hechas(),fal={p:NUT.obj.p-t.p},ses=PANEL.ses,c=PANEL.c;
- var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy();
+ var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy()+(window.pushCard?pushCard():'');
  if(ses){var mus={},nej=0,ns=0;(ses.ejercicios||[]).forEach(function(e){if(!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=e.grupo||musculoP(e.nombre);mus[g]=(mus[g]||0)+n;});
   var top=Object.keys(mus).sort(function(a,b){return mus[b]-mus[a];}).slice(0,2);
   var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(PANEL.hoy?'Empezar sesión':'Adelantar sesión');
@@ -2739,6 +2739,31 @@ if(REAL){
   if(!m||!n){document.getElementById('conxE').textContent='Ese link no es el de la app. Copiá el link completo del mensaje.';return;}
   location.href=location.pathname+'?c='+m[1]+'&p='+n[1];};
  document.getElementById('conxDemo').onclick=function(){try{localStorage.setItem('amedida-demo','1');}catch(e){}d.remove();};})();
+/* ================= avisos al celular con la app cerrada =================
+   El cliente toca «Activar avisos» una vez. El celular queda suscripto en el puente y, cuando el
+   entrenador cambia la rutina, le llega el aviso aunque la app esté cerrada. */
+var PUSH_OK=('serviceWorker' in navigator)&&('PushManager' in window)&&('Notification' in window);
+function esIOS(){return /iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+function instalada(){return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
+function b64aU8(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var r=atob(s),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o;}
+/* el service worker lee de acá el link para pedir el texto del aviso */
+function guardarRealSW(){if(!REAL||!window.caches)return;try{caches.open('am-real').then(function(c){c.put('./__real.json',new Response(JSON.stringify({token:REAL.token,p:REAL.p}),{headers:{'Content-Type':'application/json'}}));});}catch(e){}}
+function suscribir(pedir){if(!REAL||!PUSH_OK)return Promise.resolve(false);
+ var permiso=Notification.permission==='granted'?Promise.resolve('granted'):(pedir?Notification.requestPermission():Promise.resolve(Notification.permission));
+ return permiso.then(function(p){if(p!=='granted')return false;
+  return Promise.all([navigator.serviceWorker.ready,fetch(urlPuente()+'?accion=vapid').then(function(r){return r.json();})]).then(function(x){var reg=x[0],k=x[1]&&x[1].key;if(!k)return false;
+   return reg.pushManager.getSubscription().then(function(s){return s||reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64aU8(k)});}).then(function(s){
+    return fetch(urlPuente(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:REAL.token,sub:s.toJSON()})}).then(function(r){return r.json();}).then(function(r){return !!(r&&r.ok);});});});}).catch(function(){return false;});}
+function pushCard(){if(!REAL||!PUSH_OK&&!esIOS())return '';var ya=PUSH_OK&&Notification.permission==='granted',no=PUSH_OK&&Notification.permission==='denied',oc=false;try{oc=localStorage.getItem('amedida-push-ocultar')==='1';}catch(e){}
+ if(ya||oc)return '';
+ var txt=no?'Los avisos están bloqueados. Activalos en los ajustes del celular para esta app.':(esIOS()&&!instalada()?'Primero agregá la app a la pantalla de inicio (Compartir → Agregar a inicio) y abrila desde ahí.':'Te avisamos cuando tu entrenador te carga o cambia la rutina, aunque tengas la app cerrada.');
+ return '<section class="card pushc"><div class="fila" style="padding:0"><span class="ico">'+(I.campana||'')+'</span><span><b>Avisos de tu rutina</b><span class="s">'+txt+'</span></span><span></span></div><div class="bajo" style="margin-top:10px">'+(!no&&!(esIOS()&&!instalada())?'<button type="button" class="pri" data-push="on">Activar avisos</button>':'')+'<button type="button" class="sec" data-push="off">Ahora no</button></div></section>';}
+document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-push]');if(!b)return;ev.preventDefault();
+ if(b.dataset.push==='off'){try{localStorage.setItem('amedida-push-ocultar','1');}catch(e){}render();return;}
+ b.disabled=true;suscribir(true).then(function(ok){toast(ok?'Listo: te avisamos cuando cambie tu rutina':(Notification.permission==='denied'?'Quedaron bloqueados: activalos en los ajustes del celular':'No se pudo activar. Probá de nuevo con internet.'));render();});});
+if(REAL){guardarRealSW();setTimeout(function(){if(PUSH_OK&&Notification.permission==='granted')suscribir(false);},3000);
+ if(navigator.serviceWorker)navigator.serviceWorker.addEventListener('message',function(e){if(e.data==='am-aviso'){traerCliente();}});
+ if(/[?&]aviso=1/.test(location.search))setTimeout(traerCliente,500);}
 
 render();
 (function(){var sp=document.getElementById('splash');if(!sp)return;var ya=false,salir=function(){if(ya)return;ya=true;sp.classList.add('out');window.__forzar=true;render();};sp.addEventListener('click',salir);setTimeout(salir,1700);})();
