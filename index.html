@@ -1597,7 +1597,7 @@ window.AM_NOTIF=function(d){d=d||{};var ej=d.ejercicios||[],n={t:Date.now(),titu
 function vRnueva(){var n=NOTIFS[U.rn]||NOTIFS[0];if(!n)return '<p class="sub">Sin notificaciones.</p>';
  return '<div class="hd"><span class="ey">'+hhmm(n.t)+' · de tu entrenador</span><h1>'+(n.cambio?'Rutina actualizada':'Rutina nueva')+'</h1><p>'+(n.grupo||'Entreno')+' · '+n.ejercicios.length+' ejercicios · para '+n.dia+'</p></div>'+
   '<section class="card"><div class="ct"><h3>'+(n.grupo||'Entreno')+'</h3><span class="chip ac">'+n.dia+'</span></div><div class="lista" style="margin-top:6px">'+
-  n.ejercicios.map(function(e,i){var lf=lamDe(e.n),nk=NOTIFS.indexOf(n);return '<'+(lf?'button type="button" data-a="ficha" data-v="'+lf+'|n'+nk+'-'+i+'"':'div')+' class="rnx'+(lf?' tq':'')+'" style="animation-delay:'+(i*70)+'ms">'+(lf?'<span class="rnl">'+lamina(lf,e.n)+(esAnim(lf)?'<i>'+ICPLAY+'</i>':'')+'</span>':'<span class="rnn">'+(i+1)+'</span>')+'<span><b>'+e.n+'</b><span class="s">'+e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir+'</span></span>'+(lf?I.der:'')+'</'+(lf?'button':'div')+'>';}).join('')+'</div></section>'+
+  n.ejercicios.map(function(e,i){var lf=lamDe(e.n),nk=NOTIFS.indexOf(n);return '<'+(lf?'button type="button" data-a="ficha" data-v="'+lf+'|n'+nk+'-'+i+'"':'div')+' class="rnx'+(lf?' tq':'')+'" style="animation-delay:'+(i*70)+'ms">'+(lf?'<span class="rnl">'+lamina(lf,e.n)+(esAnim(lf)?'<i>'+ICPLAY+'</i>':'')+'</span>':'<span class="rnn">'+(i+1)+'</span>')+'<span><b>'+e.n+'</b><span class="s">'+(e.txt||(e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir))+'</span></span>'+(lf?I.der:'')+'</'+(lf?'button':'div')+'>';}).join('')+'</div></section>'+
   (n.cardio&&n.cardio.length?'<section class="card"><div class="ct"><h3>Cardio</h3></div>'+n.cardio.map(function(c){return '<div class="rnx"><span class="rnn">♥</span><span><b>'+c.tipo+' · '+c.cant+(c.modo==='km'?' km':' min')+'</b><span class="s">Zona '+c.zona+(c.cuando?' · '+c.cuando:'')+(c.inclinacion?' · inclinación '+c.inclinacion:'')+'</span></span></div>';}).join('')+'</section>':'')+'<p class="mu" style="font-size:12.5px;margin:10px 2px 0">Tocá un ejercicio para ver cómo se hace. Ya quedó cargada en tu calendario. El día que te toca aparece en Hoy con el botón para empezar.</p><div class="bajo"><button type="button" class="sec" data-a="tab" data-v="hoy">Más tarde</button><button type="button" class="pri" data-a="rnOk">Entendido</button></div>';}
 var HOJAS_EXTRA=function(h){var s='';
  if(h.t==='cola')s='<h2>Cambios para el panel</h2><p class="sub">Quedan guardados en el celular y se mandan cuando conectemos la app al panel.</p><div class="lista" style="margin-top:8px">'+(COLA.length?COLA.slice(0,30).map(function(c){return '<div class="sx"><span>'+c.txt+'</span><b class="mu" style="font-weight:500">'+hhmm(c.t)+'</b><span></span></div>';}).join(''):'<p class="sub" style="padding:12px 0">No hay cambios pendientes.</p>')+'</div><button type="button" class="pri full" style="margin-top:12px" data-a="cerrar">Listo</button>';
@@ -2072,7 +2072,7 @@ function detalleActual(dt){var f=diaInfo(dt),tit=DSEM[dt.getDay()]+' '+dt.getDat
  if(!f.g)return '<h3>'+tit+'</h3><p class="sub">'+(f.libre?'Día libre: el entreno se movió y no cuenta como falta.':'Día de descanso.')+'</p>';
  if(f.e==='au')return '<h3>'+tit+'</h3><p class="sub">Vacaciones: no cuenta como falta.</p>';
  if(f.e==='fa')return '<h3>'+tit+'</h3><p class="sub">'+GFULL[f.g]+' · no entrenaste.'+(f.o?' '+f.o+'.':'')+'</p>';
- if(f.e==='pl')return '<h3>'+tit+'</h3><p class="sub">Planificado: '+GFULL[f.g]+(f.desc?' · semana de descarga':'')+'.</p>';
+ if(f.e==='pl')return '<h3>'+tit+'</h3><p class="sub">Planificado: '+GFULL[f.g]+(f.desc?' · semana de descarga':'')+'.</p>'+planLista(dt);
  if(f.e==='hoy'||f.e==='cur')return '<h3>'+tit+'</h3><p class="sub">'+GFULL[f.g]+' · '+(f.e==='cur'?'en curso ('+hechas()[0]+'/'+hechas()[1]+' series)':'pendiente')+'.</p><p style="margin-top:12px"><button type="button" class="pri" data-a="sesion">'+(f.e==='cur'?'Seguir sesión':'Registrar este día')+'</button></p>';
  var ses=sesDe(f.g,dt),ton=ses.reduce(function(a,x){return a+(x.o&&x.u==='kg'?x.o.w*x.o.r.reduce(function(p,q){return p+q;},0):0);},0);
  return '<div class="ph2"><div><h3>'+tit+'</h3><p class="sub">'+GFULL[f.g]+'</p></div>'+(enSemana?'<button type="button" class="sec" style="min-height:38px;font-size:13px" data-a="verSes" data-v="'+kd(dt)+'">Abrir</button>':'')+'</div>'+
@@ -2091,7 +2091,7 @@ function detalleDia(d){var f=diaInfo(d),k=kd(d),tit=DSEM[d.getDay()]+' '+d.getDa
    '<button type="button" class="sec" style="width:100%;margin-top:12px" data-a="verSes" data-v="'+k+'">Ver sesión completa · '+ses.length+' ejercicios</button></section>';}
  if(f.e==='cur'||f.e==='hoy'){var h=hechas();return head+'<section class="card"><h3>'+GFULL[f.g]+'</h3><p class="sub">'+(f.e==='cur'?'En curso · '+h[0]+' de '+h[1]+' series':'Hoy · '+GSER[f.g]+' series · ~'+GMIN[f.g]+' min')+'</p><button type="button" class="pri full" style="margin-top:12px" data-a="sesion">'+(f.e==='cur'?'Seguir sesión':'Empezar sesión')+'</button></section>';}
  return head+'<section class="card"><div class="ct"><div><h3>'+GFULL[f.g]+'</h3><p class="sub">'+(f.desc?'Descarga · mitad de las series, RIR 3':'Planificado · '+GSER[f.g]+' series · ~'+GMIN[f.g]+' min')+(f.mov?' · '+(f.mov.rec?'recupera el '+dk(f.mov.de).getDate():'movido'):'')+'</p></div><span class="chip ac">Planificado</span></div>'+
-  '<div class="lista" style="margin-top:6px">'+ses.map(function(x){var o=x.o;return '<div class="sx"><span>'+x.n+'</span><b>'+(f.desc?Math.max(1,Math.round(x.plan[2]/2))+' × '+x.plan[1]:x.plan[2]+' × '+x.plan[1])+' · '+(o?co(o.w)+' '+x.u:'')+'</b><span></span></div>';}).join('')+'</div>'+
+  '<div class="lista" style="margin-top:6px">'+ses.map(function(x){var o=x.o;return '<div class="sx"><span>'+x.n+'</span><b>'+(f.desc?Math.max(1,Math.round(x.plan[2]/2))+' × '+x.plan[1]:(x.txt||x.plan[2]+' × '+x.plan[1]))+(o?' · '+co(o.w)+' '+x.u:'')+'</b><span></span></div>';}).join('')+'</div>'+
   '<div style="display:flex;gap:8px;margin-top:12px"><button type="button" class="sec" style="flex:1" data-a="mover" data-v="'+k+'">Mover a otro día</button><button type="button" class="sec" style="flex:1" data-a="libre" data-v="'+k+'">No voy</button></div></section>';}
 /* opciones para mover o recuperar: los próximos días libres, con aviso si queda pegado al mismo grupo */
 function opcionesMover(k){var f=diaInfo(dk(k)),g=f.g,base=new Date(Math.max(+HOYC,+dk(k)));var o=[];var d=new Date(base);d.setDate(d.getDate()+1);
@@ -2384,7 +2384,7 @@ extrasInit();
    salen de la versión mujer. Las láminas que ya tienen una mujer se usan tal cual; para las demás
    se busca  <carpeta>/mujer/<archivo>  y, si todavía no existe, no se muestra ninguna (nunca un hombre). */
 var MUJER=false;
-var FEM_OK={};['bulgara','curl','curlinclinado','gen_adu','gen_apc','gen_cma','gen_eta','gen_etb','hack','hipthrust','pressinclinado','rumano','smith','tricmanc','vuelosmanc'].forEach(function(k){FEM_OK['laminas/'+k]=1;FEM_OK['laminas_mp4/'+k]=1;});
+var FEM_OK={};['bulgara','curl','curlinclinado','gen_adu','aductores','gen_apc','gen_cma','gen_eta','gen_etb','hack','hipthrust','pressinclinado','rumano','smith','tricmanc','vuelosmanc'].forEach(function(k){FEM_OK['laminas/'+k]=1;FEM_OK['laminas_mp4/'+k]=1;});
 function rutaFem(src){var m=String(src).match(/^(.*?)(laminas_mp4|laminas|cuerpo|fichas)\/([^\/?#]+?)(\.\w+)([?#].*)?$/);if(!m||/\/mujer\//.test(src))return null;
  if(FEM_OK[m[2]+'/'+m[3]])return null;return m[1]+m[2]+'/mujer/'+m[3]+m[4]+(m[5]||'');}
 function fixMedia(root){if(!MUJER||!root||root.nodeType!==1)return;var L=[].slice.call(root.querySelectorAll('img[src],video[src],source[src],video[poster]'));if(root.matches&&root.matches('img[src],video[src],source[src],video[poster]'))L.push(root);
@@ -2393,6 +2393,14 @@ new MutationObserver(function(ms){if(!MUJER)return;ms.forEach(function(m){if(m.t
 document.addEventListener('error',function(e){var t=e.target;if(!MUJER||!t||!t.getAttribute)return;var v=t.getAttribute('src')||t.getAttribute('poster')||'';if(v.indexOf('/mujer/')<0)return;
  t.classList.add('sin-modelo');if(t.tagName==='SOURCE'&&t.parentNode)t.parentNode.classList.add('sin-modelo');},true);
 function setModelo(sx){var m=/^f/i.test(String(sx||''));if(m!==MUJER){MUJER=m;fixMedia(document.body);try{render();}catch(e){}}}
+
+/* hombres: si una lámina tiene a una mujer y existe la versión con un hombre (<carpeta>/hombre/<archivo>), se usa esa; si no existe, queda la original */
+function rutaHom(src){var m=String(src).match(/^(.*?)(laminas_mp4|laminas)\/([^\/?#]+?)(\.\w+)([?#].*)?$/);if(!m||/\/(hombre|mujer)\//.test(src))return null;if(!FEM_OK[m[2]+'/'+m[3]])return null;return m[1]+m[2]+'/hombre/'+m[3]+m[4]+(m[5]||'');}
+var HOMBRE_HAY={};['aductores'].forEach(function(k){HOMBRE_HAY['laminas/'+k]=HOMBRE_HAY['laminas_mp4/'+k]=0;});
+function fixHombre(root){if(MUJER||!window.PANEL||!root||root.nodeType!==1)return;var L=[].slice.call(root.querySelectorAll('img[src],video[src],source[src]'));if(root.matches&&root.matches('img[src],video[src],source[src]'))L.push(root);
+ L.forEach(function(el){var v=el.getAttribute('src'),m=String(v).match(/(laminas_mp4|laminas)\/([^\/?#]+?)\./);if(!m||!HOMBRE_HAY[m[1]+'/'+m[2]])return;var n=rutaHom(v);if(n){el.setAttribute('data-orig',v);el.setAttribute('src',n);if(el.tagName==='SOURCE'&&el.parentNode&&el.parentNode.load)el.parentNode.load();}});}
+new MutationObserver(function(ms){if(MUJER)return;ms.forEach(function(m){if(m.type==='attributes')fixHombre(m.target);else m.addedNodes.forEach(function(n){fixHombre(n);});});}).observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['src']});
+document.addEventListener('error',function(e){var t=e.target;if(!t||!t.getAttribute)return;var o=t.getAttribute('data-orig');if(o&&/\/hombre\//.test(t.getAttribute('src')||'')){t.removeAttribute('data-orig');t.setAttribute('src',o);}},true);
 
 /* ================= Monitor → app: la app muestra lo que hay en la Base Panel =================
    AM_PANEL(cliente) recibe el cliente con el formato de la Base Panel (rutina, historial, medidas,
@@ -2545,7 +2553,7 @@ sesDe=function(g,d){if(!PANEL)return sesDe0(g,d);var dd=diaDeFecha(d);
  var pd=new Date(d);pd.setDate(pd.getDate()-7);var prev=diaDeFecha(pd),hecho=dd.estado==='verde'||(dd.estado===undefined&&+d<+HOYC);
  return (dd.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ss=seriesP(e),u=uniP((ss[0]||{}).peso),w=Math.max.apply(null,[0].concat(ss.map(function(s){return numP(s.peso)||0;}))),r=ss.map(function(s){return parseInt(s.reps,10)||0;});
   var pv=null;if(prev)(prev.ejercicios||[]).forEach(function(x){if(nrmP(x.nombre)===nrmP(e.nombre))pv=Math.max.apply(null,[0].concat(seriesP(x).map(function(s){return numP(s.peso)||0;})));});
-  return {n:e.nombre,u:u==='pl'?'pl':'kg',o:hecho?{w:w,r:r}:null,sube:hecho&&pv!=null&&w>pv,plan:[w,r[0]||0,ss.length,parseInt((ss[0]||{}).rir,10)||0]};});};
+  var ep=ejP(e);return {n:e.nombre,u:ep.u==='pl'?'pl':'kg',o:hecho?{w:w,r:r}:null,sube:hecho&&pv!=null&&w>pv,plan:[w,r[0]||0,ss.length,parseInt((ss[0]||{}).rir,10)||0],txt:ep.o.replace(/ · drop en la última/,''),sinPeso:ep.sinPeso};});};
 
 /* ---------- Medidas con los datos del panel ---------- */
 var vMed0=vMed;
@@ -2606,7 +2614,7 @@ var vMac0=vMac;
 vMac=function(){if(!PANEL||PANEL.macros)return vMac0();
  return '<div class="hd"><span class="ey">Nutrición</span><h1>Macros</h1></div><section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.info+'</span><span><b>Todavía no está conectado</b><span class="s">Cuando tu entrenador cargue tu plan de comidas, vas a ver acá tus objetivos y lo que llevás en el día.</span></span><span></span></div></section>';};
 /* más ejercicios con lámina, y sin lámina no se muestra una imagen rota */
-LAMDE.unshift([/aductor/i,'gen_adu'],[/extensi[oó]n de cu[aá]driceps|camilla de cu[aá]driceps/i,'extension'],[/femoral/i,'curl'],[/vuelos? laterales? con mancuernas/i,'vuelosmanc'],[/vuelos? laterales?/i,'vuelospolea'],[/curl martillo/i,'gen_cma'],[/curl.*predicador|scott/i,'curlpred'],[/tr[ií]ceps.*barra/i,'gen_etb'],[/tr[ií]ceps.*unilateral/i,'gen_etu'],[/tr[ií]ceps.*(cuerda|polea)/i,'gen_etp'],[/press (plano|de banca)/i,'gen_ppb'],[/patada/i,'patada'],[/abdominal.*polea|crunch.*polea/i,'gen_abp'],[/^(?!.*prensa).*(gemelo|pantorrilla)/i,'gen_pan']);
+LAMDE.unshift([/aductor/i,'aductores'],[/extensi[oó]n de cu[aá]driceps|camilla de cu[aá]driceps/i,'extension'],[/femoral/i,'curl'],[/vuelos? laterales? con mancuernas/i,'vuelosmanc'],[/vuelos? laterales?/i,'vuelospolea'],[/curl martillo/i,'gen_cma'],[/curl.*predicador|scott/i,'curlpred'],[/tr[ií]ceps.*barra/i,'gen_etb'],[/tr[ií]ceps.*unilateral/i,'gen_etu'],[/tr[ií]ceps.*(cuerda|polea)/i,'gen_etp'],[/press (plano|de banca)/i,'gen_ppb'],[/patada/i,'patada'],[/abdominal.*polea|crunch.*polea/i,'gen_abp'],[/^(?!.*prensa).*(gemelo|pantorrilla)/i,'gen_pan']);
 lamina=(function(l0){return function(f,a){return f?l0(f,a):'<div class="lam lam0" aria-hidden="true"></div>';};})(lamina);
 /* sin lámina: no se abre una ficha vacía */
 lamBtn=(function(l0){return function(f,n,ref){return f?l0(f,n,ref):'<span class="lamb">'+lamina('',n)+'</span>';};})(lamBtn);
@@ -2615,6 +2623,14 @@ document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.targe
 LAMDE.unshift([/(gemelo|pantorrilla).*prensa|prensa.*(gemelo|pantorrilla)/i,'gemelosprensa']);
 if(ANIM.indexOf('gemelosprensa')<0)ANIM.push('gemelosprensa');
 FICHAS.gemelosprensa={m:['Gemelos','Sóleo'],p:['Espalda apoyada y piernas casi estiradas, sin trabar las rodillas.','Apoyá sólo la parte delantera de los pies en el borde de abajo de la plataforma; los talones quedan en el aire.','Bajá los talones hasta sentir el estiramiento y empujá con la punta de los pies lo más alto que puedas. Las rodillas no se mueven.'],x:['Doblar las rodillas para ayudarte: el movimiento es sólo del tobillo.','Rebotar abajo: frená un instante en el estiramiento.']};
+
+/* rutina que llega del panel (pantalla «Rutina nueva»): series y repeticiones tal como las cargó el entrenador */
+rutinaDesdePanel=(function(r0){return function(d){var o=r0(d);(o.ejercicios||[]).forEach(function(e,i){var x=(d.ejercicios||[])[i];if(!x)return;var ep=ejP(x);e.txt=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso?'':' · '+co(ep.p[0][0])+' '+(ep.u==='pl'?'placas':ep.u));e.u=ep.u==='pl'?'placas':ep.u;});return o;};})(rutinaDesdePanel);
+/* lista de ejercicios de un día planificado (calendario) */
+function planLista(dt){if(!PANEL)return '';var L=sesDe(null,dt);if(!L.length)return '';return '<div class="lista" style="margin-top:6px">'+L.map(function(x){return '<div class="sx"><span>'+x.n+'</span><b>'+(x.txt||x.plan[2]+' × '+x.plan[1])+'</b><span></span></div>';}).join('')+'</div>';}
+/* aductores: lámina animada propia (antes mostraba la de abductores) */
+if(ANIM.indexOf('aductores')<0)ANIM.push('aductores');
+FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almohadillas por dentro de las rodillas.','Arrancá con las piernas abiertas hasta donde te resulte cómodo y sostené 2 segundos.','Cerrá las piernas juntando las almohadillas, sostené 2 segundos y volvé despacio.'],x:['Soltar el peso de golpe al abrir.','Despegar la espalda o la cadera del asiento para ayudarte.']};
 
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */

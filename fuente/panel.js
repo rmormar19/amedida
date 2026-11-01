@@ -149,7 +149,7 @@ sesDe=function(g,d){if(!PANEL)return sesDe0(g,d);var dd=diaDeFecha(d);
  var pd=new Date(d);pd.setDate(pd.getDate()-7);var prev=diaDeFecha(pd),hecho=dd.estado==='verde'||(dd.estado===undefined&&+d<+HOYC);
  return (dd.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ss=seriesP(e),u=uniP((ss[0]||{}).peso),w=Math.max.apply(null,[0].concat(ss.map(function(s){return numP(s.peso)||0;}))),r=ss.map(function(s){return parseInt(s.reps,10)||0;});
   var pv=null;if(prev)(prev.ejercicios||[]).forEach(function(x){if(nrmP(x.nombre)===nrmP(e.nombre))pv=Math.max.apply(null,[0].concat(seriesP(x).map(function(s){return numP(s.peso)||0;})));});
-  return {n:e.nombre,u:u==='pl'?'pl':'kg',o:hecho?{w:w,r:r}:null,sube:hecho&&pv!=null&&w>pv,plan:[w,r[0]||0,ss.length,parseInt((ss[0]||{}).rir,10)||0]};});};
+  var ep=ejP(e);return {n:e.nombre,u:ep.u==='pl'?'pl':'kg',o:hecho?{w:w,r:r}:null,sube:hecho&&pv!=null&&w>pv,plan:[w,r[0]||0,ss.length,parseInt((ss[0]||{}).rir,10)||0],txt:ep.o.replace(/ · drop en la última/,''),sinPeso:ep.sinPeso};});};
 
 /* ---------- Medidas con los datos del panel ---------- */
 var vMed0=vMed;
@@ -210,7 +210,7 @@ var vMac0=vMac;
 vMac=function(){if(!PANEL||PANEL.macros)return vMac0();
  return '<div class="hd"><span class="ey">Nutrición</span><h1>Macros</h1></div><section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.info+'</span><span><b>Todavía no está conectado</b><span class="s">Cuando tu entrenador cargue tu plan de comidas, vas a ver acá tus objetivos y lo que llevás en el día.</span></span><span></span></div></section>';};
 /* más ejercicios con lámina, y sin lámina no se muestra una imagen rota */
-LAMDE.unshift([/aductor/i,'gen_adu'],[/extensi[oó]n de cu[aá]driceps|camilla de cu[aá]driceps/i,'extension'],[/femoral/i,'curl'],[/vuelos? laterales? con mancuernas/i,'vuelosmanc'],[/vuelos? laterales?/i,'vuelospolea'],[/curl martillo/i,'gen_cma'],[/curl.*predicador|scott/i,'curlpred'],[/tr[ií]ceps.*barra/i,'gen_etb'],[/tr[ií]ceps.*unilateral/i,'gen_etu'],[/tr[ií]ceps.*(cuerda|polea)/i,'gen_etp'],[/press (plano|de banca)/i,'gen_ppb'],[/patada/i,'patada'],[/abdominal.*polea|crunch.*polea/i,'gen_abp'],[/^(?!.*prensa).*(gemelo|pantorrilla)/i,'gen_pan']);
+LAMDE.unshift([/aductor/i,'aductores'],[/extensi[oó]n de cu[aá]driceps|camilla de cu[aá]driceps/i,'extension'],[/femoral/i,'curl'],[/vuelos? laterales? con mancuernas/i,'vuelosmanc'],[/vuelos? laterales?/i,'vuelospolea'],[/curl martillo/i,'gen_cma'],[/curl.*predicador|scott/i,'curlpred'],[/tr[ií]ceps.*barra/i,'gen_etb'],[/tr[ií]ceps.*unilateral/i,'gen_etu'],[/tr[ií]ceps.*(cuerda|polea)/i,'gen_etp'],[/press (plano|de banca)/i,'gen_ppb'],[/patada/i,'patada'],[/abdominal.*polea|crunch.*polea/i,'gen_abp'],[/^(?!.*prensa).*(gemelo|pantorrilla)/i,'gen_pan']);
 lamina=(function(l0){return function(f,a){return f?l0(f,a):'<div class="lam lam0" aria-hidden="true"></div>';};})(lamina);
 /* sin lámina: no se abre una ficha vacía */
 lamBtn=(function(l0){return function(f,n,ref){return f?l0(f,n,ref):'<span class="lamb">'+lamina('',n)+'</span>';};})(lamBtn);
@@ -219,3 +219,11 @@ document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.targe
 LAMDE.unshift([/(gemelo|pantorrilla).*prensa|prensa.*(gemelo|pantorrilla)/i,'gemelosprensa']);
 if(ANIM.indexOf('gemelosprensa')<0)ANIM.push('gemelosprensa');
 FICHAS.gemelosprensa={m:['Gemelos','Sóleo'],p:['Espalda apoyada y piernas casi estiradas, sin trabar las rodillas.','Apoyá sólo la parte delantera de los pies en el borde de abajo de la plataforma; los talones quedan en el aire.','Bajá los talones hasta sentir el estiramiento y empujá con la punta de los pies lo más alto que puedas. Las rodillas no se mueven.'],x:['Doblar las rodillas para ayudarte: el movimiento es sólo del tobillo.','Rebotar abajo: frená un instante en el estiramiento.']};
+
+/* rutina que llega del panel (pantalla «Rutina nueva»): series y repeticiones tal como las cargó el entrenador */
+rutinaDesdePanel=(function(r0){return function(d){var o=r0(d);(o.ejercicios||[]).forEach(function(e,i){var x=(d.ejercicios||[])[i];if(!x)return;var ep=ejP(x);e.txt=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso?'':' · '+co(ep.p[0][0])+' '+(ep.u==='pl'?'placas':ep.u));e.u=ep.u==='pl'?'placas':ep.u;});return o;};})(rutinaDesdePanel);
+/* lista de ejercicios de un día planificado (calendario) */
+function planLista(dt){if(!PANEL)return '';var L=sesDe(null,dt);if(!L.length)return '';return '<div class="lista" style="margin-top:6px">'+L.map(function(x){return '<div class="sx"><span>'+x.n+'</span><b>'+(x.txt||x.plan[2]+' × '+x.plan[1])+'</b><span></span></div>';}).join('')+'</div>';}
+/* aductores: lámina animada propia (antes mostraba la de abductores) */
+if(ANIM.indexOf('aductores')<0)ANIM.push('aductores');
+FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almohadillas por dentro de las rodillas.','Arrancá con las piernas abiertas hasta donde te resulte cómodo y sostené 2 segundos.','Cerrá las piernas juntando las almohadillas, sostené 2 segundos y volvé despacio.'],x:['Soltar el peso de golpe al abrir.','Despegar la espalda o la cadera del asiento para ayudarte.']};
