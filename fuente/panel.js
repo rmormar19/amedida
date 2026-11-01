@@ -228,3 +228,7 @@ function planLista(dt){if(!PANEL)return '';var L=sesDe(null,dt);if(!L.length)ret
 /* aductores: lámina animada propia (antes mostraba la de abductores) */
 if(ANIM.indexOf('aductores')<0)ANIM.push('aductores');
 FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almohadillas por dentro de las rodillas.','Arrancá con las piernas abiertas hasta donde te resulte cómodo y sostené 2 segundos.','Cerrá las piernas juntando las almohadillas, sostené 2 segundos y volvé despacio.'],x:['Soltar el peso de golpe al abrir.','Despegar la espalda o la cadera del asiento para ayudarte.']};
+/* texto series × reps de un ejercicio de un aviso guardado: si el aviso es viejo (sin txt) se busca en la rutina del panel */
+function txtEj(e){if(e.txt)return e.txt;if(!PANEL)return '';var n=nrmP(e.n||e.nombre||''),r='';
+ (PANEL.c.rutina||[]).forEach(function(d){(d.ejercicios||[]).forEach(function(x){if(!r&&x.nombre&&nrmP(x.nombre)===n){var ep=ejP(x);r=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso||!(numP((seriesP(x)[0]||{}).peso)>0)?'':' · '+co(ep.p[0][0])+' '+(ep.u==='pl'?'placas':ep.u));}});});
+ return r;}

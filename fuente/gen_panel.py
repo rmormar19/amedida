@@ -30,7 +30,7 @@ def aplicar(s, D):
     rep("if(x)rr.push(x[2])", "if(x&&x[2]!=='')rr.push(+x[2])")
     rep("if(x)rirs.push(x[2])", "if(x&&x[2]!=='')rirs.push(+x[2])")
     rep("pres=[[m?m[1]+' × '+m[2]:e.o,'series × reps'],[co(sugerido(e,0)),", "pres=[[e.rr?e.o.split(' · ')[0]:(m?m[1]+' × '+m[2]:e.o),'series × reps'],[e.sinPeso?'—':co(sugerido(e,0)),")
-    rep("<span class=\"s\">'+e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir+'</span>", "<span class=\"s\">'+(e.txt||(e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir))+'</span>")
+    rep("<span class=\"s\">'+e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir+'</span>", "<span class=\"s\">'+(txtEj(e)||(e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir))+'</span>")
     rep("(f.desc?Math.max(1,Math.round(x.plan[2]/2))+' × '+x.plan[1]:x.plan[2]+' × '+x.plan[1])+' · '+(o?co(o.w)+' '+x.u:'')", "(f.desc?Math.max(1,Math.round(x.plan[2]/2))+' × '+x.plan[1]:(x.txt||x.plan[2]+' × '+x.plan[1]))+(o?' · '+co(o.w)+' '+x.u:'')")
     rep("if(f.e==='pl')return '<h3>'+tit+'</h3><p class=\"sub\">Planificado: '+GFULL[f.g]+(f.desc?' · semana de descarga':'')+'.</p>';", "if(f.e==='pl')return '<h3>'+tit+'</h3><p class=\"sub\">Planificado: '+GFULL[f.g]+(f.desc?' · semana de descarga':'')+'.</p>'+planLista(dt);")
     rep('</style></head>', CSS + '</style></head>')
