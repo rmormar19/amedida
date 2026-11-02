@@ -43,6 +43,10 @@ def aplicar(s, D):
         "var nx=PANEL?sigTxt(bl,i):(i<bl.h.length-1?(bl.ss?'Vuelta '+(i+2)+' · '+bl.k+'1 '+bl.ej[0].p[i+1][0]+' '+bl.ej[0].u+' × '+bl.ej[0].p[i+1][1]:'Serie '+(i+2)+' · '+bl.ej[0].p[i+1][0]+' '+bl.ej[0].u+' × '+bl.ej[0].p[i+1][1]):'Sigue: '+(BLQ[U.ses.b+1]?BLQ[U.ses.b+1].n:'terminar'));var dz=PANEL?descRow(bl,i):bl.d;if(dz>0)arrancar(dz,nx);else toast(nx);}}")
     rep("n:+q[0]+1,ss:bl.ss?bl.k:null,serie:{peso:pesoTxt(e,x[0]),reps:String(x[1]),rir:String(x[2]),tipo:bl.drop&&+q[0]===2?'drop':''}}",
         "n:serN(e,+q[0]),sub:serSub(e,+q[0]),ss:bl.ss?bl.k:null,serie:{peso:pesoTxt(e,x[0]),reps:String(x[1]),rir:String(x[2]),tipo:''}}")
+    # ---- cardio con zonas como el Monitor ----
+    rep("<span>Zona '+c.zona+' · '+(ZONA_TXT[c.zona]||'')+(c.inclinacion?", "<span>'+(PANEL?zonaTxt(c.zona):'Zona '+c.zona+' · '+(ZONA_TXT[c.zona]||''))+(c.inclinacion?")
+    rep("<span class=\"s\">Zona '+c.zona+(c.cuando?' · '+c.cuando:'')+", "<span class=\"s\">'+(PANEL?zonaTxt(c.zona):'Zona '+c.zona)+(c.cuando?' · '+(CUANDO_TXT[c.cuando]||c.cuando):'')+")
+    rep("<b>'+c.tipo+' · '+c.cant+' min</b>", "<b>'+(String(c.tipo).charAt(0).toUpperCase()+String(c.tipo).slice(1))+' · '+c.cant+(c.modo==='km'?' km':' min')+'</b>")
     rep('</style></head>', CSS + '</style></head>')
     return s
 
@@ -54,6 +58,24 @@ CSS = '''
 .sr.t-d .n{color:var(--ora,#e8933a)}.sr.t-p .n{color:var(--vio,#8b6fe0)}
 .sr .n small{font-size:10px;font-weight:800;margin-left:2px;opacity:.8}
 .sr.na{opacity:.55}.sr.na .nax{grid-column:2/-1;font-size:12.5px;color:var(--tx4)}
+.czx span{display:flex;align-items:center;gap:7px}.czd{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.chip.czc{color:var(--cya);border-color:rgba(79,209,230,.45)}
+.czhero{height:100%;min-height:150px;display:flex;align-items:center;background:radial-gradient(120% 90% at 50% 40%,rgba(79,209,230,.14),transparent 60%),var(--surf2)}
+.czp{stroke-dasharray:1;stroke-dashoffset:1;animation:czT 1.4s .2s cubic-bezier(.6,.1,.2,1) forwards}
+.czline{stroke-dasharray:1;stroke-dashoffset:1;animation:czT 1.1s .15s cubic-bezier(.6,.1,.2,1) forwards}
+.czbar{transform-box:fill-box;transform-origin:bottom;animation:czUp .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes czT{to{stroke-dashoffset:0}}@keyframes czUp{from{transform:scaleY(0)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.czp,.czline{animation:none;stroke-dashoffset:0}.czbar{animation:none}}
+.czk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.czk>div{background:linear-gradient(160deg,var(--surf2),var(--surf));border:1px solid var(--line);border-radius:16px;padding:11px 12px;min-width:0}
+.czk small{display:block;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--tx4);font-weight:700}
+.czk b{display:block;font-size:22px;font-weight:800;letter-spacing:-.5px;margin-top:2px}.czk b em{font-style:normal;font-size:12px;color:var(--tx3);font-weight:700}
+.czk span{display:block;font-size:11.5px;color:var(--tx3);line-height:1.3;margin-top:2px}
+.czleg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--tx3);margin-top:6px}.czleg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:0}
+.czn{margin:10px 0 0;font-size:13px;color:var(--tx2);border-left:3px solid var(--cya);padding:4px 0 4px 10px}
+.czgb{grid-template-columns:88px 1fr 64px}
+.czlink{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;margin-top:12px;text-align:left;cursor:pointer;color:inherit;font:inherit}
+.czlink .ico{color:var(--cya)}.czlink b{display:block}.czlink .s{display:block;font-size:12.5px;color:var(--tx3)}
 .hoyl{margin:2px 0 14px}.hoyl .sx{font-size:13.5px}.hoyl .sx b{white-space:nowrap;font-weight:600}
 .lam0{background:var(--surf2)}
 .ent .img:has(img.sin-modelo),.mapa:has(img.sin-modelo){display:none}

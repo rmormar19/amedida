@@ -1085,6 +1085,24 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .sr.t-d .n{color:var(--ora,#e8933a)}.sr.t-p .n{color:var(--vio,#8b6fe0)}
 .sr .n small{font-size:10px;font-weight:800;margin-left:2px;opacity:.8}
 .sr.na{opacity:.55}.sr.na .nax{grid-column:2/-1;font-size:12.5px;color:var(--tx4)}
+.czx span{display:flex;align-items:center;gap:7px}.czd{width:8px;height:8px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.chip.czc{color:var(--cya);border-color:rgba(79,209,230,.45)}
+.czhero{height:100%;min-height:150px;display:flex;align-items:center;background:radial-gradient(120% 90% at 50% 40%,rgba(79,209,230,.14),transparent 60%),var(--surf2)}
+.czp{stroke-dasharray:1;stroke-dashoffset:1;animation:czT 1.4s .2s cubic-bezier(.6,.1,.2,1) forwards}
+.czline{stroke-dasharray:1;stroke-dashoffset:1;animation:czT 1.1s .15s cubic-bezier(.6,.1,.2,1) forwards}
+.czbar{transform-box:fill-box;transform-origin:bottom;animation:czUp .55s cubic-bezier(.2,.8,.2,1) both}
+@keyframes czT{to{stroke-dashoffset:0}}@keyframes czUp{from{transform:scaleY(0)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){.czp,.czline{animation:none;stroke-dashoffset:0}.czbar{animation:none}}
+.czk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.czk>div{background:linear-gradient(160deg,var(--surf2),var(--surf));border:1px solid var(--line);border-radius:16px;padding:11px 12px;min-width:0}
+.czk small{display:block;font-size:10.5px;letter-spacing:.5px;text-transform:uppercase;color:var(--tx4);font-weight:700}
+.czk b{display:block;font-size:22px;font-weight:800;letter-spacing:-.5px;margin-top:2px}.czk b em{font-style:normal;font-size:12px;color:var(--tx3);font-weight:700}
+.czk span{display:block;font-size:11.5px;color:var(--tx3);line-height:1.3;margin-top:2px}
+.czleg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--tx3);margin-top:6px}.czleg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:0}
+.czn{margin:10px 0 0;font-size:13px;color:var(--tx2);border-left:3px solid var(--cya);padding:4px 0 4px 10px}
+.czgb{grid-template-columns:88px 1fr 64px}
+.czlink{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;margin-top:12px;text-align:left;cursor:pointer;color:inherit;font:inherit}
+.czlink .ico{color:var(--cya)}.czlink b{display:block}.czlink .s{display:block;font-size:12.5px;color:var(--tx3)}
 .hoyl{margin:2px 0 14px}.hoyl .sx{font-size:13.5px}.hoyl .sx b{white-space:nowrap;font-weight:600}
 .lam0{background:var(--surf2)}
 .ent .img:has(img.sin-modelo),.mapa:has(img.sin-modelo){display:none}
@@ -1604,7 +1622,7 @@ function vRnueva(){var n=NOTIFS[U.rn]||NOTIFS[0];if(!n)return '<p class="sub">Si
  return '<div class="hd"><span class="ey">'+hhmm(n.t)+' · de tu entrenador</span><h1>'+(n.cambio?'Rutina actualizada':'Rutina nueva')+'</h1><p>'+(n.grupo||'Entreno')+' · '+n.ejercicios.length+' ejercicios · para '+n.dia+'</p></div>'+
   '<section class="card"><div class="ct"><h3>'+(n.grupo||'Entreno')+'</h3><span class="chip ac">'+n.dia+'</span></div><div class="lista" style="margin-top:6px">'+
   n.ejercicios.map(function(e,i){var lf=lamDe(e.n),nk=NOTIFS.indexOf(n);return '<'+(lf?'button type="button" data-a="ficha" data-v="'+lf+'|n'+nk+'-'+i+'"':'div')+' class="rnx'+(lf?' tq':'')+'" style="animation-delay:'+(i*70)+'ms">'+(lf?'<span class="rnl">'+lamina(lf,e.n)+(esAnim(lf)?'<i>'+ICPLAY+'</i>':'')+'</span>':'<span class="rnn">'+(i+1)+'</span>')+'<span><b>'+e.n+'</b><span class="s">'+(txtEj(e)||(e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir))+'</span></span>'+(lf?I.der:'')+'</'+(lf?'button':'div')+'>';}).join('')+'</div></section>'+
-  (n.cardio&&n.cardio.length?'<section class="card"><div class="ct"><h3>Cardio</h3></div>'+n.cardio.map(function(c){return '<div class="rnx"><span class="rnn">♥</span><span><b>'+c.tipo+' · '+c.cant+(c.modo==='km'?' km':' min')+'</b><span class="s">Zona '+c.zona+(c.cuando?' · '+c.cuando:'')+(c.inclinacion?' · inclinación '+c.inclinacion:'')+'</span></span></div>';}).join('')+'</section>':'')+'<p class="mu" style="font-size:12.5px;margin:10px 2px 0">Tocá un ejercicio para ver cómo se hace. Ya quedó cargada en tu calendario. El día que te toca aparece en Hoy con el botón para empezar.</p><div class="bajo"><button type="button" class="sec" data-a="tab" data-v="hoy">Más tarde</button><button type="button" class="pri" data-a="rnOk">Entendido</button></div>';}
+  (n.cardio&&n.cardio.length?'<section class="card"><div class="ct"><h3>Cardio</h3></div>'+n.cardio.map(function(c){return '<div class="rnx"><span class="rnn">♥</span><span><b>'+c.tipo+' · '+c.cant+(c.modo==='km'?' km':' min')+'</b><span class="s">'+(PANEL?zonaTxt(c.zona):'Zona '+c.zona)+(c.cuando?' · '+(CUANDO_TXT[c.cuando]||c.cuando):'')+(c.inclinacion?' · inclinación '+c.inclinacion:'')+'</span></span></div>';}).join('')+'</section>':'')+'<p class="mu" style="font-size:12.5px;margin:10px 2px 0">Tocá un ejercicio para ver cómo se hace. Ya quedó cargada en tu calendario. El día que te toca aparece en Hoy con el botón para empezar.</p><div class="bajo"><button type="button" class="sec" data-a="tab" data-v="hoy">Más tarde</button><button type="button" class="pri" data-a="rnOk">Entendido</button></div>';}
 var HOJAS_EXTRA=function(h){var s='';
  if(h.t==='cola')s='<h2>Cambios para el panel</h2><p class="sub">Quedan guardados en el celular y se mandan cuando conectemos la app al panel.</p><div class="lista" style="margin-top:8px">'+(COLA.length?COLA.slice(0,30).map(function(c){return '<div class="sx"><span>'+c.txt+'</span><b class="mu" style="font-weight:500">'+hhmm(c.t)+'</b><span></span></div>';}).join(''):'<p class="sub" style="padding:12px 0">No hay cambios pendientes.</p>')+'</div><button type="button" class="pri full" style="margin-top:12px" data-a="cerrar">Listo</button>';
  if(h.t==='notifs')s='<h2>Notificaciones</h2><div class="lista" style="margin-top:8px">'+(NOTIFS.length?NOTIFS.map(function(n,i){return '<button type="button" class="fila" data-a="abrirNotif" data-v="'+i+'"><span class="ico">'+I.campana+'</span><span><b>'+n.titulo+'</b><span class="s">'+n.cuerpo+' · '+hhmm(n.t)+'</span></span>'+(n.leida?'<span></span>':'<span class="ndot"></span>')+'</button>';}).join(''):'<p class="sub" style="padding:12px 0">Todavía no tenés notificaciones. Cuando tu entrenador te cargue una rutina, te llega acá.</p>')+'</div><button type="button" class="pri full" style="margin-top:12px" data-a="cerrar">Listo</button>';
@@ -1838,7 +1856,7 @@ try{if(GUARDA){var cdg=JSON.parse(localStorage.getItem('amedida-cardio-v1')||'nu
 function guardarCardio(){if(GUARDA)try{localStorage.setItem('amedida-cardio-v1',JSON.stringify({dia:hoyISO(),c:CARDIO}));}catch(e){}}
 var ZONA_TXT={1:'muy suave',2:'ritmo cómodo: podés hablar',3:'exigente: frases cortas'};
 function bloqueCardio(){if(!CARDIO.length)return '';return '<div class="bk" style="margin-top:18px"><b>Cardio</b><span>'+CARDIO[0].cuando+'</span></div>'+CARDIO.map(function(c,i){var hecho=c.estado==='hecho';
- return '<div class="cdx'+(hecho?' h':'')+'"><div class="cdt"><b>'+c.tipo+' · '+c.cant+' min</b><span>Zona '+c.zona+' · '+(ZONA_TXT[c.zona]||'')+(c.inclinacion?' · inclinación '+c.inclinacion:'')+'</span></div>'+
+ return '<div class="cdx'+(hecho?' h':'')+'"><div class="cdt"><b>'+(String(c.tipo).charAt(0).toUpperCase()+String(c.tipo).slice(1))+' · '+c.cant+(c.modo==='km'?' km':' min')+'</b><span>'+(PANEL?zonaTxt(c.zona):'Zona '+c.zona+' · '+(ZONA_TXT[c.zona]||''))+(c.inclinacion?' · inclinación '+c.inclinacion:'')+'</span></div>'+
   '<div class="cdi"><label>Minutos<input inputmode="numeric" data-cd="minReal" data-i="'+i+'" placeholder="'+c.cant+'" value="'+(c.minReal||'')+'"></label><label>FC promedio<input inputmode="numeric" data-cd="fc" data-i="'+i+'" placeholder="lpm" value="'+(c.fc||'')+'"></label><button type="button" class="ok" data-a="cdOk" data-v="'+i+'" aria-label="Marcar cardio hecho">'+I.chk+'</button></div>'+
   '<p class="cdn">La FC promedio la ves en el reloj o la cinta al terminar. Con eso tu entrenador ve en qué zona trabajaste.</p></div>';}).join('');}
 document.addEventListener('input',function(ev){var t=ev.target;if(!t.dataset||t.dataset.cd==null)return;CARDIO[+t.dataset.i][t.dataset.cd]=t.value.trim();guardarCardio();});
@@ -2485,14 +2503,17 @@ function serN(e,i){var r=filaDe(e,i);return r&&r.si>=0?r.si+1:i+1;}
 function serSub(e,i){var r=filaDe(e,i);return r&&r.sub?r.sub:null;}
 function efIdx(e){if(!e||!e.rt)return 0;for(var i=0;i<e.rt.length;i++)if(e.rt[i].t==='ef'||e.rt[i].t==='rp')return i;return 0;}
 hechas=function(){var h=0,t=0;BLQ.forEach(function(b){b.h.forEach(function(r){r.forEach(function(x){if(x&&x.na)return;t++;if(x)h++;});});});return [h,t];};
-function firmaDia(dd){return dd?JSON.stringify([dd.grupo,(dd.ejercicios||[]).map(function(e){return [e.nombre,e.ss||'',(e.series||[]).map(function(s){return s?[s.peso,s.reps,s.rir,s.tipo||'',(s.drops||[]).length,(s.rp||[]).length]:0;})];})]):'';}
+function firmaDia(dd){return dd?JSON.stringify([dd.grupo,(dd.ejercicios||[]).map(function(e){return [e.nombre,e.ss||'',(e.series||[]).map(function(s){return s?[s.peso,s.reps,s.rir,s.tipo||'',(s.drops||[]).length,(s.rp||[]).length]:0;})];}),(dd.cardio||[]).map(function(z){return z?[z.tipo,z.cant,z.modo,z.zona,z.cuando]:0;})]):'';}
 
 /* el día de la sesión: hoy si toca; si no, el próximo de la semana que esté pendiente */
 /* la semana del panel cierra el domingo 06:00: desde ese momento la rutina cargada es la de la semana que empieza el lunes */
 function lunesOp(d){var x=new Date(d);if(x.getDay()===0&&x.getHours()>=6)x.setDate(x.getDate()+1);var m=lunes(x);return new Date(m.getFullYear(),m.getMonth(),m.getDate());}
 function LUNH(){return PANEL&&PANEL.lun?PANEL.lun:lunesOp(new Date());}
 function fechaDia(d,lun){var i=iDia(d.dia),f=new Date(lun);f.setDate(lun.getDate()+((i+6)%7));return f;}
-function diaSesion(c){var lun=lunesOp(new Date()),r=(c.rutina||[]).filter(function(d){return (d.ejercicios||[]).some(function(e){return e.nombre;})&&!d.libre&&iDia(d.dia)>=0;});
+function tieneDia(d){return !!d&&((d.ejercicios||[]).some(function(e){return e&&e.nombre;})||(d.cardio||[]).some(function(z){return z&&z.tipo;}));}
+function soloCardio(d){return !!d&&!(d.ejercicios||[]).some(function(e){return e&&e.nombre;})&&(d.cardio||[]).some(function(z){return z&&z.tipo;});}
+function grupoDia(d){return soloCardio(d)?(d.grupo||'Cardio'):d.grupo;}
+function diaSesion(c){var lun=lunesOp(new Date()),r=(c.rutina||[]).filter(function(d){return tieneDia(d)&&!d.libre&&iDia(d.dia)>=0;});
  var hoy=r.filter(function(d){return +fechaDia(d,lun)===+HOYC;})[0];if(hoy)return {d:hoy,hoy:true};
  var prox=r.filter(function(d){return +fechaDia(d,lun)>+HOYC&&d.estado!=='verde'&&d.estado!=='rojo';}).sort(function(a,b){return fechaDia(a,lun)-fechaDia(b,lun);})[0];
  return prox?{d:prox,hoy:false}:null;}
@@ -2501,11 +2522,11 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
  var t=new Date();HOYC=new Date(t.getFullYear(),t.getMonth(),t.getDate());if(window.CST_CACHE)for(var kc in CST_CACHE)delete CST_CACHE[kc];
  var antes=PANEL?PANEL.firmas:{};
  /* grupos del panel */
- var dias=(c.rutina||[]).filter(function(d){return (d.ejercicios||[]).some(function(e){return e.nombre;});}),gi=0;
+ var dias=(c.rutina||[]).filter(tieneDia),gi=0;
  GRP={};var firmas={};
  (c.historial||[]).forEach(function(h){(h.rutina||[]).forEach(function(d){var k=gKey(d.grupo);if((d.ejercicios||[]).length&&!GCOL[k]){GCOL[k]=GPAL[(gi++)%GPAL.length];GFULL[k]=d.grupo||k;GSER[k]=GSER[k]||12;GMIN[k]=GMIN[k]||40;}});});
- dias.forEach(function(d){var k=gKey(d.grupo),i=iDia(d.dia);firmas[nrmP(d.dia)]=firmaDia(d);
-  if(!GCOL[k])GCOL[k]=GPAL[(gi++)%GPAL.length];GFULL[k]=d.grupo||k;
+ dias.forEach(function(d){var k=gKey(grupoDia(d)),i=iDia(d.dia);firmas[nrmP(d.dia)]=firmaDia(d);
+  if(!GCOL[k])GCOL[k]=soloCardio(d)?'var(--cya)':GPAL[(gi++)%GPAL.length];GFULL[k]=grupoDia(d)||k;
   var ns=0;(d.ejercicios||[]).forEach(function(e){ns+=seriesP(e).length;});GSER[k]=ns||GSER[k]||12;GMIN[k]=Math.round((ns||12)*3);
   if(i>=0&&!d.libre)GRP[i]=k;});
  /* calendario: faltas, días libres y días que pasaron sin registrar */
@@ -2514,7 +2535,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
  var marcar=function(mon,lista,actual){(lista||[]).forEach(function(d){var i=iDia(d.dia);if(i<0)return;var f=new Date(mon);f.setDate(mon.getDate()+((i+6)%7));var k=kd(f);
    if(d.libre){MOVS[k]={libre:true};return;}
    if(d.estado==='rojo')CALX[k]={e:'fa',o:'Faltó'};
-   else if(actual&&d.estado!=='verde'&&+f<+HOYC&&(d.ejercicios||[]).length)CALX[k]={e:'fa',o:'Sin registrar en la app'};});};
+   else if(actual&&d.estado!=='verde'&&+f<+HOYC&&tieneDia(d))CALX[k]={e:'fa',o:'Sin registrar en la app'};});};
  (c.historial||[]).forEach(function(h){var m=lunesOp(new Date(h.fecha));if(+m!==+lunH)marcar(m,h.rutina,false);});
  marcar(lunH,c.rutina,true);
  (c.observaciones||[]).forEach(function(o){var m=String(o.texto||'').match(/viaje|vacacion/i);if(!m||!/^\d{4}-\d{2}-\d{2}/.test(o.fecha||''))return;});
@@ -2526,7 +2547,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
   nuevo.forEach(function(b){b.ej.forEach(function(e,k){viejo.forEach(function(bo){bo.ej.forEach(function(eo,ko){if(eo.id===e.id)b.h.forEach(function(r,s){if(bo.h[s]&&bo.h[s][ko])r[k]=bo.h[s][ko];});});});});});}
  BLQ.length=0;nuevo.forEach(function(b){BLQ.push(b);});if(U.ses&&U.ses.b>=BLQ.length)U.ses.b=0;DIA_SES=ses?ses.dia:'';
  /* cardio del día, tal como lo cargó el panel */
- if(window.CARDIO){CARDIO.length=0;(ses&&ses.cardio||[]).forEach(function(z){if(z&&z.tipo)CARDIO.push({tipo:z.tipo,modo:z.modo||'min',cant:z.cant||'',zona:z.zona||'',inclinacion:z.inclinacion||'',velocidad:z.velocidad||'',cuando:z.cuando||'al final',minReal:z.minReal||'',fc:z.fc||'',estado:z.estado||''});});}
+ if(window.CARDIO){CARDIO.length=0;(ses&&ses.cardio||[]).forEach(function(z){if(z&&z.tipo)CARDIO.push({tipo:z.tipo,modo:z.modo||'min',cant:z.cant||'',zona:z.zona||'',inclinacion:z.inclinacion||'',velocidad:z.velocidad||'',cuando:CUANDO_TXT[z.cuando]||z.cuando||'al final',minReal:z.minReal||'',fc:z.fc||'',estado:z.estado||''});});}
  PANEL={c:c,ses:ses,hoy:ds&&ds.hoy,firmas:firmas,lun:lunH};
  try{setModelo((c.datos&&c.datos.sexo)||(window.REAL&&REAL.g)||'');}catch(e){}
  if(primera&&U.cal){U.cal.sel=kd(HOYC);U.cal.mes=HOYC.getMonth();U.cal.mx=Math.max(U.cal.mx||0,HOYC.getMonth());}
@@ -2562,10 +2583,11 @@ vHoy=function(){if(!PANEL)return vHoy0();
  var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy()+(window.pushCard?pushCard():'');
  if(ses){var mus={},nej=0,ns=0;(ses.ejercicios||[]).forEach(function(e){if(!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=e.grupo||musculoP(e.nombre);mus[g]=(mus[g]||0)+n;});
   var top=Object.keys(mus).sort(function(a,b){return mus[b]-mus[a];}).slice(0,2);
-  var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(PANEL.hoy?'Empezar sesión':'Adelantar sesión');
-  s+='<section class="card ent"><div class="img"><img src="cuerpo/'+imgG(ses.grupo)+'.webp" alt="Músculos de la sesión resaltados en azul"><span class="chip">'+(PANEL.hoy?'Entreno de hoy':'Próximo · '+ses.dia)+'</span></div><div class="in"><h2>'+(ses.grupo||'Entreno')+'</h2><div class="meta">'+
-   top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+'</span>';}).join('')+'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span><span class="chip">~'+Math.round(ns*3)+' min</span></div>'+
-   '<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+ep.o.replace(/ · drop en la última/,'')+'</b><span></span></div>';}).join('')+'</div>'+
+  var czL=(ses.cardio||[]).filter(function(z){return z&&z.tipo;}),czMin=czL.reduce(function(a,z){return a+(z.modo==='km'?0:(numP(z.cant)||0));},0),sc=!nej&&czL.length;
+  var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(sc?(PANEL.hoy?'Empezar cardio':'Adelantar cardio'):(PANEL.hoy?'Empezar sesión':'Adelantar sesión'));
+  s+='<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':'<img src="cuerpo/'+imgG(ses.grupo)+'.webp" alt="Músculos de la sesión resaltados en azul">')+'<span class="chip">'+(PANEL.hoy?'Entreno de hoy':'Próximo · '+ses.dia)+'</span></div><div class="in"><h2>'+(ses.grupo||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
+   top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+'</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'<span class="chip">~'+Math.round(ns*3+czMin)+' min</span></div>'+
+   '<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+ep.o.replace(/ · drop en la última/,'')+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>'+
    '<button type="button" class="pri full" data-a="'+(U.ses.fin||(U.ses.on&&h[0]===h[1])?'resumen':'sesion')+'">'+btn+'</button></div></section>';}
  else s+='<section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.reloj+'</span><span><b>Hoy descansás</b><span class="s">No tenés más entrenos pendientes esta semana.</span></span><span></span></div></section>';
  /* semana */
@@ -2622,8 +2644,8 @@ vMed=function(){if(!MEDT)return vMed0();var m=U.med,s='<div class="hd"><div clas
 var diaInfo0=diaInfo;
 diaInfo=function(d){if(!PANEL)return diaInfo0(d);var k=kd(d),m=MOVS[k],t=+d,h=+HOYC,dd=diaDeFecha(d);
  if(m&&m.libre)return {g:null,e:'de',libre:true};
- if(!dd||dd.libre||!(dd.ejercicios||[]).some(function(e){return e&&e.nombre;}))return {g:null,e:'de',libre:!!(dd&&dd.libre)};
- var g=gKey(dd.grupo),e;
+ if(!dd||dd.libre||!tieneDia(dd))return {g:null,e:'de',libre:!!(dd&&dd.libre)};
+ var g=gKey(grupoDia(dd)),e;
  if(t===h)e=dd.estado==='verde'?'ok':(U.ses.on?'cur':'hoy');
  else if(t>h)e=dd.estado==='rojo'?'fa':'pl';
  else e=dd.estado==='rojo'?'fa':(dd.estado==='verde'||!Object.prototype.hasOwnProperty.call(dd,'estado')?'ok':'fa');
@@ -2668,7 +2690,7 @@ FICHAS.gemelosprensa={m:['Gemelos','Sóleo'],p:['Espalda apoyada y piernas casi 
 /* rutina que llega del panel (pantalla «Rutina nueva»): series y repeticiones tal como las cargó el entrenador */
 rutinaDesdePanel=(function(r0){return function(d){var o=r0(d);(o.ejercicios||[]).forEach(function(e,i){var x=(d.ejercicios||[])[i];if(!x)return;var ep=ejP(x);e.txt=ep.o.replace(/ · drop en la última/,'')+(ep.sinPeso||!(pesoEj(ep)>0)?'':' · '+co(pesoEj(ep))+' '+(ep.u==='pl'?'placas':ep.u));e.u=ep.u==='pl'?'placas':ep.u;});return o;};})(rutinaDesdePanel);
 /* lista de ejercicios de un día planificado (calendario) */
-function planLista(dt){if(!PANEL)return '';var L=sesDe(null,dt);if(!L.length)return '';return '<div class="lista" style="margin-top:6px">'+L.map(function(x){return '<div class="sx"><span>'+x.n+'</span><b>'+(x.txt||x.plan[2]+' × '+x.plan[1])+'</b><span></span></div>';}).join('')+'</div>';}
+function planLista(dt){if(!PANEL)return '';var L=sesDe(null,dt),dd=diaDeFecha(dt),cz=cardioLista(dd&&dd.cardio);if(!L.length&&!cz)return '';return '<div class="lista" style="margin-top:6px">'+L.map(function(x){return '<div class="sx"><span>'+x.n+'</span><b>'+(x.txt||x.plan[2]+' × '+x.plan[1])+'</b><span></span></div>';}).join('')+cz+'</div>';}
 /* aductores: lámina animada propia (antes mostraba la de abductores) */
 if(ANIM.indexOf('aductores')<0)ANIM.push('aductores');
 FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almohadillas por dentro de las rodillas.','Arrancá con las piernas abiertas hasta donde te resulte cómodo y sostené 2 segundos.','Cerrá las piernas juntando las almohadillas, sostené 2 segundos y volvé despacio.'],x:['Soltar el peso de golpe al abrir.','Despegar la espalda o la cadera del asiento para ayudarte.']};
@@ -2685,6 +2707,23 @@ function pesoEj(ep){for(var i=0;i<ep.p.length;i++)if(ep.p[i][0]>0)return ep.p[i]
 /* con datos del panel el peso lo decide el entrenador: no se sugiere subir a partir del plan */
 alTope=(function(a0){return function(e){return PANEL?false:a0(e);};})(alTope);
 
+/* ================= cardio: zonas como en el Monitor (FC máx = 208 − 0,7 × edad) ================= */
+var CUANDO_TXT={despues:'después de las pesas',antes:'antes de las pesas',propio:'día aparte',final:'al final'};
+var ZCAR=[{k:'Z1',t:'Suave',a:0,b:.60,c:'#5fb0ff',f:'conversación fluida'},{k:'Z2',t:'Zona de grasa',a:.60,b:.75,c:'#7ef7c0',f:'frases completas'},{k:'Z3',t:'Fuerte',a:.75,b:.85,c:'#ffc069',f:'frases cortas'},{k:'Z3+',t:'Muy fuerte',a:.85,b:9,c:'#ff6f88',f:'respiración muy marcada'}];
+var COL_PICO='#9b82ff';
+function edadP(){var d=PANEL&&PANEL.c&&PANEL.c.datos||{},v=parseInt(d.edad,10);return isNaN(v)?null:v;}
+function betaP(){return !!(PANEL&&PANEL.c&&PANEL.c.datos&&PANEL.c.datos.betabloq);}
+function zonasP(){var e=edadP();if(e==null)return null;var mx=208-0.7*e;return {edad:e,mx:Math.round(mx),pico:[Math.round(mx*.60),Math.round(mx*.65)],z:ZCAR.map(function(q){return {k:q.k,t:q.t,c:q.c,f:q.f,lo:Math.round(mx*q.a),hi:q.b>=9?null:Math.round(mx*q.b)};})};}
+function zonaFC(Z,fc){var j=0;Z.z.forEach(function(q,i){if(i>0&&fc>=q.lo)j=i;});return j;}
+function zIdx(z){var n=parseInt(z,10);return isNaN(n)?1:Math.max(0,Math.min(3,n-1));}
+function zonaTxt(z){var Z=zonasP(),i=zIdx(z),q=ZCAR[i];var r=Z?Z.z[i]:null;return q.k+' · '+q.t.toLowerCase()+(r?' · '+r.lo+(r.hi?'–'+r.hi:'+')+' lpm':'');}
+function cardioLista(L){return (L||[]).filter(function(z){return z&&z.tipo;}).map(function(z){var i=zIdx(z.zona);return '<div class="sx czx"><span><i class="czd" style="background:'+ZCAR[i].c+'"></i>'+z.tipo.charAt(0).toUpperCase()+z.tipo.slice(1)+'</span><b>'+(z.cant||'—')+(z.modo==='km'?' km':' min')+' · '+ZCAR[i].k+'</b><span></span></div>';}).join('');}
+
+/* imagen del entreno cuando el día es sólo cardio: una curva de pulso */
+function czHero(){return '<svg viewBox="0 0 320 150" preserveAspectRatio="none" width="100%" height="100%"><defs><linearGradient id="czg" x1="0" x2="1"><stop offset="0" stop-color="#6e9bff"/><stop offset="1" stop-color="#4fd1e6"/></linearGradient><filter id="czb" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="3"/></filter></defs><path d="M0 92 H92 L104 92 L114 58 L126 124 L138 40 L150 104 L160 92 H320" fill="none" stroke="url(#czg)" stroke-width="7" opacity=".45" filter="url(#czb)"/><path class="czp" d="M0 92 H92 L104 92 L114 58 L126 124 L138 40 L150 104 L160 92 H320" fill="none" stroke="url(#czg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" pathLength="1"/></svg>';}
+/* sesión de un día que es sólo cardio: no hay series, va directo al cardio */
+(function(){var vs0=vSesion;vSesion=function(){if(PANEL&&!BLQ.length)return '<div class="bk"><b>'+(DIA_SES||'Hoy')+' · cardio</b><span>anotá minutos y FC promedio al terminar</span></div>'+bloqueCardio()+bajoSesion(true);return vs0();};})();
+
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */
 var PP={tab:'carga',ej:null,cg:'series'},PM={sel:null};
@@ -2692,12 +2731,13 @@ function semanasP(){if(!PANEL)return [];var c=PANEL.c,L=(c.historial||[]).slice(
  var vis={},out=[];L.forEach(function(w){vis[+w.m]=w;});Object.keys(vis).sort(function(a,b){return a-b;}).forEach(function(k){out.push(vis[k]);});
  var lh=LUNH();out=out.filter(function(w){return +w.m!==+lh;});out.push({m:lh,r:c.rutina||[],hoy:true});
  return out.map(function(w){var pl=0,he=0,fa=0,ser=0,rirS=0,rirN=0,esf=[],grp={},car=[];
-  w.r.forEach(function(d){var tiene=(d.ejercicios||[]).some(function(e){return e&&e.nombre;});if(!tiene||d.libre)return;pl++;
+  w.r.forEach(function(d){if(!d.libre&&d.estado!=='rojo')(d.cardio||[]).forEach(function(z){if(z&&z.tipo&&(z.estado==='hecho'||z.minReal||z.fc)){var mn=numP(z.minReal);if(mn==null&&z.modo!=='km')mn=numP(z.cant);car.push({t:String(z.tipo).toLowerCase(),min:mn,fc:numP(z.fc),dia:d.dia,zona:z.zona});}});
+   var tiene=(d.ejercicios||[]).some(function(e){return e&&e.nombre;});if(!tiene||d.libre)return;pl++;
    var hecho=d.estado==='verde'||(!w.hoy&&!Object.prototype.hasOwnProperty.call(d,'estado'));
    if(d.estado==='rojo'){fa++;return;}if(!hecho)return;he++;if(d.esfuerzo)esf.push(d.esfuerzo);
    (d.ejercicios||[]).forEach(function(e){var ss=seriesP(e).filter(function(s){return s.reps||s.peso;});ser+=ss.length;var g=e.grupo||musculoP(e.nombre);grp[g]=(grp[g]||0)+ss.length;
     ss.forEach(function(s){var r=numP(s.rir);if(r!=null){rirS+=r;rirN++;}});});
-   (d.cardio||[]).forEach(function(z){if(z&&(z.estado==='hecho'||z.minReal))car.push({t:z.tipo,min:numP(z.minReal)||numP(z.cant),fc:numP(z.fc),dia:d.dia});});});
+   });
   return {m:w.m,lab:w.m.getDate()+' '+MESC[w.m.getMonth()],hoy:!!w.hoy,r:w.r,pl:pl,he:he,fa:fa,ser:ser,rir:rirN?Math.round(rirS/rirN*10)/10:null,esf:esf,grp:grp,car:car};});}
 /* barras simples con etiqueta y valor */
 function barP(vals,labs,o){o=o||{};var W=330,H=150,L=8,R=8,T=18,B=24,n=vals.length,mx=Math.max.apply(null,vals.map(function(v){return v||0;}).concat([o.max||1])),dx=(W-L-R)/Math.max(1,n),w=Math.min(26,dx*.62),g='';
@@ -2709,7 +2749,7 @@ function barP(vals,labs,o){o=o||{};var W=330,H=150,L=8,R=8,T=18,B=24,n=vals.leng
 function lineaP(vals,labs,o){var v=[],l=[];vals.forEach(function(x,i){if(x!=null){v.push(x);l.push(labs[i]);}});
  if(v.length<2)return '<p class="sub" style="margin:10px 0">'+(v.length?'Una sola semana con dato: el gráfico aparece desde la segunda.':'Todavía sin datos.')+'</p>';return linea(v,l,o);}
 var ESFC={liviano:'var(--grn)',moderado:'var(--yel)',duro:'var(--red)'};
-function ppTabs(){return '<div class="seg" role="tablist" style="margin:2px 0 14px">'+[['carga','Semanas'],['ej','Ejercicios'],['grp','Músculos']].map(function(t){return '<button type="button" role="tab" data-pp="tab:'+t[0]+'" aria-pressed="'+(PP.tab===t[0])+'">'+t[1]+'</button>';}).join('')+'</div>';}
+function ppTabs(){return '<div class="seg" role="tablist" style="margin:2px 0 14px">'+[['carga','Semanas'],['ej','Ejercicios'],['grp','Músculos'],['cz','Cardio']].map(function(t){return '<button type="button" role="tab" data-pp="tab:'+t[0]+'" aria-pressed="'+(PP.tab===t[0])+'">'+t[1]+'</button>';}).join('')+'</div>';}
 /* ---------- Progreso ---------- */
 vPro=function(){if(!PANEL)return vPro0();var S=semanasP(),cer=S.filter(function(w){return !w.hoy;}),pl=0,he=0;cer.forEach(function(w){pl+=w.pl;he+=w.he;});
  var s='<div class="hd"><span class="ey">Tu progreso</span><h1>Progreso</h1><p>'+(cer.length?he+' de '+pl+' sesiones hechas en '+cer.length+' semana'+(cer.length===1?'':'s')+(pl?' · '+Math.round(he/pl*100)+' % de asistencia':''):'Tu progreso aparece acá a medida que entrenes.')+'</p></div>'+ppTabs();
@@ -2721,9 +2761,10 @@ vPro=function(){if(!PANEL)return vPro0();var S=semanasP(),cer=S.filter(function(
   s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Qué tan cerca del fallo</h3></div><p class="sub">Repeticiones que te sobraban en promedio (RIR). Más bajo = más exigente.</p>'+lineaP(S.map(function(w){return w.rir;}),lab,{col:'var(--vio)',aria:'RIR promedio por semana'})+'</section>';
   var hayE=S.some(function(w){return w.esf.length;});
   if(hayE)s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Cómo te sentiste</h3></div><p class="sub">Lo que marcaste al terminar cada sesión.</p><div class="esfw">'+S.map(function(w){return '<div class="esfc"><div class="esfd">'+w.esf.map(function(e){return '<i title="'+e+'" style="background:'+ESFC[e]+'"></i>';}).join('')+'</div><small>'+(w.hoy?'Esta':w.lab)+'</small></div>';}).join('')+'</div><p class="mu" style="font-size:12px;margin:8px 0 0"><i class="esfl" style="background:var(--grn)"></i>liviano <i class="esfl" style="background:var(--yel)"></i>moderado <i class="esfl" style="background:var(--red)"></i>duro</p></section>';
-  var car=[];S.forEach(function(w){w.car.forEach(function(z){car.push({lab:w.hoy?'Esta':w.lab,z:z});});});
-  if(car.length)s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Cardio</h3></div><div class="lista">'+car.slice(-8).reverse().map(function(x){return '<div class="fila" style="padding:8px 0"><span class="ico">♥</span><span><b>'+x.z.t+' · '+(x.z.min||'—')+' min</b><span class="s">'+x.lab+' · '+x.z.dia+(x.z.fc?' · FC '+x.z.fc+' lpm':'')+'</span></span><span></span></div>';}).join('')+'</div></section>';
+  var ncz=0;S.forEach(function(w){ncz+=w.car.length;});
+  if(ncz)s+='<button type="button" class="card czlink" data-pp="tab:cz"><span class="ico">♥</span><span><b>Cardio</b><span class="s">'+ncz+' sesi'+(ncz===1?'ón':'ones')+' anotadas · minutos, tipos y zonas</span></span>'+I.der+'</button>';
  }
+ if(PP.tab==='cz')s+=cardioPro(S,lab);
  if(PP.tab==='grp'){var cerr=cer.slice(-4),G={};cerr.forEach(function(w){Object.keys(w.grp).forEach(function(g){G[g]=(G[g]||0)+w.grp[g];});});
   var ult=cer[cer.length-1],keys=Object.keys(G).sort(function(a,b){return G[b]-G[a];});
   s+='<section class="card"><div class="ct"><h3>Series por músculo</h3></div><p class="sub">Promedio por semana'+(cerr.length?' de las últimas '+cerr.length:'')+'. Entre 10 y 20 es donde progresa la mayoría.</p>'+
@@ -2760,6 +2801,56 @@ function pesoUlt(){var a=(SERIE.peso||[]).filter(function(x){return x!=null;});r
 document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-pp],[data-pm]');if(!b)return;
  if(b.dataset.pm!=null){PM.sel=b.dataset.pm;render();try{document.querySelector('#view').scrollIntoView({block:'start'});}catch(e){}return;}
  var p=b.dataset.pp.split(':'),k=p.shift(),v=p.join(':');if(k==='tab'){PP.tab=v;PP.ej=null;}if(k==='ej')PP.ej=v||null;render();try{irArriba();}catch(e){}});
+
+/* ================= Cardio: minutos por semana, tipos y zonas (mismos colores y zonas que el Monitor) ================= */
+var CZT={caminata:'#6e9bff',cinta:'#5fb0ff',bici:'#4fd1e6','elíptica':'#7ef7c0',eliptica:'#7ef7c0',escalador:'#ffc069',remo:'#a99ad6',trote:'#ff9fb8',natación:'#8fe0c8'};
+function colT(t,i){return CZT[t]||['#6e9bff','#4fd1e6','#7ef7c0','#ffc069','#a99ad6','#ff9fb8'][i%6];}
+function cap1(t){t=String(t||'');return t.charAt(0).toUpperCase()+t.slice(1);}
+function cardioPro(S,lab){var all=[],tipos=[];S.forEach(function(w,wi){w.car.forEach(function(z){all.push({w:wi,lab:lab[wi],z:z});if(tipos.indexOf(z.t)<0)tipos.push(z.t);});});
+ if(!all.length)return '<section class="card"><h3>Cardio</h3><p class="sub">Todavía no anotaste cardio. Cuando tu entrenador te cargue cardio, al terminarlo anotá los minutos y la FC promedio: acá vas a ver cuánto hiciste por semana y en qué zona trabajaste.</p></section>';
+ var Z=zonasP(),beta=betaP(),s='';
+ /* resumen */
+ var est=S[S.length-1],minE=est.car.reduce(function(a,z){return a+(z.min||0);},0),ult4=S.slice(-4),min4=0,n4=0;ult4.forEach(function(w){w.car.forEach(function(z){min4+=z.min||0;n4++;});});
+ var conFC=all.filter(function(x){return x.z.fc;}),obj=conFC.length?zIdx(conFC[conFC.length-1].z.zona):1,enz=Z?conFC.filter(function(x){return zonaFC(Z,x.z.fc)===zIdx(x.z.zona);}).length:null;
+ s+='<div class="czk"><div><small>Esta semana</small><b>'+minE+'<em> min</em></b><span>'+est.car.length+' sesi'+(est.car.length===1?'ón':'ones')+'</span></div><div><small>Últimas 4 semanas</small><b>'+Math.round(min4/Math.max(1,ult4.length))+'<em> min</em></b><span>promedio por semana · '+n4+' sesiones</span></div><div><small>En tu zona</small><b>'+(enz==null||!conFC.length?'—':enz+'<em> de '+conFC.length+'</em>')+'</b><span>'+(Z?'sesiones con FC dentro de la zona pedida':(conFC.length?'falta tu edad en la ficha':'anotá la FC al terminar'))+'</span></div></div>';
+ /* minutos por semana, apilado por tipo */
+ var W=330,H=170,L=8,R=8,T=20,B=26,n=S.length,tot=S.map(function(w){return w.car.reduce(function(a,z){return a+(z.min||0);},0);}),mx=Math.max.apply(null,tot.concat([30])),dx=(W-L-R)/Math.max(1,n),bw=Math.min(24,dx*.62),g='';
+ S.forEach(function(w,i){var x=L+i*dx+dx/2,y0=H-B;tipos.forEach(function(t,ti){var m=w.car.filter(function(z){return z.t===t;}).reduce(function(a,z){return a+(z.min||0);},0);if(!m)return;var h=(H-T-B)*m/mx;g+='<rect class="czbar" style="animation-delay:'+(i*40)+'ms" x="'+(x-bw/2).toFixed(1)+'" y="'+(y0-h).toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="4" fill="'+colT(t,ti)+'"/>';y0-=h;});
+  if(tot[i])g+='<text x="'+x.toFixed(1)+'" y="'+(y0-5).toFixed(1)+'" text-anchor="middle" font-size="10.5" font-weight="700" fill="var(--tx2)">'+tot[i]+'</text>';
+  if(n<=8||i%Math.ceil(n/8)===0||i===n-1)g+='<text x="'+x.toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="'+(w.hoy?'var(--cya)':'var(--tx4)')+'">'+lab[i]+'</text>';});
+ s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Minutos por semana</h3></div><p class="sub">Cuánto cardio hiciste cada semana, por tipo.</p><svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Minutos de cardio por semana">'+g+'</svg><div class="czleg">'+tipos.map(function(t,ti){return '<span><i style="background:'+colT(t,ti)+'"></i>'+cap1(t)+'</span>';}).join('')+'</div></section>';
+ /* tipos de cardio */
+ var porT=tipos.map(function(t,ti){var m=0,k=0;all.forEach(function(x){if(x.z.t===t){m+=x.z.min||0;k++;}});return {t:t,m:m,k:k,c:colT(t,ti)};}).sort(function(a,b){return b.m-a.m;}),mt=Math.max.apply(null,porT.map(function(x){return x.m;}).concat([1]));
+ s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Tipo de cardio</h3></div><p class="sub">Minutos totales de cada uno.</p><div class="gbar">'+porT.map(function(x){return '<div class="gb czgb"><span>'+cap1(x.t)+'</span><div class="gt"><i style="width:'+Math.max(4,x.m/mt*100)+'%;background:'+x.c+'"></i></div><em>'+x.m+' min</em></div>';}).join('')+'</div><p class="mu" style="font-size:12px;margin:8px 0 0">'+porT.map(function(x){return cap1(x.t)+': '+x.k+' sesi'+(x.k===1?'ón':'ones');}).join(' · ')+'</p></section>';
+ /* zonas */
+ s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Zonas de frecuencia cardíaca</h3></div>';
+ if(!conFC.length)s+='<p class="sub">Para ver tus zonas, anotá la FC promedio (lpm) al terminar el cardio: la ves en el reloj o en la máquina.</p>';
+ else{var P=conFC.slice(-12),fcs=P.map(function(x){return x.z.fc;}),lo,hi;
+  if(Z){lo=Math.min(Math.round(Z.mx*.45),Math.min.apply(null,fcs)-6);hi=Math.max(Math.round(Z.mx*.92),Math.max.apply(null,fcs)+8);}else{lo=Math.min.apply(null,fcs)-15;hi=Math.max.apply(null,fcs)+15;}
+  var W2=330,H2=210,L2=34,R2=30,T2=14,B2=30,X=function(i){return L2+14+(P.length===1?(W2-L2-R2-28)/2:i*(W2-L2-R2-28)/(P.length-1));},Y=function(v){return T2+(H2-T2-B2)*(1-(v-lo)/(hi-lo));},q='';
+  q+='<defs><linearGradient id="czl" x1="0" x2="1"><stop offset="0" stop-color="#6e9bff"/><stop offset="1" stop-color="#4fd1e6"/></linearGradient><filter id="czgl" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="2.4"/></filter></defs>';
+  if(Z){Z.z.forEach(function(z,zi){var a=Math.max(lo,zi===0?lo:z.lo),b=Math.min(hi,z.hi==null?hi:z.hi);if(b<=a)return;var on=zi===obj;
+    q+='<rect x="'+L2+'" y="'+Y(b).toFixed(1)+'" width="'+(W2-L2-R2)+'" height="'+(Y(a)-Y(b)).toFixed(1)+'" fill="'+z.c+'" opacity="'+(on?.20:.07)+'"/><text x="'+(W2-R2+4)+'" y="'+((Y(a)+Y(b))/2+3.5).toFixed(1)+'" font-size="10" font-weight="800" fill="'+z.c+'">'+z.k+'</text>';
+    if(zi>0&&z.lo>lo&&z.lo<hi)q+='<line x1="'+L2+'" x2="'+(W2-R2)+'" y1="'+Y(z.lo).toFixed(1)+'" y2="'+Y(z.lo).toFixed(1)+'" stroke="'+z.c+'" stroke-opacity=".35" stroke-dasharray="3 4"/><text x="'+(L2-5)+'" y="'+(Y(z.lo)+3.5).toFixed(1)+'" text-anchor="end" font-size="9.5" fill="var(--tx4)">'+z.lo+'</text>';});
+   q+='<rect x="'+L2+'" y="'+Y(Z.pico[1]).toFixed(1)+'" width="'+(W2-L2-R2)+'" height="'+(Y(Z.pico[0])-Y(Z.pico[1])).toFixed(1)+'" fill="'+COL_PICO+'" opacity=".16"/>';}
+  var pts=P.map(function(x,i){return X(i).toFixed(1)+','+Y(x.z.fc).toFixed(1);}).join(' ');
+  if(P.length>1)q+='<polyline points="'+pts+'" fill="none" stroke="url(#czl)" stroke-width="6" opacity=".35" filter="url(#czgl)"/><polyline class="czline" pathLength="1" points="'+pts+'" fill="none" stroke="url(#czl)" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+  P.forEach(function(x,i){var zi=Z?zonaFC(Z,x.z.fc):null,col=Z?Z.z[zi].c:'#6e9bff',last=i===P.length-1,cx=X(i).toFixed(1),cy=Y(x.z.fc).toFixed(1);
+   if(last)q+='<circle cx="'+cx+'" cy="'+cy+'" r="11" fill="'+col+'" opacity=".22"/>';
+   q+='<circle cx="'+cx+'" cy="'+cy+'" r="'+(last?5.5:4)+'" fill="'+(last?'#e8eef7':col)+'" stroke="'+(last?col:'var(--bg)')+'" stroke-width="'+(last?3:1.5)+'"/>';
+   if(last||P.length<=6)q+='<text x="'+cx+'" y="'+(Y(x.z.fc)-11).toFixed(1)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="var(--tx)">'+x.z.fc+'</text>';
+   if(P.length<=7||i%2===0||last)q+='<text x="'+cx+'" y="'+(H2-14)+'" text-anchor="middle" font-size="9.5" fill="var(--tx4)">'+x.lab+'</text><text x="'+cx+'" y="'+(H2-3)+'" text-anchor="middle" font-size="9" fill="var(--tx4)">'+cap1(x.z.t).slice(0,6)+'</text>';});
+  q+='<text x="'+(L2-5)+'" y="'+(T2+4)+'" text-anchor="end" font-size="9" fill="var(--tx4)">lpm</text>';
+  var u=P[P.length-1],uz=Z?zonaFC(Z,u.z.fc):null,oz=zIdx(u.z.zona);
+  s+='<p class="sub">'+(Z?'Tu FC máx estimada es '+Z.mx+' lpm (a los '+Z.edad+' años). La franja más marcada es la zona que te pidió tu entrenador.':'Falta tu edad en la ficha para calcular tus zonas: pedísela a tu entrenador.')+'</p>';
+  s+='<svg viewBox="0 0 '+W2+' '+H2+'" width="100%" role="img" aria-label="Frecuencia cardíaca de cada sesión de cardio sobre las zonas">'+q+'</svg>';
+  if(Z)s+='<div class="czleg">'+Z.z.map(function(z){return '<span><i style="background:'+z.c+'"></i>'+z.k+' '+(z.hi?(z.lo?z.lo+'–':'<')+z.hi:z.lo+'+')+'</span>';}).join('')+'<span><i style="background:'+COL_PICO+'"></i>quema de grasa '+Z.pico[0]+'–'+Z.pico[1]+'</span></div>';
+  if(beta)s+='<p class="czn">Con tu medicación la FC queda más baja de lo normal: guiate también por cómo respirás ('+ZCAR[oz].f+').</p>';
+  else if(Z&&uz!=null){var r=Z.z[oz];s+='<p class="czn" style="border-color:'+Z.z[uz].c+'">Última sesión: <b>'+u.z.fc+' lpm</b>, '+Z.z[uz].k+' · '+Z.z[uz].t.toLowerCase()+'. '+(uz===oz?'Justo en la zona que te pidió tu entrenador.':(uz<oz?'Quedaste por debajo: para entrar en '+r.k+' tenés que llegar a '+r.lo+' lpm ('+ZCAR[oz].f+').':'Quedaste por encima: bajá un poco el ritmo, en '+r.k+' es hasta '+r.hi+' lpm.'))+'</p>';}}
+ s+='</section>';
+ /* cada sesión */
+ s+='<section class="card" style="margin-top:12px"><h3>Cada sesión</h3><div class="lista">'+all.slice(-10).reverse().map(function(x){var zi=Z&&x.z.fc?zonaFC(Z,x.z.fc):null;return '<div class="fila" style="padding:8px 0"><span class="ico" style="color:'+(zi!=null?Z.z[zi].c:'var(--cya)')+'">♥</span><span><b>'+cap1(x.z.t)+' · '+(x.z.min!=null?x.z.min+' min':'—')+'</b><span class="s">'+(x.lab==='Esta'?'Esta semana':'Semana del '+x.lab)+' · '+String(x.z.dia||'').toLowerCase()+(x.z.fc?' · '+x.z.fc+' lpm':'')+'</span></span>'+(zi!=null?'<span class="chip" style="color:'+Z.z[zi].c+';border-color:'+Z.z[zi].c+'55">'+Z.z[zi].k+'</span>':'<span></span>')+'</div>';}).join('')+'</div></section>';
+ return s;}
 
 /* ================= cliente real: la app conectada al Monitor por el puente =================
    El link que manda Ricky trae ?c=<token>&p=<id del puente>. Con eso la app:
