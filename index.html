@@ -2733,6 +2733,76 @@ function czHero(){return '<svg viewBox="0 0 320 150" preserveAspectRatio="none" 
 /* sesión de un día que es sólo cardio: no hay series, va directo al cardio */
 (function(){var vs0=vSesion;vSesion=function(){if(PANEL&&!BLQ.length)return '<div class="bk"><b>'+(DIA_SES||'Hoy')+' · cardio</b><span>anotá minutos y FC promedio al terminar</span></div>'+bloqueCardio()+bajoSesion(true);return vs0();};})();
 
+/* ================= 27 láminas animadas nuevas (4 nov 2026) =================
+   Van primero en LAMDE (lo más específico arriba). Las que tienen una mujer van en FEM_OK; para las
+   clientas, si la animación es de un hombre y hay una lámina fija con mujer del mismo ejercicio, se usa esa. */
+['cruce','crunch','crunchpeso','crunchpolea','curlmanc','curlmartillo','curlpolea','curlsentado','dominadas','elevpiernas','estocadasmith','flexiones','patadamaq','pecdeck','pecdeckinv','pressbancasmith','pressdecl','pressinclsmith','pressmanc','pressmaq','pressplano','remobarra','remomanc','remomaq','tricbarra','tricpolea','vuelopost'].forEach(function(k){if(ANIM.indexOf(k)<0)ANIM.push(k);});
+['crunch','curlmartillo','curlpolea','curlsentado','elevpiernas','flexiones','patadamaq','pecdeck','pecdeckinv','pressinclsmith','remobarra','remomaq','tricpolea','vuelopost'].forEach(function(k){FEM_OK['laminas/'+k]=1;FEM_OK['laminas_mp4/'+k]=1;});
+LAMDE.unshift(
+ [/press inclinado.*smith|smith.*inclinad/i,'pressinclsmith'],
+ [/press (plano|de banca|banca).*smith|smith.*(press|banca)/i,'pressbancasmith'],
+ [/(estocada|zancada).*smith|smith.*(estocada|zancada)/i,'estocadasmith'],
+ [/declinad/i,'pressdecl'],
+ [/press (plano|de banca|banca) con mancuernas?/i,'pressmanc'],
+ [/press (plano|de banca|banca)/i,'pressplano'],
+ [/press (de )?pecho en m[aá]quina|chest press/i,'pressmaq'],
+ [/pec ?deck invertido|(vuelos?|aperturas?) (posteriores?|invertid[ao]s?) en m[aá]quina/i,'pecdeckinv'],
+ [/pec ?deck|mariposa|aperturas? en m[aá]quina/i,'pecdeck'],
+ [/^(?!press).*(cruce de poleas|apertura.*polea|polea cruzada)/i,'cruce'],
+ [/flexiones de brazos|^flexiones|lagartija/i,'flexiones'],
+ [/dominada/i,'dominadas'],
+ [/remo con barra(?! ?t\b)/i,'remobarra'],
+ [/remo.*m[aá]quina/i,'remomaq'],
+ [/remo.*(unilateral|una mano|mancuerna)/i,'remomanc'],
+ [/remo bajo|remo sentado|remo.*polea/i,'remopolea'],
+ [/femoral sentado/i,'curlsentado'],
+ [/patada.*m[aá]quina/i,'patadamaq'],
+ [/curl martillo/i,'curlmartillo'],
+ [/curl.*polea/i,'curlpolea'],
+ [/^curl de b[ií]ceps$|^curl (de b[ií]ceps )?(alternado )?con mancuernas?$|curl alternado/i,'curlmanc'],
+ [/tr[ií]ceps.*polea.*(nuca|cabeza)/i,'gen_eta'],
+ [/tr[ií]ceps.*unilateral/i,'gen_etu'],
+ [/tr[ií]ceps.*(barra|barrita)/i,'tricbarra'],
+ [/tr[ií]ceps.*(cuerda|polea)/i,'tricpolea'],
+ [/crunch con peso|abdominales? con (peso|disco)/i,'crunchpeso'],
+ [/abdominal.*polea|crunch.*polea/i,'crunchpolea'],
+ [/abdominales colgad|elevaci[oó]n de piernas colgad|colgad.*piernas/i,'elevpiernas'],
+ [/abdominales en (el )?piso|^crunch( en (el )?piso)?$|^abdominales$/i,'crunch'],
+ [/vuelos? posteriores?\b(?! en (polea|m[aá]quina))/i,'vuelopost'],
+ [/vuelos? laterales? con mancuernas?/i,'vuelosmanc']);
+/* clientas: animación de hombre → lámina fija con mujer del mismo ejercicio, si existe */
+var ALT_FEM={cruce:'gen_apc',tricbarra:'gen_etb'};
+lamDe=(function(l0){return function(n){var k=l0(n);return (MUJER&&k&&!FEM_OK['laminas/'+k]&&ALT_FEM[k])?ALT_FEM[k]:k;};})(lamDe);
+(function(F){for(var k in F)if(!FICHAS[k])FICHAS[k]=F[k];})({
+ cruce:{m:['Pectoral','Deltoides anterior'],p:['Poleas altas, un paso adelante y el torso apenas inclinado; codos un poco flexionados.','Juntá las manos al frente y abajo en arco, como abrazando un barril, apretando el pecho.','Volvé abriendo despacio hasta sentir el estiramiento, sin pasar la línea de los hombros.'],x:['Doblar y estirar los codos: se convierte en un press.','Volver rápido y dejar que el peso te tire los brazos hacia atrás.']},
+ crunch:{m:['Recto abdominal'],p:['Boca arriba, rodillas flexionadas y pies apoyados; manos al costado de la cabeza.','Subí despegando los omóplatos del piso, llevando las costillas hacia la cadera.','Bajá despacio sin apoyar del todo la cabeza y volvé a subir.'],x:['Tirar del cuello con las manos.','Subir con impulso hasta sentarte: alcanza con despegar los omóplatos.']},
+ crunchpeso:{m:['Recto abdominal'],p:['Boca arriba, rodillas flexionadas; el disco o la mancuerna sobre el pecho.','Subí despegando los omóplatos, llevando las costillas hacia la cadera.','Bajá controlado sin apoyar la cabeza del todo.'],x:['Tirar del cuello o mover el peso hacia adelante para ayudarte.','Usar tanto peso que el movimiento se vuelve un rebote.']},
+ crunchpolea:{m:['Recto abdominal'],p:['De rodillas frente a la polea alta, la cuerda a los costados de la cabeza.','Enrollá el tronco llevando los codos hacia los muslos; la cadera no se mueve.','Volvé despacio hasta estirar el abdomen, sin soltar la tensión.'],x:['Sentarte sobre los talones y bajar con la cadera en vez de enrollar la espalda.','Tirar con los brazos: las manos quedan fijas junto a la cabeza.']},
+ curlmanc:{m:['Bíceps','Braquial'],p:['De pie, mancuernas a los costados con las palmas hacia adelante.','Flexioná los codos subiendo las mancuernas hacia los hombros, codos pegados al cuerpo.','Bajá despacio hasta estirar los brazos del todo.'],x:['Balancear el cuerpo para subir el peso.','Adelantar los codos al final del recorrido.']},
+ curlmartillo:{m:['Braquial','Braquiorradial','Bíceps'],p:['De pie, mancuernas a los costados con agarre neutro (palmas mirándose).','Flexioná los codos sin girar las muñecas, codos pegados al cuerpo.','Bajá despacio hasta estirar los brazos.'],x:['Balancear el cuerpo para subir el peso.','Girar las muñecas: el agarre queda neutro todo el tiempo.']},
+ curlpolea:{m:['Bíceps'],p:['De frente a la polea baja, agarre supino y codos pegados al costado.','Flexioná los codos subiendo la barra hacia los hombros, sin mover los codos.','Bajá despacio hasta estirar los brazos, sin dejar que la polea te tire.'],x:['Echar el cuerpo hacia atrás para ayudarte.','Separar los codos del cuerpo al subir.']},
+ curlsentado:{m:['Isquiotibiales'],p:['Sentado con la espalda apoyada, el rodillo de arriba sobre los muslos y el de abajo arriba de los talones.','Flexioná las rodillas llevando los talones hacia abajo y atrás todo lo que puedas.','Volvé despacio hasta casi estirar las piernas.'],x:['Despegar la cadera del asiento.','Soltar el peso de golpe en la vuelta.']},
+ dominadas:{m:['Dorsal','Bíceps','Romboides'],p:['Colgado de la barra con agarre un poco más ancho que los hombros y los brazos estirados.','Subí llevando el pecho hacia la barra y los codos hacia abajo, hasta pasar el mentón.','Bajá controlado hasta estirar los brazos del todo.'],x:['Balancearte o patear para subir.','Hacer medio recorrido sin estirar los brazos abajo.']},
+ elevpiernas:{m:['Recto abdominal','Flexores de cadera'],p:['Colgado de la barra, brazos estirados y el cuerpo quieto.','Subí las piernas (rectas o con las rodillas flexionadas) enrollando un poco la pelvis.','Bajá despacio sin balancearte.'],x:['Balancear el cuerpo para subir las piernas.','Subir sólo las piernas sin enrollar la pelvis: trabaja menos el abdomen.']},
+ estocadasmith:{m:['Cuádriceps','Glúteo'],p:['Barra del Smith sobre el trapecio, un pie adelante y el otro atrás en punta.','Bajá la rodilla de atrás hacia el piso con el tronco erguido, hasta que las dos rodillas queden en 90°.','Subí empujando con el talón de adelante.'],x:['Pies en la misma línea: perdés el equilibrio y la rodilla se va hacia adentro.','Empujar con la pierna de atrás.']},
+ flexiones:{m:['Pectoral','Tríceps','Deltoides anterior'],p:['Manos un poco más anchas que los hombros, cuerpo en línea de la cabeza a los talones.','Bajá el pecho hacia el piso con los codos a unos 45° del cuerpo.','Empujá hasta estirar los brazos sin perder la línea.'],x:['Dejar caer la cadera o levantarla.','Abrir los codos en cruz.']},
+ patadamaq:{m:['Glúteo mayor'],p:['Con el pecho y los antebrazos apoyados, el pie en la plataforma de la máquina.','Empujá la pierna hacia atrás y arriba extendiendo la cadera, apretando el glúteo arriba.','Volvé despacio sin apoyar el peso.'],x:['Arquear la zona lumbar para subir más.','Girar la cadera hacia afuera.']},
+ pecdeck:{m:['Pectoral'],p:['Espalda apoyada, brazos abiertos a la altura del pecho y codos apenas flexionados.','Juntá los brazos al frente apretando el pecho.','Volvé abriendo despacio hasta sentir el estiramiento.'],x:['Despegar la espalda del respaldo.','Volver rápido y dejar que el peso te tire hacia atrás.']},
+ pecdeckinv:{m:['Deltoides posterior','Romboides','Trapecio medio'],p:['Sentado de frente al respaldo, brazos al frente a la altura de los hombros.','Abrí los brazos hacia atrás en arco, con los codos apenas flexionados.','Volvé despacio al frente sin soltar la tensión.'],x:['Juntar los omóplatos con fuerza: el trabajo es del hombro de atrás.','Tirar con los brazos doblando los codos.']},
+ pressbancasmith:{m:['Pectoral','Tríceps','Deltoides anterior'],p:['Acostado en el banco con la barra del Smith a la altura del pecho medio; escápulas juntas.','Bajá la barra al pecho con los codos a unos 45°.','Empujá hasta estirar los brazos.'],x:['Rebotar la barra en el pecho.','Despegar la cadera del banco.']},
+ pressdecl:{m:['Pectoral inferior','Tríceps'],p:['En el banco declinado con las piernas trabadas y escápulas juntas.','Bajá la barra a la parte baja del pecho, controlada.','Empujá hasta estirar los brazos.'],x:['Bajar la barra al cuello.','Rebotar la barra en el pecho.']},
+ pressinclsmith:{m:['Pectoral superior','Deltoides anterior','Tríceps'],p:['Banco a 30° debajo de la barra del Smith; escápulas juntas y pies firmes.','Bajá la barra a la parte alta del pecho con los codos a unos 45°.','Empujá hasta estirar los brazos.'],x:['Banco demasiado inclinado: trabaja más el hombro.','Despegar la cadera del banco.']},
+ pressmanc:{m:['Pectoral','Tríceps','Deltoides anterior'],p:['Acostado en el banco, mancuernas a los costados del pecho y escápulas juntas.','Empujá hacia arriba juntando apenas las mancuernas sobre el pecho.','Bajá despacio hasta sentir el estiramiento del pecho.'],x:['Bajar con los codos en cruz.','Chocar las mancuernas arriba.']},
+ pressmaq:{m:['Pectoral','Tríceps','Deltoides anterior'],p:['Asiento regulado para que los agarres queden a la altura del pecho medio; espalda apoyada.','Empujá hasta casi estirar los brazos.','Volvé despacio sin que el peso toque abajo.'],x:['Despegar la espalda del respaldo.','Subir los hombros hacia las orejas.']},
+ pressplano:{m:['Pectoral','Tríceps','Deltoides anterior'],p:['Acostado, ojos debajo de la barra, escápulas juntas y pies firmes en el piso.','Bajá la barra al pecho medio con los codos a unos 45°.','Empujá hasta estirar los brazos.'],x:['Rebotar la barra en el pecho.','Despegar la cadera del banco.']},
+ remobarra:{m:['Dorsal','Romboides','Trapecio medio'],p:['De pie, cadera atrás y tronco inclinado unos 45°, espalda recta y barra colgando.','Tirá la barra hacia el ombligo llevando los codos atrás.','Bajá despacio hasta estirar los brazos.'],x:['Redondear la espalda.','Pararte con el tronco para subir la barra.']},
+ remomanc:{m:['Dorsal','Romboides'],p:['Una mano y una rodilla en el banco, espalda recta; la mancuerna cuelga del otro brazo.','Tirá la mancuerna hacia la cadera llevando el codo atrás y pegado al cuerpo.','Bajá despacio hasta estirar el brazo.'],x:['Girar el tronco para subir el peso.','Tirar hacia el hombro en vez de hacia la cadera.']},
+ remomaq:{m:['Dorsal','Romboides','Trapecio medio'],p:['Pecho apoyado en el soporte y brazos estirados agarrando las asas.','Tirá llevando los codos atrás y juntando los omóplatos.','Volvé despacio hasta estirar los brazos.'],x:['Despegar el pecho del apoyo.','Hacer medio recorrido.']},
+ tricbarra:{m:['Tríceps'],p:['Parado frente a la polea alta, agarrá la barra y pegá los codos al costado del cuerpo.','Extendé los codos hasta estirar del todo los brazos.','Volvé despacio sin despegar los codos.'],x:['Mover los codos hacia adelante y atrás.','Inclinar el cuerpo para empujar con el peso.']},
+ tricpolea:{m:['Tríceps'],p:['De frente a la polea alta, la cuerda en las manos y los codos pegados al cuerpo.','Extendé los codos y abrí la cuerda abajo, al final del recorrido.','Volvé despacio sin despegar los codos.'],x:['Mover los codos.','Inclinar el cuerpo para empujar con el peso.']},
+ vuelopost:{m:['Deltoides posterior','Romboides'],p:['De pie, cadera atrás y tronco casi paralelo al piso; mancuernas colgando.','Abrí los brazos hacia los costados con los codos apenas flexionados, hasta la altura de los hombros.','Bajá despacio.'],x:['Subir el tronco con cada repetición.','Usar tanto peso que tenés que balancearte.']}
+});
+
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */
 var PP={tab:'carga',ej:null,cg:'series'},PM={sel:null};
