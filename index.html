@@ -1118,6 +1118,7 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .gb em{font-style:normal;font-weight:700;text-align:right}
 /* ---------- conectar la app con el link del entrenador ---------- */
 .movb{display:flex;gap:8px;margin-top:12px}.movb .sec{flex:1;min-height:44px}
+.mvw{margin-top:14px}.mvw h4{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--tx2);margin:0 0 7px}.mvw h4 span{font-weight:500;color:var(--tx4)}.mvg{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.mvd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:52px;padding:4px 0;border-radius:12px;border:1px solid var(--line);background:var(--surf2);font-size:10.5px;color:var(--tx3);font-family:inherit}.mvd b{font-size:16px;color:var(--tx);line-height:1.1}.mvd i{width:5px;height:5px;border-radius:50%;display:block;margin-top:2px}.mvd[aria-pressed="true"]{border:2px solid var(--a1);background:rgba(var(--a1rgb),.14)}.mvd[aria-pressed="true"] b{color:var(--a1)}.mvd.off{background:transparent;border-color:transparent;opacity:.45}.mvd.org{opacity:1;border:1px dashed var(--a1)}.mvs{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:11px 13px;border-radius:14px;background:var(--surf2);border:1px solid var(--line)}.mvs b{display:block;font-size:14.5px}.mvs div span{font-size:12px;color:var(--tx3)}
 .fasep{margin:-6px 0 14px;font-size:14.5px;color:var(--tx3)}.fasep b{color:var(--tx);font-weight:700}.fasec.desc{border-color:rgba(79,209,230,.45)}.envc{opacity:.92}.envc.sin{border-color:rgba(239,183,78,.5)}
 .conx{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;padding-top:max(24px,env(safe-area-inset-top))}
 .conx-in{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
@@ -2299,12 +2300,23 @@ function pintarHoja(){var c=document.getElementById('capa'),h=U.hoja;document.do
   '<div class="seg sm" style="margin-top:12px"><button type="button" data-a="comTab" data-v="rec" aria-pressed="'+(h.tab!=='mis')+'">Recientes</button><button type="button" data-a="comTab" data-v="mis" aria-pressed="'+(h.tab==='mis')+'">Mis comidas · '+MISCOM.length+'</button></div>'+(h.tab==='mis'?listaMis(h):'<p class="sub" id="cNo" hidden style="margin:12px 0 0">No encontramos «<b></b>». <button type="button" class="lnk" data-a="comTab" data-v="mis">Guardala en Mis comidas</button></p><div class="lista">'+
   RECIENTES.map(function(r,k){var ya=h.ok&&h.ok[k];return '<div class="it"><div><b>'+r[0]+'</b><span class="s"><u>P '+r[1]+'</u> · C '+r[2]+' · G '+r[3]+' · '+kf(kc(r[1],r[2],r[3]))+' kcal · '+r[4]+'</span></div><button type="button" class="'+(ya?'hecho':'')+'" data-a="sumar" data-v="'+k+'" aria-label="Agregar '+r[0]+'">'+(ya?I.chk:I.mas)+'</button></div>';}).join('')+'</div>');
   var f=Math.max(0,NUT.obj.p-tot().p);s+='<div class="hint">Para llegar a 160 g de proteína te faltan <b>'+f+' g</b>.</div><button type="button" class="pri full" style="margin-top:12px" data-a="cerrar">Listo</button>';}
- if(h.t==='mover'){var fm=diaInfo(dk(h.k)),O=opcionesMover(h.k),rec=fm.e==='fa';
-  s='<h2>'+(rec?'Recuperar ':'Mover ')+GFULL[fm.g]+'</h2><p class="sub">'+(rec?'Faltó el ':'Planificado para el ')+DSEM[dk(h.k).getDay()].toLowerCase()+' '+dk(h.k).getDate()+'. ¿A qué día lo pasás?</p>'+O.map(function(o,j){return '<button type="button" class="op2" data-a="destino" data-v="'+j+'" aria-pressed="'+(h.sel===j)+'"><span class="d">'+DSEM[o.d.getDay()].slice(0,3)+'<b>'+o.d.getDate()+'</b></span><span><b class="t">'+DSEM[o.d.getDay()]+' '+o.d.getDate()+'</b><span class="s">'+o.txt+'</span></span><span class="'+o.est[0]+'">'+o.est[1]+'</span></button>';}).join('')+
-  (rec?'':'<p class="sub" style="margin-top:10px">El día que queda libre no cuenta como falta.</p>')+'<button type="button" class="pri full" style="margin-top:12px" data-a="confMover"'+(O.length?'':' disabled')+'>'+(O.length?(rec?'Recuperar el ':'Mover al ')+DSEM[O[h.sel].d.getDay()].toLowerCase()+' '+O[h.sel].d.getDate():'Sin días libres cerca')+'</button>';}
- if(h.t==='dia'){s=detalleDia(dk(h.k)).replace('<div class="sh">','<div class="sh" style="margin-top:0">');}
- if(h.t==='ses'){var dd=dk(h.k),fi=diaInfo(dd),ss=sesDe(fi.g,dd);s='<h2>'+GFULL[fi.g]+'</h2><p class="sub">'+DSEM[dd.getDay()]+' '+dd.getDate()+' de '+MESES_L[dd.getMonth()]+' · '+GSER[fi.g]+' series</p><div class="lista" style="margin-top:8px">'+ss.map(function(x){return '<div class="sx"><span>'+x.n+'</span><b>'+(x.o?co(x.o.w)+' '+x.u+' × '+x.o.r.join(' · '):'—')+'</b>'+(x.sube?'<span class="chip ok">subió</span>':'<span></span>')+'</div>';}).join('')+'</div><button type="button" class="pri full" style="margin-top:14px" data-a="cerrar">Listo</button>';}
- if(h.t==='var'){var e=BLQ[h.b].ej[h.k];s='<div class="vsheet"><h2>'+e.n+'</h2><p class="sub">Queda guardado para las próximas semanas.</p><div style="margin-top:14px">'+Object.keys(VAR_CAT).filter(function(k){return k!=='banco'||e.v.banco;}).map(function(k){return '<span class="lbl">'+VAR_CAT[k][0]+'</span><div class="op">'+VAR_CAT[k][1].map(function(o){return '<button type="button" data-a="varSel" data-v="'+k+'|'+o+'" aria-pressed="'+(e.v[k]===o)+'">'+o+'</button>';}).join('')+'<button type="button" class="mas" aria-label="Agregar opción">'+I.mas+'</button></div>';}).join('')+'<span class="lbl">Personalizado</span><div class="op"><button type="button" class="mas" aria-label="Agregar opción">'+I.mas+'</button></div></div><button type="button" class="pri full" data-a="cerrar">Listo</button></div>';}
+ if(h.t==='mover'){var fm=diaInfo(dk(h.k)),O=opcionesMover(h.k),rec=fm.e==='fa'||fm.e==='sm',oD=dk(h.k);
+  var L0=lunes(new Date(HOYC)),L0=new Date(L0.getFullYear(),L0.getMonth(),L0.getDate()),W={},dm=function(d){return d.getDate()+'/'+(d.getMonth()+1);};
+  if(new Date().getDay()===0&&new Date().getHours()>=6)L0.setDate(L0.getDate()+7);
+  O.forEach(function(o,j){var sm=o.sem!=null?o.sem:Math.round((+new Date(o.d.getFullYear(),o.d.getMonth(),o.d.getDate()-((o.d.getDay()+6)%7))-+L0)/6048e5);o.sem=sm;(W[sm]=W[sm]||{})[o.k]=j;});
+  if(h.sel>=O.length)h.sel=0;var se=O[h.sel];
+  s='<h2>'+(rec?'Recuperar ':'Mover ')+GFULL[fm.g]+'</h2><p class="sub">'+(rec?'Era el ':'Planificado para el ')+DSEM[oD.getDay()].toLowerCase()+' '+dm(oD)+'. Elegí el día nuevo: esta semana o las que vienen.</p>';
+  var NS=Math.max(1,Object.keys(W).reduce(function(m,x){return Math.max(m,+x+1);},1));
+  for(var sm=0;sm<NS;sm++){var a0=new Date(L0);a0.setDate(L0.getDate()+7*sm);var a6=new Date(a0);a6.setDate(a0.getDate()+6);
+   s+='<div class="mvw"><h4>'+(sm===0?'Esta semana':sm===1?'Semana que viene':'En '+sm+' semanas')+' <span>'+dm(a0)+' – '+dm(a6)+'</span></h4><div class="mvg">';
+   for(var i=0;i<7;i++){var d=new Date(a0);d.setDate(a0.getDate()+i);var kk=kd(d),j=(W[sm]||{})[kk],lb=DSEM[d.getDay()].slice(0,2);
+    if(j!=null){s+='<button type="button" class="mvd" data-a="destino" data-v="'+j+'" aria-pressed="'+(h.sel===j)+'" aria-label="'+DSEM[d.getDay()]+' '+dm(d)+'">'+lb+'<b>'+d.getDate()+'</b></button>';continue;}
+    var fi=+d>=+HOYC||kk===h.k?diaInfo(d):{},dot=fi.g?'<i style="background:'+(GCOL[fi.g]||'var(--tx4)')+'"></i>':'<i></i>';
+    s+='<span class="mvd off'+(kk===h.k?' org':'')+'" aria-hidden="true">'+lb+'<b>'+d.getDate()+'</b>'+dot+'</span>';}
+   s+='</div></div>';}
+  if(se)s+='<div class="mvs"><div><b>'+DSEM[se.d.getDay()]+' '+dm(se.d)+'</b><span>'+se.txt+'</span></div><span class="'+se.est[0]+'">'+se.est[1]+'</span></div>';
+  s+='<p class="sub" style="margin-top:10px;font-size:12.5px">'+(rec?'':'El día que queda libre no cuenta como falta. ')+'Los días con punto ya tienen sesión.'+(se&&se.sem>0?' Tu entrenador lo suma a esa semana.':'')+'</p>';
+  s+='<button type="button" class="pri full" style="margin-top:12px" data-a="confMover"'+(O.length?'':' disabled')+'>'+(se?(rec?'Recuperar el ':'Mover al ')+DSEM[se.d.getDay()].toLowerCase()+' '+dm(se.d):'Sin días libres')+'</button>';} if(h.t==='var'){var e=BLQ[h.b].ej[h.k];s='<div class="vsheet"><h2>'+e.n+'</h2><p class="sub">Queda guardado para las próximas semanas.</p><div style="margin-top:14px">'+Object.keys(VAR_CAT).filter(function(k){return k!=='banco'||e.v.banco;}).map(function(k){return '<span class="lbl">'+VAR_CAT[k][0]+'</span><div class="op">'+VAR_CAT[k][1].map(function(o){return '<button type="button" data-a="varSel" data-v="'+k+'|'+o+'" aria-pressed="'+(e.v[k]===o)+'">'+o+'</button>';}).join('')+'<button type="button" class="mas" aria-label="Agregar opción">'+I.mas+'</button></div>';}).join('')+'<span class="lbl">Personalizado</span><div class="op"><button type="button" class="mas" aria-label="Agregar opción">'+I.mas+'</button></div></div><button type="button" class="pri full" data-a="cerrar">Listo</button></div>';}
  if(h.t==='cola'||h.t==='notifs')s=HOJAS_EXTRA(h);
  if(h.t==='inst')s=hojaInstalar();
  if(h.t==='ficha')s=FICHA(h);
@@ -2549,7 +2561,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
    if(d.estado==='rojo')CALX[k]={e:'fa',o:'Faltó'};
    else if(actual&&d.estado!=='verde'&&+f<+HOYC&&tieneDia(d))CALX[k]={e:'fa',o:'Sin registrar en la app'};});};
  (c.historial||[]).forEach(function(h){var m=lunesOp(new Date(h.fecha));if(+m!==+lunH)marcar(m,h.rutina,false);});
- marcar(lunH,c.rutina,true);movPendMarcas();
+ marcar(lunH,c.rutina,true);movPendMarcas(c);
  (c.observaciones||[]).forEach(function(o){var m=String(o.texto||'').match(/viaje|vacacion/i);if(!m||!/^\d{4}-\d{2}-\d{2}/.test(o.fecha||''))return;});
  /* la sesión */
  var ds=diaSesion(c),ses=ds?ds.d:null,nuevo=ses?blqP(ses):[],viejo=BLQ;
@@ -2624,7 +2636,8 @@ var sesDe0=sesDe;
 function diaDeFecha(d){if(!PANEL)return null;var c=PANEL.c,m=lunes(d),i=d.getDay(),lista=null;m=new Date(m.getFullYear(),m.getMonth(),m.getDate());
  if(+m===+LUNH())lista=c.rutina;else (c.historial||[]).slice().sort(function(a,b){return String(a.fecha).localeCompare(String(b.fecha));}).forEach(function(h){if(+lunesOp(new Date(h.fecha))===+m)lista=h.rutina;});
  return lista?(lista.filter(function(x){return iDia(x.dia)===i;})[0]||null):null;}
-sesDe=function(g,d){if(!PANEL)return sesDe0(g,d);var dd=diaDeFecha(d);
+sesDe=function(g,d){if(!PANEL)return sesDe0(g,d);var dd=diaDeFecha(d),mv=MOVS[kd(d)];
+ if(mv&&mv.g&&mv.de&&!(dd&&tieneDia(dd))){var oD=dk(mv.de),od=+lun0(oD)===+LUNH()&&PANEL.crudo?(PANEL.crudo.rutina||[]).filter(function(x){return iDia(x.dia)===oD.getDay()&&tieneDia(x);})[0]:diaDeFecha(oD);if(od&&tieneDia(od))dd={ejercicios:od.ejercicios,estado:null};}
  if(!dd){var i=d.getDay();dd=(PANEL.c.rutina||[]).filter(function(x){return iDia(x.dia)===i;})[0];if(!dd)return [];dd={ejercicios:dd.ejercicios,estado:''};}
  var pd=new Date(d);pd.setDate(pd.getDate()-7);var prev=diaDeFecha(pd),hecho=dd.estado==='verde'||(dd.estado===undefined&&+d<+HOYC);
  return (dd.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ss=seriesP(e),u=uniP((ss[0]||{}).peso),w=Math.max.apply(null,[0].concat(ss.map(function(s){return numP(s.peso)||0;}))),r=ss.map(function(s){return parseInt(s.reps,10)||0;});
@@ -2657,6 +2670,7 @@ vMed=function(){if(!MEDT)return vMed0();var m=U.med,s='<div class="hd"><div clas
 var diaInfo0=diaInfo;
 diaInfo=function(d){if(!PANEL)return diaInfo0(d);var k=kd(d),m=MOVS[k],t=+d,h=+HOYC,dd=diaDeFecha(d);
  if(m&&m.libre)return {g:null,e:'de',libre:true};
+ if(m&&m.g&&!(dd&&tieneDia(dd))&&t>=h)return {g:m.g,e:t===h?'hoy':'pl',o:'',desc:false,mov:m.de||null,movido:true};
  if(!dd||dd.libre||!tieneDia(dd))return {g:null,e:'de',libre:!!(dd&&dd.libre)};
  var g=gKey(grupoDia(dd)),e;
  if(t===h)e=dd.estado==='verde'?'ok':(U.ses.on?'cur':'hoy');
@@ -2831,34 +2845,47 @@ vHoy=function(){if(PANEL)return vHoyP();var h=vHoy0(),k=h.indexOf('</h1></div>')
 var CLAVE_MOV='amedida-movs';
 function movPend(){try{return JSON.parse(localStorage.getItem(CLAVE_MOV)||'[]')||[];}catch(e){return [];}}
 function movPendGuardar(L){try{localStorage.setItem(CLAVE_MOV,JSON.stringify(L));}catch(e){}}
-function movPendSumar(de,a,g){if(!PANEL)return;var L=movPend();L.push({de:DSEM[de.getDay()],a:DSEM[a.getDay()],deK:kd(de),aK:kd(a),g:g||'',lun:+lunesOp(new Date()),mismo:+lunesOp(de)===+lunesOp(a),t:Date.now()});movPendGuardar(L);
+function movPendSumar(de,a,g){if(!PANEL)return;var L=movPend();L.push({de:DSEM[de.getDay()],a:DSEM[a.getDay()],deK:kd(de),aK:kd(a),g:g||'',lun:+lunesOp(new Date()),mismo:+lunesOp(de)===+lunesOp(a),fut:+lun0(a)>+lunesOp(new Date()),t:Date.now()});movPendGuardar(L);
  try{if(PANEL.crudo)AM_PANEL(PANEL.crudo,{silencio:true});render();}catch(e){}}
 /* recuperar una falta de la semana pasada: el calendario la muestra en el día nuevo hasta que llega del entrenador */
-function movPendMarcas(){movPend().forEach(function(m){if(!m.mismo&&m.aK&&m.g&&!(GRP[dk(m.aK).getDay()]))MOVS[m.aK]={g:m.g,rec:true,de:m.deK};});}
+function lun0(d){var m=lunes(d);return new Date(m.getFullYear(),m.getMonth(),m.getDate());}
+function movPendMarcas(c){var lun=+lunesOp(new Date());movPend().forEach(function(m){if(m.mismo||!m.aK||!m.g)return;var a=dk(m.aK),la=+lun0(a);
+  if(la<lun||(+a<+HOYC&&!m.fut))return;
+  if(la===lun&&c&&(c.rutina||[]).some(function(d){return iDia(d.dia)===a.getDay()&&tieneDia(d);}))return;
+  MOVS[m.aK]={g:m.g,rec:!m.fut,fut:!!m.fut,de:m.deK};});}
 function movPendAplicar(c){var L=movPend();if(!L.length||!c||!c.rutina)return c;var lun=+lunesOp(new Date()),queda=[];
  var r=c.rutina.map(function(d){return Object.assign({},d);});
  var por=function(n){return r.filter(function(d){return nrmP(d.dia)===nrmP(n);})[0];};
- L.forEach(function(m){if(m.lun!==lun||Date.now()-m.t>8*864e5)return;
+ L.forEach(function(m){
+  if(m.fut){var aD=dk(m.aK);if(+aD<+HOYC||Date.now()-m.t>40*864e5)return;
+   if(+lun0(aD)===lun){var a2=por(m.a);if(a2&&tieneDia(a2))return;}          /* llegó la semana y el entrenador ya lo puso */
+   queda.push(m);
+   if(m.lun===lun){var o2=por(m.de);if(o2&&tieneDia(o2))r[r.indexOf(o2)]={dia:o2.dia,libre:true};}   /* el día de origen queda libre ya */
+   return;}
+  if(m.lun!==lun||Date.now()-m.t>8*864e5)return;
   var o=por(m.de),a=por(m.a);
   if(a&&tieneDia(a)&&!(m.mismo&&o&&tieneDia(o)))return;          /* ya lo aplicó el entrenador */
   queda.push(m);
   if(m.mismo&&o&&tieneDia(o)&&!(a&&tieneDia(a))){if(a)r.splice(r.indexOf(a),1);o.dia=m.a;o.estado=null;}});
  movPendGuardar(queda);if(!queda.length)return c;var c2=Object.assign({},c);c2.rutina=r;return c2;}
 var opcionesMover0=opcionesMover;
+var MOV_SEM=4;   /* esta semana y las tres que vienen */
 opcionesMover=function(k){if(!PANEL)return opcionesMover0(k);
- var f=diaInfo(dk(k)),g=f.g,lun=lunesOp(new Date()),fin=new Date(lun);fin.setDate(lun.getDate()+6);var o=[];
+ var f=diaInfo(dk(k)),g=f.g,lun=lunesOp(new Date()),fin=new Date(lun);fin.setDate(lun.getDate()+7*MOV_SEM-1);var o=[],fin0=new Date(lun);fin0.setDate(lun.getDate()+6);
  for(var d=new Date(HOYC);+d<=+fin;d.setDate(d.getDate()+1)){var kk=kd(d);if(kk===k)continue;var fi=diaInfo(d);if(fi.g)continue;
+  if(+d>+fin0){var sm=Math.round((+lun0(d)-+lun)/(7*864e5));o.push({k:kk,d:new Date(d),sem:sm,txt:sm===1?'Semana que viene':'En '+sm+' semanas',est:['chip','Otra semana']});continue;}
   var a=new Date(d);a.setDate(a.getDate()-1);var b=new Date(d);b.setDate(b.getDate()+1);var ga=diaInfo(a).g,gb=diaInfo(b).g;
   var choca=(ga===g&&kd(a)!==k)||(gb===g&&kd(b)!==k);var na=kd(a)===k?'queda libre':(ga||'descanso'),nb=kd(b)===k?'queda libre':(gb||'descanso');
-  o.push({k:kk,d:new Date(d),txt:'Antes: '+na+' · después: '+nb,est:choca?['chip wa','Mismo grupo cerca']:['chip ok','Sin choque']});}
+  o.push({k:kk,d:new Date(d),sem:0,txt:'Antes: '+na+' · después: '+nb,est:choca?['chip wa','Mismo grupo cerca']:['chip ok','Sin choque']});}
  return o;};
 
 /* en el calendario: «Mover a otro día» y «No voy» en los días de esta semana que todavía no entrenó,
    y «Recuperar en otro día» si faltó o quedó sin registrar. Las semanas que vienen las arma el entrenador. */
 var detalleActual0=detalleActual;
 detalleActual=function(dt){var h=detalleActual0(dt);if(!PANEL)return h;var f=diaInfo(dt),k=kd(dt),lun=lunesOp(new Date()),fin=new Date(lun);fin.setDate(lun.getDate()+6);
+ if(f.movido){var od=dk(f.mov);return h+'<p class="sub" style="font-size:12.5px;margin-top:8px">Lo pasaste acá desde el '+DSEM[od.getDay()].toLowerCase()+' '+od.getDate()+'/'+(od.getMonth()+1)+'.'+(+lun0(dt)>+lun?' Tu entrenador lo suma a esa semana.':'')+'</p>';}
  if(!f.g||+dt<+lun||+dt>+fin)return h;var op=opcionesMover(k).length;
- if((f.e==='hoy'||f.e==='pl')&&+dt>=+HOYC)return h+'<div class="movb">'+(op?'<button type="button" class="sec" data-a="mover" data-v="'+k+'">Mover a otro día</button>':'')+'<button type="button" class="sec" data-a="libre" data-v="'+k+'">No voy</button></div>'+(op?'':'<p class="sub" style="font-size:12.5px;margin-top:6px">No quedan días libres esta semana para moverlo.</p>');
+ if((f.e==='hoy'||f.e==='pl')&&+dt>=+HOYC)return h+'<div class="movb">'+(op?'<button type="button" class="sec" data-a="mover" data-v="'+k+'">Mover a otro día</button>':'')+'<button type="button" class="sec" data-a="libre" data-v="'+k+'">No voy</button></div>';
  if((f.e==='fa'||f.e==='sm')&&op)return h+'<div class="movb"><button type="button" class="sec" data-a="mover" data-v="'+k+'">'+I.rep+'Recuperar en otro día</button></div>';
  return h;};
 
