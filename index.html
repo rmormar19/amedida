@@ -1117,6 +1117,7 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .gt{position:relative;height:10px;border-radius:6px;background:var(--surf2)}.gt i{position:absolute;left:0;top:0;bottom:0;border-radius:6px}.gt b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--tx3);opacity:.6}
 .gb em{font-style:normal;font-weight:700;text-align:right}
 /* ---------- conectar la app con el link del entrenador ---------- */
+.movb{display:flex;gap:8px;margin-top:12px}.movb .sec{flex:1;min-height:44px}
 .fasep{margin:-6px 0 14px;font-size:14.5px;color:var(--tx3)}.fasep b{color:var(--tx);font-weight:700}.fasec.desc{border-color:rgba(79,209,230,.45)}.envc{opacity:.92}.envc.sin{border-color:rgba(239,183,78,.5)}
 .conx{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;padding-top:max(24px,env(safe-area-inset-top))}
 .conx-in{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
@@ -1840,7 +1841,9 @@ function anotarDato(ev){var b=ev.target.closest&&ev.target.closest('[data-a]');i
  if(a==='sumar'&&PRE.hoja){var r=RECIENTES[+v],m=NUT.com[PRE.hoja.i];if(r&&!PRE.hoja.ok[v])cola('Comida · '+r[0],paq('comida',{comida:m.n,texto:r[0],p:r[1],c:r[2],g:r[3]}));}
  if(a==='sumarMis'&&PRE.hoja){var r2=MISCOM[+v],m2=NUT.com[PRE.hoja.i];if(r2&&!(PRE.hoja.okm&&PRE.hoja.okm[v]))cola('Comida · '+r2[0],paq('comida',{comida:m2.n,texto:r2[0],p:r2[1],c:r2[2],g:r2[3]}));}
  if(a==='confMover'&&PRE.hoja){var de=dk(PRE.hoja.k),aK=U.cal.sel,aD=dk(aK),g=(MOVS[aK]||{}).g;
-  cola('Entreno movido · '+(GFULL[g]||g||'')+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate(),paq('obs',{texto:'Movió '+(GFULL[g]||g||'el entreno')+' del '+DSEM[de.getDay()].toLowerCase()+' '+de.getDate()+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate()+' (desde la app).',mover:{de:PRE.hoja.k,a:aK,grupo:g}}));}
+  var isoM=function(d){return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);};
+  cola('Entreno movido · '+(GFULL[g]||g||'')+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate(),paq('obs',{texto:'Movió '+(GFULL[g]||g||'el entreno')+' del '+DSEM[de.getDay()].toLowerCase()+' '+de.getDate()+' al '+DSEM[aD.getDay()].toLowerCase()+' '+aD.getDate()+' (desde la app).',mover:{de:PRE.hoja.k,a:aK,fechaDe:isoM(de),fechaA:isoM(aD),grupo:GFULL[g]||g||''}}));
+  if(window.movPendSumar)movPendSumar(de,aD,g);}
  if(a==='libre'){var dl=dk(v);cola('Día libre · '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate(),paq('libre',{dia:DSEM[dl.getDay()],fechaDia:v,libre:true,observacion:{texto:'No va a entrenar el '+DSEM[dl.getDay()].toLowerCase()+' '+dl.getDate()+'/'+(dl.getMonth()+1)+' (lo marcó desde la app).',fecha:hoyISO()}}));}
  if(a==='varSel'&&PRE.hoja){var ev2=BLQ[PRE.hoja.b].ej[PRE.hoja.k];cola('Opción de ejercicio · '+ev2.n+' · '+v.split('|')[1],paq('variante',{ejercicio:ejRef(ev2),agarre:ev2.v.agarre||'',lateralidad:ev2.v.lado||'',banco:ev2.v.banco||''}));}
  if(COLA.length){var t=document.querySelector('[data-a="sync"]');if(t){t.classList.add('sync');t.setAttribute('aria-label',COLA.length+' cambios sin mandar al panel');}}}
@@ -2527,7 +2530,7 @@ function diaSesion(c){var lun=lunesOp(new Date()),r=(c.rutina||[]).filter(functi
  var prox=r.filter(function(d){return +fechaDia(d,lun)>+HOYC&&d.estado!=='verde'&&d.estado!=='rojo';}).sort(function(a,b){return fechaDia(a,lun)-fechaDia(b,lun);})[0];
  return prox?{d:prox,hoy:false}:null;}
 
-window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
+window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crudo=c;c=movPendAplicar(c);
  var t=new Date();HOYC=new Date(t.getFullYear(),t.getMonth(),t.getDate());if(window.CST_CACHE)for(var kc in CST_CACHE)delete CST_CACHE[kc];
  var antes=PANEL?PANEL.firmas:{};
  /* grupos del panel */
@@ -2546,7 +2549,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
    if(d.estado==='rojo')CALX[k]={e:'fa',o:'Faltó'};
    else if(actual&&d.estado!=='verde'&&+f<+HOYC&&tieneDia(d))CALX[k]={e:'fa',o:'Sin registrar en la app'};});};
  (c.historial||[]).forEach(function(h){var m=lunesOp(new Date(h.fecha));if(+m!==+lunH)marcar(m,h.rutina,false);});
- marcar(lunH,c.rutina,true);
+ marcar(lunH,c.rutina,true);movPendMarcas();
  (c.observaciones||[]).forEach(function(o){var m=String(o.texto||'').match(/viaje|vacacion/i);if(!m||!/^\d{4}-\d{2}-\d{2}/.test(o.fecha||''))return;});
  /* la sesión */
  var ds=diaSesion(c),ses=ds?ds.d:null,nuevo=ses?blqP(ses):[],viejo=BLQ;
@@ -2557,7 +2560,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL;
  BLQ.length=0;nuevo.forEach(function(b){BLQ.push(b);});if(U.ses&&U.ses.b>=BLQ.length)U.ses.b=0;DIA_SES=ses?ses.dia:'';
  /* cardio del día, tal como lo cargó el panel */
  if(window.CARDIO){CARDIO.length=0;(ses&&ses.cardio||[]).forEach(function(z){if(z&&z.tipo)CARDIO.push({tipo:z.tipo,modo:z.modo||'min',cant:z.cant||'',zona:z.zona||'',inclinacion:z.inclinacion||'',velocidad:z.velocidad||'',cuando:CUANDO_TXT[z.cuando]||z.cuando||'al final',minReal:z.minReal||'',fc:z.fc||'',estado:z.estado||''});});}
- PANEL={c:c,ses:ses,hoy:ds&&ds.hoy,firmas:firmas,lun:lunH};
+ PANEL={c:c,ses:ses,hoy:ds&&ds.hoy,firmas:firmas,lun:lunH,crudo:crudo};
  try{setModelo((c.datos&&c.datos.sexo)||(window.REAL&&REAL.g)||'');}catch(e){}
  if(primera&&U.cal){U.cal.sel=kd(HOYC);U.cal.mes=HOYC.getMonth();U.cal.mx=Math.max(U.cal.mx||0,HOYC.getMonth());}
  /* medidas */
@@ -2820,6 +2823,44 @@ var faseCard0=faseCard;
 faseCard=function(){if(PANEL)return faseCard0();var v=(location.search.match(/[?&]ver=([a-z]+)/)||[])[1]||'',f=v==='descarga'?{f:'Descarga',s:6,rir:'',desc:true,viaje:true}:{f:'Progresión',s:3,rir:'RIR 2'},P0=PANEL;PANEL={c:{fase:f}};var r='';try{r=faseCard0();}finally{PANEL=P0;}return r;};
 var vHoyP=vHoy;
 vHoy=function(){if(PANEL)return vHoyP();var h=vHoy0(),k=h.indexOf('</h1></div>');return k<0?h:h.slice(0,k+11)+faseCard()+(window.envioCard?envioCard():'')+h.slice(k+11);};
+
+/* ================= 6 nov 2026 · mover el entreno a otro día desde la app =================
+   El cliente elige otro día libre de ESTA semana (desde hoy hasta el domingo). La app lo muestra movido
+   enseguida (también en «Hoy») y el Monitor lo aplica a la rutina cuando sincroniza. Mientras tanto el
+   cambio queda guardado en el celular; cuando la rutina que llega del entrenador ya lo trae, se borra solo. */
+var CLAVE_MOV='amedida-movs';
+function movPend(){try{return JSON.parse(localStorage.getItem(CLAVE_MOV)||'[]')||[];}catch(e){return [];}}
+function movPendGuardar(L){try{localStorage.setItem(CLAVE_MOV,JSON.stringify(L));}catch(e){}}
+function movPendSumar(de,a,g){if(!PANEL)return;var L=movPend();L.push({de:DSEM[de.getDay()],a:DSEM[a.getDay()],deK:kd(de),aK:kd(a),g:g||'',lun:+lunesOp(new Date()),mismo:+lunesOp(de)===+lunesOp(a),t:Date.now()});movPendGuardar(L);
+ try{if(PANEL.crudo)AM_PANEL(PANEL.crudo,{silencio:true});render();}catch(e){}}
+/* recuperar una falta de la semana pasada: el calendario la muestra en el día nuevo hasta que llega del entrenador */
+function movPendMarcas(){movPend().forEach(function(m){if(!m.mismo&&m.aK&&m.g&&!(GRP[dk(m.aK).getDay()]))MOVS[m.aK]={g:m.g,rec:true,de:m.deK};});}
+function movPendAplicar(c){var L=movPend();if(!L.length||!c||!c.rutina)return c;var lun=+lunesOp(new Date()),queda=[];
+ var r=c.rutina.map(function(d){return Object.assign({},d);});
+ var por=function(n){return r.filter(function(d){return nrmP(d.dia)===nrmP(n);})[0];};
+ L.forEach(function(m){if(m.lun!==lun||Date.now()-m.t>8*864e5)return;
+  var o=por(m.de),a=por(m.a);
+  if(a&&tieneDia(a)&&!(m.mismo&&o&&tieneDia(o)))return;          /* ya lo aplicó el entrenador */
+  queda.push(m);
+  if(m.mismo&&o&&tieneDia(o)&&!(a&&tieneDia(a))){if(a)r.splice(r.indexOf(a),1);o.dia=m.a;o.estado=null;}});
+ movPendGuardar(queda);if(!queda.length)return c;var c2=Object.assign({},c);c2.rutina=r;return c2;}
+var opcionesMover0=opcionesMover;
+opcionesMover=function(k){if(!PANEL)return opcionesMover0(k);
+ var f=diaInfo(dk(k)),g=f.g,lun=lunesOp(new Date()),fin=new Date(lun);fin.setDate(lun.getDate()+6);var o=[];
+ for(var d=new Date(HOYC);+d<=+fin;d.setDate(d.getDate()+1)){var kk=kd(d);if(kk===k)continue;var fi=diaInfo(d);if(fi.g)continue;
+  var a=new Date(d);a.setDate(a.getDate()-1);var b=new Date(d);b.setDate(b.getDate()+1);var ga=diaInfo(a).g,gb=diaInfo(b).g;
+  var choca=(ga===g&&kd(a)!==k)||(gb===g&&kd(b)!==k);var na=kd(a)===k?'queda libre':(ga||'descanso'),nb=kd(b)===k?'queda libre':(gb||'descanso');
+  o.push({k:kk,d:new Date(d),txt:'Antes: '+na+' · después: '+nb,est:choca?['chip wa','Mismo grupo cerca']:['chip ok','Sin choque']});}
+ return o;};
+
+/* en el calendario: «Mover a otro día» y «No voy» en los días de esta semana que todavía no entrenó,
+   y «Recuperar en otro día» si faltó o quedó sin registrar. Las semanas que vienen las arma el entrenador. */
+var detalleActual0=detalleActual;
+detalleActual=function(dt){var h=detalleActual0(dt);if(!PANEL)return h;var f=diaInfo(dt),k=kd(dt),lun=lunesOp(new Date()),fin=new Date(lun);fin.setDate(lun.getDate()+6);
+ if(!f.g||+dt<+lun||+dt>+fin)return h;var op=opcionesMover(k).length;
+ if((f.e==='hoy'||f.e==='pl')&&+dt>=+HOYC)return h+'<div class="movb">'+(op?'<button type="button" class="sec" data-a="mover" data-v="'+k+'">Mover a otro día</button>':'')+'<button type="button" class="sec" data-a="libre" data-v="'+k+'">No voy</button></div>'+(op?'':'<p class="sub" style="font-size:12.5px;margin-top:6px">No quedan días libres esta semana para moverlo.</p>');
+ if((f.e==='fa'||f.e==='sm')&&op)return h+'<div class="movb"><button type="button" class="sec" data-a="mover" data-v="'+k+'">'+I.rep+'Recuperar en otro día</button></div>';
+ return h;};
 
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */
