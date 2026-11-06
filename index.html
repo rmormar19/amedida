@@ -2814,6 +2814,13 @@ function faseCard(){var f=PANEL&&PANEL.c&&PANEL.c.fase;if(!f||f.pausa||!f.f)retu
  else{return '<p class="fasep"><b>Semana '+(f.s||'—')+' de 6</b> · '+f.f+(f.rir?' · <span title="Repeticiones que te quedan en reserva al terminar cada serie">objetivo '+f.rir.replace(/\s+/g,' ')+'</span>':'')+'</p>';}
  return '<section class="card fasec'+(f.desc?' desc':'')+'"><div class="fila" style="padding:0"><span class="ico">'+(f.desc?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l6 6 4-4 8 8"></path><path d="M15 16h6v-6"></path></svg>':(I.trofeo||''))+'</span><span><b>'+t+'</b>'+(s?'<span class="s">'+s+'</span>':'')+'</span><span></span></div></section>';}
 
+/* app de prueba (sin link de cliente): muestra la semana del bloque como la vería un cliente.
+   ?ver=descarga → semana de descarga · ?ver=enviado / ?ver=sinred → tarjeta de envíos */
+var faseCard0=faseCard;
+faseCard=function(){if(PANEL)return faseCard0();var v=(location.search.match(/[?&]ver=([a-z]+)/)||[])[1]||'',f=v==='descarga'?{f:'Descarga',s:6,rir:'',desc:true,viaje:true}:{f:'Progresión',s:3,rir:'RIR 2'},P0=PANEL;PANEL={c:{fase:f}};var r='';try{r=faseCard0();}finally{PANEL=P0;}return r;};
+var vHoyP=vHoy;
+vHoy=function(){if(PANEL)return vHoyP();var h=vHoy0(),k=h.indexOf('</h1></div>');return k<0?h:h.slice(0,k+11)+faseCard()+(window.envioCard?envioCard():'')+h.slice(k+11);};
+
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */
 var PP={tab:'carga',ej:null,cg:'series'},PM={sel:null};
@@ -3003,7 +3010,7 @@ function revisarEstado(){if(!REAL||revisandoEstado||!ENVIADO.length)return;revis
  fetch(urlPuente()+'?accion=estado&token='+encodeURIComponent(REAL.token)+'&uids='+encodeURIComponent(ENVIADO.map(function(x){return x.uid;}).join(',')),{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){revisandoEstado=false;
   if(!r||!r.ok){if(r&&r.error==='accion')ESTADO_OK=false;return;}
   var p=r.pend||[],antes=ENVIADO.length;ENVIADO=ENVIADO.filter(function(x){return p.indexOf(x.uid)>=0;});guardarEnviado();if(ENVIADO.length!==antes){try{render();}catch(e){}}}).catch(function(){revisandoEstado=false;});}
-function envioCard(){if(!REAL)return '';var sin=ENV.length,nv=ESTADO_OK?ENVIADO.length:0;if(!sin&&!nv)return '';
+function envioCard(){var sin,nv;if(!REAL){/* app de prueba: ?ver=enviado o ?ver=sinred muestran la tarjeta */var v=(location.search.match(/[?&]ver=([a-z]+)/)||[])[1]||'';if(v==='sinred'){sin=2;nv=0;}else if(v==='enviado'){sin=0;nv=1;}else return '';}else{sin=ENV.length;nv=ESTADO_OK?ENVIADO.length:0;}if(!sin&&!nv)return '';
  var t=sin?(sin===1?'1 cambio sin mandar':sin+' cambios sin mandar'):(nv===1?'1 cambio enviado':nv+' cambios enviados');
  var uno=(sin||nv)===1, s=sin?(uno?'Se manda solo cuando tengas internet. No hace falta anotarlo de nuevo.':'Se mandan solos cuando tengas internet. No hace falta anotarlos de nuevo.'):(uno?'Le llegó a tu entrenador; todavía no lo vio. No hace falta anotarlo de nuevo.':'Le llegaron a tu entrenador; todavía no los vio. No hace falta anotarlos de nuevo.');
  return '<section class="card envc'+(sin?' sin':'')+'"><div class="fila" style="padding:0"><span class="ico">'+(sin?(I.reloj||''):(I.chk||''))+'</span><span><b>'+t+'</b><span class="s">'+s+'</span></span><span></span></div></section>';}
