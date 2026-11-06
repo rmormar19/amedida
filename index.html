@@ -1117,6 +1117,7 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .gt{position:relative;height:10px;border-radius:6px;background:var(--surf2)}.gt i{position:absolute;left:0;top:0;bottom:0;border-radius:6px}.gt b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--tx3);opacity:.6}
 .gb em{font-style:normal;font-weight:700;text-align:right}
 /* ---------- conectar la app con el link del entrenador ---------- */
+.fasep{margin:-6px 0 14px;font-size:14.5px;color:var(--tx3)}.fasep b{color:var(--tx);font-weight:700}.fasec.desc{border-color:rgba(79,209,230,.45)}.envc{opacity:.92}.envc.sin{border-color:rgba(239,183,78,.5)}
 .conx{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px;padding-top:max(24px,env(safe-area-inset-top))}
 .conx-in{width:100%;max-width:380px;display:flex;flex-direction:column;gap:12px}
 .conx-lg b{display:block;font-size:22px;font-weight:800;letter-spacing:-.02em}.conx-lg small{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--tx3)}
@@ -2359,7 +2360,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  case 'instalar':if(PWA.evt){var ev=PWA.evt;PWA.evt=null;ev.prompt();ev.userChoice.then(function(){render();});return;}U.hoja={t:'inst'};break;
  case 'instNo':try{localStorage.setItem('am.inst.no','1');}catch(x){}break;
  case 'cstY':U.cstY=+v;break;
- case 'cdOk':var cx=CARDIO[+v];if(cx.estado==='hecho'){cx.estado='';}else{cx.estado='hecho';if(!cx.minReal)cx.minReal=String(cx.cant);cola('Cardio · '+cx.tipo+' · '+cx.minReal+' min'+(cx.fc?' · FC '+cx.fc:''),paq('cardio',{dia:DIA_SES,tipo:cx.tipo,modo:cx.modo,cant:cx.cant,zona:cx.zona,minReal:cx.minReal,fc:cx.fc,estado:'hecho'}));if(!cx.fc)toast('Si tenés la FC promedio, anotala: tu entrenador ve la zona');}guardarCardio();break;
+ case 'cdOk':var cx=CARDIO[+v];if(cx.estado==='hecho'){cx.estado='';}else{cx.estado='hecho';if(!cx.minReal)cx.minReal=String(cx.cant);cola('Cardio · '+cx.tipo+' · '+cx.minReal+' min'+(cx.fc?' · FC '+cx.fc:''),paq('cardio',{dia:DIA_SES,cardio:cx.tipo,tipo:cx.tipo,modo:cx.modo,cant:cx.cant,zona:cx.zona,minReal:cx.minReal,fc:cx.fc,estado:'hecho'}));if(!cx.fc)toast('Si tenés la FC promedio, anotala: tu entrenador ve la zona');}guardarCardio();break;
  case 'tipOk':ponLS('am.tip.ses','1');break;
  case 'tipRe':ponLS('am.tip.ses','0');U.hoja=null;toast('La ayuda aparece al empezar la sesión');break;
  case 'volverSes':U.pila=['sesion'];irArriba();break;
@@ -2472,7 +2473,7 @@ function phSer(e,i,j){var p=e.p[i]||e.p[e.p.length-1],rf=filaDe(e,i);if(j===1)re
 /* un día del panel → bloques de la sesión (los ejercicios seguidos con la misma superserie van juntos) */
 function blqP(dd){var ej=(dd.ejercicios||[]).filter(function(e){return e&&e.nombre&&String(e.nombre).trim();}),out=[],L=0;
  for(var i=0;i<ej.length;i++){var g=[ej[i]];if(ej[i].ss)while(i+1<ej.length&&ej[i+1].ss&&String(ej[i+1].ss)===String(ej[i].ss))g.push(ej[++i]);
-  var k=String.fromCharCode(65+L++),es=g.map(ejP),ss=es.length>1,pesado=es.some(function(e){return e.u==='kg'&&e.p[0][0]>=40&&e.p[0][1]<=8;});
+  var k=String.fromCharCode(65+L++),es=g.map(ejP),_ix=es.forEach(function(e,q){e.ix=i-g.length+1+q;e.nt=ej.length;}),ss=es.length>1,pesado=es.some(function(e){return e.u==='kg'&&e.p[0][0]>=40&&e.p[0][1]<=8;});
   /* cada fila de la sesión es lo que el cliente anota: aproximación, serie, pausas del rest-pause y drops */
   var RR=g.map(function(x,j){return filasP(x,es[j].u);});
   if(ss){/* superserie: cada serie va con su par; los drops y pausas de uno quedan frente a «no lleva» en el otro */
@@ -2589,7 +2590,7 @@ function proxTxt(dia){var n=nrmP(dia),idx=['domingo','lunes','martes','miercoles
 var vHoy0=vHoy;
 vHoy=function(){if(!PANEL)return vHoy0();
  var t=tot(),h=hechas(),fal={p:NUT.obj.p-t.p},ses=PANEL.ses,c=PANEL.c;
- var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy()+(window.pushCard?pushCard():'');
+ var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy()+faseCard()+(window.envioCard?envioCard():'')+(window.pushCard?pushCard():'');
  if(ses){var mus={},nej=0,ns=0;(ses.ejercicios||[]).forEach(function(e){if(!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=grupoEjP(e);mus[g]=(mus[g]||0)+n;});
   var top=Object.keys(mus).sort(function(a,b){return mus[b]-mus[a];}).slice(0,2);
   var czL=(ses.cardio||[]).filter(function(z){return z&&z.tipo;}),czMin=czL.reduce(function(a,z){return a+(z.modo==='km'?0:(numP(z.cant)||0));},0),sc=!nej&&czL.length;
@@ -2803,6 +2804,16 @@ lamDe=(function(l0){return function(n){var k=l0(n);return (MUJER&&k&&!FEM_OK['la
  vuelopost:{m:['Deltoides posterior','Romboides'],p:['De pie, cadera atrás y tronco casi paralelo al piso; mancuernas colgando.','Abrí los brazos hacia los costados con los codos apenas flexionados, hasta la altura de los hombros.','Bajá despacio.'],x:['Subir el tronco con cada repetición.','Usar tanto peso que tenés que balancearte.']}
 });
 
+/* ================= 6 nov 2026 · integración con el Monitor =================
+   · el ejercicio viaja con su lugar en el día (si el entrenador lo renombra mientras entrenás, igual se ubica);
+   · la fase del bloque la calcula el Monitor y llega con la rutina. */
+ejRef=function(e){var r={id:e.id,nombre:e.n};if(e.ix!=null){r.i=e.ix;r.nt=e.nt;}return r;};
+function faseCard(){var f=PANEL&&PANEL.c&&PANEL.c.fase;if(!f||f.pausa||!f.f)return '';var t,s;
+ if(f.desc){t='Semana de descarga';s=(f.viaje?'Coincide con tu viaje. ':'')+'Esta semana baja la exigencia para que el cuerpo recupere y asimile lo entrenado. Es parte del plan.';}
+ else if(f.vent){t='Semana 6 de 6 · fin del bloque';s='Tu entrenador decide según cómo venís si esta semana es de descarga.';}
+ else{return '<p class="fasep"><b>Semana '+(f.s||'—')+' de 6</b> · '+f.f+(f.rir?' · <span title="Repeticiones que te quedan en reserva al terminar cada serie">objetivo '+f.rir.replace(/\s+/g,' ')+'</span>':'')+'</p>';}
+ return '<section class="card fasec'+(f.desc?' desc':'')+'"><div class="fila" style="padding:0"><span class="ico">'+(f.desc?(I.luna||''):(I.trofeo||''))+'</span><span><b>'+t+'</b>'+(s?'<span class="s">'+s+'</span>':'')+'</span><span></span></div></section>';}
+
 /* ================= Progreso y Medidas completos con los datos del panel =================
    Todo sale de lo registrado (rutina de la semana + semanas cerradas del historial). */
 var PP={tab:'carga',ej:null,cg:'series'},PM={sel:null};
@@ -2978,14 +2989,29 @@ function guardarEnv(){try{localStorage.setItem(CLAVE_ENV,JSON.stringify(ENV));}c
 var enviando=false;
 function enviarPuente(){if(!REAL||enviando||!ENV.length)return;enviando=true;var lote=ENV.slice(0,50);
  fetch(urlPuente(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:REAL.token,items:lote})}).then(function(r){return r.json();}).then(function(r){enviando=false;
-  if(r&&r.ok){var u=r.uids||[];ENV=ENV.filter(function(x){return u.indexOf(x.uid)<0;});guardarEnv();if(ENV.length)setTimeout(enviarPuente,500);}
+  if(r&&r.ok){var u=r.uids||[];ENV.forEach(function(x){if(u.indexOf(x.uid)>=0)ENVIADO.push({uid:x.uid,t:Date.now(),txt:x.txt||''});});ENV=ENV.filter(function(x){return u.indexOf(x.uid)<0;});guardarEnv();guardarEnviado();if(ENV.length)setTimeout(enviarPuente,500);else{try{render();}catch(e){}}}
   else if(r&&r.error==='link')linkInvalido();}).catch(function(){enviando=false;});}
 (function(){var c0=cola;cola=function(t,d){var r=c0.apply(this,arguments);
- if(REAL&&d){ENV.push({uid:Date.now().toString(36)+Math.random().toString(36).slice(2,8),d:JSON.parse(JSON.stringify(d))});guardarEnv();setTimeout(enviarPuente,300);}return r;};})();
+ if(REAL&&d){ENV.push({uid:Date.now().toString(36)+Math.random().toString(36).slice(2,8),d:JSON.parse(JSON.stringify(d)),txt:t||''});guardarEnv();setTimeout(enviarPuente,300);}return r;};})();
+/* 6 nov 2026 · cada dato lleva el momento exacto en que pasó (el Monitor lo ubica en esa semana aunque lo vea días después) */
+(function(){var p0=paq;paq=function(t,o){var r=p0(t,o);if(r&&r.ts==null)r.ts=Date.now();return r;};})();
+/* lo que ya llegó al puente pero tu entrenador todavía no vio (el Monitor lo aplica cuando está abierto) */
+var CLAVE_ENVIADO='amedida-enviado',ENVIADO=[],ESTADO_OK=true;try{ENVIADO=JSON.parse(localStorage.getItem(CLAVE_ENVIADO)||'[]')||[];}catch(e){}
+function guardarEnviado(){var lim=Date.now()-14*864e5;ENVIADO=ENVIADO.filter(function(x){return x&&x.t>lim;}).slice(-200);try{localStorage.setItem(CLAVE_ENVIADO,JSON.stringify(ENVIADO));}catch(e){}}
+var revisandoEstado=false;
+function revisarEstado(){if(!REAL||revisandoEstado||!ENVIADO.length)return;revisandoEstado=true;
+ fetch(urlPuente()+'?accion=estado&token='+encodeURIComponent(REAL.token)+'&uids='+encodeURIComponent(ENVIADO.map(function(x){return x.uid;}).join(',')),{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){revisandoEstado=false;
+  if(!r||!r.ok){if(r&&r.error==='accion')ESTADO_OK=false;return;}
+  var p=r.pend||[],antes=ENVIADO.length;ENVIADO=ENVIADO.filter(function(x){return p.indexOf(x.uid)>=0;});guardarEnviado();if(ENVIADO.length!==antes){try{render();}catch(e){}}}).catch(function(){revisandoEstado=false;});}
+function envioCard(){if(!REAL)return '';var sin=ENV.length,nv=ESTADO_OK?ENVIADO.length:0;if(!sin&&!nv)return '';
+ var t=sin?(sin===1?'1 cambio sin mandar':sin+' cambios sin mandar'):(nv===1?'1 cambio enviado':nv+' cambios enviados');
+ var s=sin?'Se mandan solos cuando tengas internet. No hace falta anotarlos de nuevo.':'Le llegaron a tu entrenador; todavía no los vio. No hace falta anotarlos de nuevo.';
+ return '<section class="card envc'+(sin?' sin':'')+'"><div class="fila" style="padding:0"><span class="ico">'+(sin?(I.reloj||''):(I.chk||''))+'</span><span><b>'+t+'</b><span class="s">'+s+'</span></span><span></span></div></section>';}
 if(REAL){
  setTimeout(function(){var c=null;try{c=JSON.parse(localStorage.getItem(CLAVE_RC)||'null');}catch(e){}if(c){nombreReal(c);AM_PANEL(c,{silencio:true});}traerCliente();enviarPuente();},0);
- setInterval(function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();}},120000);
- document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();}});
+ setInterval(function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();revisarEstado();}},120000);
+ document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();revisarEstado();}});
+ setTimeout(revisarEstado,2500);
  window.addEventListener('online',enviarPuente);
 }
 /* app instalada sin link: pedir el link (en el iPhone la app instalada no comparte lo guardado en Safari) */
