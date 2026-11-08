@@ -3186,12 +3186,13 @@ if(REAL){
 }
 /* app instalada sin link: pedir el link (en el iPhone la app instalada no comparte lo guardado en Safari) */
 (function(){var inst=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone;
- var demo=false;try{demo=localStorage.getItem('amedida-demo')==='1';}catch(e){}
+ var demo=false;try{demo=localStorage.getItem('amedida-demo')==='1'||localStorage.getItem('amedida-prueba')==='1';}catch(e){}
  if(REAL||!inst||demo||window.top!==window)return;
  var d=document.createElement('div');d.className='conx';d.setAttribute('role','dialog');d.setAttribute('aria-label','Conectá tu app');
  d.innerHTML='<div class="conx-in"><span class="conx-lg"><b>A medida</b><small>Entrenamiento integral</small></span><h1>Conectá tu app</h1><p>Pegá acá el link que te mandó tu entrenador por WhatsApp.</p><input id="conxIn" type="url" inputmode="url" autocomplete="off" placeholder="https://rmormar19.github.io/amedida/?c=…" aria-label="Link de tu entrenador"><button type="button" class="pri full" id="conxOk">Conectar</button><button type="button" class="sec full" id="conxDemo">Ver la demo</button><p class="conx-e" id="conxE" role="alert"></p></div>';
  document.body.appendChild(d);
  document.getElementById('conxOk').onclick=function(){var v=document.getElementById('conxIn').value.trim(),m=v.match(/[?&]c=([\w-]{20,})/),n=v.match(/[?&]p=([\w-]{20,})/);
+  if(/[?&]prueba=1/.test(v)){location.href=location.pathname+'?prueba=1';return;}   /* app de prueba de Ricky */
   if(!m||!n){document.getElementById('conxE').textContent='Ese link no es el de la app. Copiá el link completo del mensaje.';return;}
   location.href=location.pathname+'?c='+m[1]+'&p='+n[1];};
  document.getElementById('conxDemo').onclick=function(){try{localStorage.setItem('amedida-demo','1');}catch(e){}d.remove();};})();
