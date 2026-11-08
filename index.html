@@ -2484,7 +2484,7 @@ function imgG(g){var n=nrmP(g);return /pierna|cuadri|glute|femoral|lower|inferio
 var CANON_G={biceps:'Bíceps',triceps:'Tríceps',cuadriceps:'Cuádriceps',gluteo:'Glúteo',gluteos:'Glúteo',aductor:'Aductor',aductores:'Aductor',femoral:'Femoral',femorales:'Femoral',espalda:'Espalda',hombro:'Hombro',hombros:'Hombro',pecho:'Pecho',core:'Core',abdomen:'Core',pantorrilla:'Pantorrilla',pantorrillas:'Pantorrilla',otros:'Otros'};
 function canonG(g){var k=nrmP(g);return CANON_G[k]||String(g||'');}
 function grupoEjP(e){return canonG(e.grupo||musculoP(e.nombre));}
-function musculoP(n){n=nrmP(n);var R=[[/aductor/,'Aductor'],[/abductor/,'Glúteo'],[/gemel|pantorr/,'Pantorrilla'],[/femoral|peso muerto|rumano|isquio/,'Femoral'],[/hip thrust|glute|patada/,'Glúteo'],[/sentadilla|prensa|extension de cuadri|camilla de cuadri|bulgara|zancada|estocada|hack|sissy/,'Cuádriceps'],[/tricep|frances|fondos/,'Tríceps'],[/curl/,'Bíceps'],[/press militar|vuelo|(^| )lateral|frontal|face ?pull|hombro/,'Hombro'],[/press|apertura|pec ?deck|cruce|pecho|flexion/,'Pecho'],[/remo|jalon|dorsal|dominada|pullover/,'Espalda'],[/abdom|crunch|plancha|elevacion de piernas/,'Core']];
+function musculoP(n){n=nrmP(n);var R=[[/aductor/,'Aductor'],[/abductor/,'Glúteo'],[/gemel|pantorr/,'Pantorrilla'],[/femoral|peso muerto|rumano|isquio/,'Femoral'],[/hip thrust|glute|patada/,'Glúteo'],[/sentadilla|prensa|extension de cuadri|camilla de cuadri|bulgara|zancada|estocada|hack|sissy/,'Cuádriceps'],[/tricep|frances|fondos/,'Tríceps'],[/curl/,'Bíceps'],[/press militar|vuelo|(^| )lateral|frontal|face ?pull|hombro/,'Hombro'],[/remo|jalon|dorsal|dominada|pullover/,'Espalda'],[/press|apertura|pec ?deck|cruce|pecho|flexion/,'Pecho'],[/abdom|crunch|plancha|elevacion de piernas/,'Core']];
  for(var i=0;i<R.length;i++)if(R[i][0].test(n))return R[i][1];return 'Otros';}
 function uniP(p){p=String(p||'').toLowerCase();return /placa/.test(p)?'pl':/lb|libra/.test(p)?'lb':'kg';}
 function seriesP(e){return (e.series||[]).filter(function(s){return s&&s.tipo!=='aprox';});}
@@ -3264,8 +3264,40 @@ function clientePrueba(){var t=new Date(),hoy=new Date(t.getFullYear(),t.getMont
  /* sin link de cliente y fuera de la página web, la app es la de prueba de Ricky */
  if(window.top===window)PRUEBA=true;
  if(!PRUEBA)return;
- setTimeout(function(){try{AM_PANEL(clientePrueba(),{silencio:true});render();}catch(e){if(window.console)console.error(e);}},0);})();
+ setTimeout(function(){try{AM_PANEL(pruCargar(),{silencio:true});render();}catch(e){if(window.console)console.error(e);}},0);})();
 (function(r0){render=function(){r0.apply(this,arguments);if(!PRUEBA)return;try{var t=document.querySelector('#top .syt');if(t)t.textContent='Prueba';}catch(e){}};})(render);
+
+/* ===== App de prueba operativa (7 nov 2026): lo que Ricky anota queda guardado en su celular y se ve en la app
+   (sesiones, series, peso y medidas, días libres, solo cardio). La semana se archiva sola cuando empieza otra. Macros: todavía no. ===== */
+var CLAVE_PRU='amedida-prueba-c';
+function pruGuardar(c){try{localStorage.setItem(CLAVE_PRU,JSON.stringify(c));}catch(e){}}
+function pruCargar(){var c=null,lun=+lunesOp(new Date());try{c=JSON.parse(localStorage.getItem(CLAVE_PRU)||'null');}catch(e){}
+ if(!c||c.v!==2){c=clientePrueba();c.v=2;c.lun=lun;pruGuardar(c);return c;}
+ if(c.lun!==lun){var mon=new Date(c.lun),sab=new Date(mon);sab.setDate(mon.getDate()+5);sab.setHours(12);
+  c.historial.push({fecha:sab.toISOString(),rutina:c.rutina});c.historial=c.historial.slice(-16);
+  c.rutina=JSON.parse(JSON.stringify(c.rutina)).filter(function(d){return (d.ejercicios||[]).length||!d.soloCardio;}).map(function(d){
+   if(d.soloCardio&&d.soloCardio.g){d.grupo=d.soloCardio.g;}delete d.soloCardio;delete d.libre;delete d.esfuerzo;delete d.cardio;d.estado=null;return d;}).filter(function(d){return (d.ejercicios||[]).length;});
+  /* los días de solo cardio vuelven a tener su fuerza: se arma de nuevo desde la pauta */
+  var base=clientePrueba().rutina;base.forEach(function(b){if(!c.rutina.some(function(d){return nrmP(d.dia)===nrmP(b.dia);})){b.estado=null;c.rutina.push(b);}});
+  if(c.fase&&!c.fase.desc)c.fase.s=(c.fase.s%6)+1;c.lun=lun;pruGuardar(c);}
+ return c;}
+function pruAplicar(c,d){var dia=function(n){return (c.rutina||[]).filter(function(x){return nrmP(x.dia)===nrmP(n);})[0];},dd;
+ switch(d.tipo){
+  case 'serie':dd=dia(d.dia);if(!dd)return;var e=(dd.ejercicios||[]).filter(function(x){return d.ejercicio&&nrmP(x.nombre)===nrmP(d.ejercicio.nombre);})[0];if(!e)return;
+   var i=Math.max(0,(+d.n||1)-1);e.series=e.series||[];var sr=e.series[i]||(e.series[i]={});if(d.serie){if(d.serie.peso)sr.peso=d.serie.peso;if(d.serie.reps)sr.reps=d.serie.reps;if(d.serie.rir!==''&&d.serie.rir!=null)sr.rir=d.serie.rir;}break;
+  case 'sesion':dd=dia(d.dia);if(dd){dd.estado=d.estado||'verde';if(d.esfuerzo)dd.esfuerzo=d.esfuerzo;}break;
+  case 'libre':dd=dia(d.dia);if(dd){dd.libre=true;dd.estado=null;}break;
+  case 'medidas':var m=c.medidas||(c.medidas={fechas:[],filas:[]}),f0=hoyISO()+'T03:00:00.000Z',k=m.fechas.indexOf(f0);
+   if(k<0){m.fechas.push(f0);k=m.fechas.length-1;m.filas.forEach(function(r){r.valores[k]=null;});}
+   (d.filas||[]).forEach(function(f){var r=m.filas.filter(function(x){return x.nombre===f.nombre;})[0];if(!r){r={nombre:f.nombre,unidad:f.u||'',valores:m.fechas.map(function(){return null;})};m.filas.push(r);}r.valores[k]=numP(f.valor);});break;
+  case 'soloCardio':dd=dia(d.dia);if(!dd)return;var ej=(dd.ejercicios||[]).filter(function(x){return x&&x.nombre;}),g=dd.grupo||'',pasa=!!(d.a&&ej.length);
+   if(pasa){var a=dia(d.a);if(!a){a={dia:d.a,grupo:'',estado:null,ejercicios:[]};c.rutina.push(a);}var tn=(a.ejercicios||[]).some(function(x){return x&&x.nombre;})&&!a.libre;
+    a.ejercicios=(tn?a.ejercicios:[]).concat(JSON.parse(JSON.stringify(ej)));a.grupo=tn?[a.grupo,g].filter(Boolean).join(' + '):g;a.estado=null;delete a.libre;}
+   dd.ejercicios=[];dd.grupo='Cardio';dd.estado='verde';delete dd.libre;
+   dd.cardio=[{tipo:d.cardio,modo:'min',cant:String(d.min),minReal:String(d.min),estado:'hecho',cuando:'propio'}];
+   dd.soloCardio={t:d.cardio,min:d.min,a:pasa?d.a:'',g:g,ej:pasa?[]:ej.map(function(x){return {n:x.nombre};})};break;}}
+(function(c0){cola=function(txt,d){c0.apply(this,arguments);if(!PRUEBA||!d||!d.tipo||d.tipo==='comida')return;
+ try{var c=pruCargar();pruAplicar(c,d);pruGuardar(c);setTimeout(function(){try{AM_PANEL(c,{silencio:true});render();}catch(e){}},0);}catch(e){if(window.console)console.error(e);}};})(cola);
 
 render();
 (function(){var sp=document.getElementById('splash');if(!sp)return;var ya=false,salir=function(){if(ya)return;ya=true;sp.classList.add('out');window.__forzar=true;render();};sp.addEventListener('click',salir);setTimeout(salir,1700);})();
