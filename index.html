@@ -3140,31 +3140,42 @@ function cardioPro(S,lab){var all=[],tipos=[];S.forEach(function(w,wi){w.car.for
 var REAL=null,CLAVE_REAL='amedida-real',CLAVE_ENV='amedida-envios',CLAVE_RC='amedida-real-c';
 (function(){var q=new URLSearchParams(location.search),c=q.get('c'),p=q.get('p'),g=(q.get('g')||'').toLowerCase();
  /* app de prueba de Ricky (7 nov 2026): ?prueba=1 saca el link de cliente guardado en este celular y deja la app con su rutina; abrir un link de cliente la saca del modo prueba */
- try{if(q.get('prueba')==='1'){localStorage.setItem('amedida-prueba','1');[CLAVE_REAL,CLAVE_RC,CLAVE_ENV,'amedida-panel-h','amedida-ses-v1','amedida-notas-v1'].forEach(function(k){localStorage.removeItem(k);});}
+ try{if(q.get('prueba')==='1'){localStorage.setItem('amedida-prueba','1');[CLAVE_REAL,CLAVE_RC,CLAVE_ENV,'amedida-panel-h','amedida-ses-v1','amedida-notas-v1','amedida-baja'].forEach(function(k){localStorage.removeItem(k);});}
   if(c&&p)localStorage.removeItem('amedida-prueba');
   if(localStorage.getItem('amedida-prueba')==='1')return;}catch(e){}
  try{var prev=JSON.parse(localStorage.getItem(CLAVE_REAL)||'null');
   if(c&&p&&/^[\w-]{20,}$/.test(c)&&/^[\w-]{20,}$/.test(p)){
-   if(!prev||prev.token!==c){['amedida-nueva-v1','amedida-notas-v1','amedida-ses-v1','amedida-cardio-v1','amedida-panel-h',CLAVE_ENV,CLAVE_RC].forEach(function(k){localStorage.removeItem(k);});
+   if(!prev||prev.token!==c){['amedida-nueva-v1','amedida-notas-v1','amedida-ses-v1','amedida-cardio-v1','amedida-panel-h',CLAVE_ENV,CLAVE_RC,'amedida-baja'].forEach(function(k){localStorage.removeItem(k);});
     localStorage.setItem(CLAVE_REAL,JSON.stringify({token:c,p:p,g:g}));location.reload();return;}
    if(g&&prev.g!==g){prev.g=g;localStorage.setItem(CLAVE_REAL,JSON.stringify(prev));}}
   REAL=JSON.parse(localStorage.getItem(CLAVE_REAL)||'null');}catch(e){}})();
 function urlPuente(){return 'https://script.google.com/macros/s/'+REAL.p+'/exec';}
 function nombreReal(c){NOMBRE=String(c.nombre||'').trim().split(/\s+/)[0]||NOMBRE;}
 function linkInvalido(){toast('Tu link ya no es válido. Pedile uno nuevo a tu entrenador.');}
+/* 7 nov 2026 · cliente dado de baja (en el Monitor o en Mi negocio): la app queda cerrada con un aviso.
+   Lo anotado queda guardado en el celular: si el entrenador lo reactiva, la app vuelve sola. */
+var CLAVE_BAJA='amedida-baja';
+function bajaPantalla(on){var d=document.getElementById('bajaX');
+ if(!on){if(d)d.remove();return;}
+ if(d)return;d=document.createElement('div');d.id='bajaX';d.className='conx';d.setAttribute('role','dialog');d.setAttribute('aria-label','Tu plan no está activo');
+ d.innerHTML='<div class="conx-in"><span class="conx-lg"><b>A medida</b><small>Entrenamiento integral</small></span><h1>Tu plan no está activo</h1><p>Tu entrenador dio de baja tu plan, así que la app no muestra rutinas ni guarda entrenamientos.</p><p>Si querés volver a entrenar, escribile. Cuando te reactive, la app se abre sola con todo lo que tenías.</p><button type="button" class="sec full" id="bajaRev">Volver a revisar</button></div>';
+ document.body.appendChild(d);
+ document.getElementById('bajaRev').onclick=function(){this.disabled=true;this.textContent='Revisando…';var b=this;trayendo=false;traerCliente(function(){b.disabled=false;b.textContent='Volver a revisar';});};}
+function marcarBaja(on){try{if(on)localStorage.setItem(CLAVE_BAJA,'1');else localStorage.removeItem(CLAVE_BAJA);}catch(e){}bajaPantalla(on);}
 /* lo que viene del puente */
 var trayendo=false;
-function traerCliente(){if(!REAL||trayendo)return;trayendo=true;
- fetch(urlPuente()+'?accion=cliente&token='+encodeURIComponent(REAL.token),{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){trayendo=false;
-  if(!r||!r.ok){if(r&&(r.error==='link'||r.error==='cliente'))linkInvalido();return;}
+function traerCliente(fin){if(!REAL||trayendo)return;trayendo=true;fin=fin||function(){};
+ fetch(urlPuente()+'?accion=cliente&token='+encodeURIComponent(REAL.token),{cache:'no-store'}).then(function(r){return r.json();}).then(function(r){trayendo=false;fin();
+  if(!r||!r.ok){if(r&&(r.error==='baja'||r.error==='cliente'))marcarBaja(true);else if(r&&r.error==='link')linkInvalido();return;}
+  marcarBaja(false);
   var c=r.cliente,txt=JSON.stringify(c),ant=null;try{ant=localStorage.getItem(CLAVE_RC);}catch(e){}
   try{localStorage.setItem(CLAVE_RC,txt);}catch(e){}
-  if(ant===txt&&PANEL)return;nombreReal(c);AM_PANEL(c,{silencio:!PANEL});}).catch(function(){trayendo=false;});}
+  if(ant===txt&&PANEL)return;nombreReal(c);AM_PANEL(c,{silencio:!PANEL});}).catch(function(){trayendo=false;fin();});}
 /* lo que sale hacia el puente: se guarda y se reintenta hasta que llega */
 var ENV=[];try{ENV=JSON.parse(localStorage.getItem(CLAVE_ENV)||'[]')||[];}catch(e){}
 function guardarEnv(){try{localStorage.setItem(CLAVE_ENV,JSON.stringify(ENV));}catch(e){}}
 var enviando=false;
-function enviarPuente(){if(!REAL||enviando||!ENV.length)return;enviando=true;var lote=ENV.slice(0,50);
+function enviarPuente(){if(!REAL||enviando||!ENV.length)return;try{if(localStorage.getItem(CLAVE_BAJA)==='1')return;}catch(e){}enviando=true;var lote=ENV.slice(0,50);
  fetch(urlPuente(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({token:REAL.token,items:lote})}).then(function(r){return r.json();}).then(function(r){enviando=false;
   if(r&&r.ok){var u=r.uids||[];ENV.forEach(function(x){if(u.indexOf(x.uid)>=0)ENVIADO.push({uid:x.uid,t:Date.now(),txt:x.txt||''});});ENV=ENV.filter(function(x){return u.indexOf(x.uid)<0;});guardarEnv();guardarEnviado();if(ENV.length)setTimeout(enviarPuente,500);else{try{render();}catch(e){}}}
   else if(r&&r.error==='link')linkInvalido();}).catch(function(){enviando=false;});}
@@ -3185,6 +3196,7 @@ function envioCard(){var sin,nv;if(!REAL){/* app de prueba: ?ver=enviado o ?ver=
  var uno=(sin||nv)===1, s=sin?(uno?'Se manda solo cuando tengas internet. No hace falta anotarlo de nuevo.':'Se mandan solos cuando tengas internet. No hace falta anotarlos de nuevo.'):(uno?'Le llegó a tu entrenador; todavía no lo vio. No hace falta anotarlo de nuevo.':'Le llegaron a tu entrenador; todavía no los vio. No hace falta anotarlos de nuevo.');
  return '<section class="card envc'+(sin?' sin':'')+'"><div class="fila" style="padding:0"><span class="ico">'+(sin?(I.reloj||''):(I.chk||''))+'</span><span><b>'+t+'</b><span class="s">'+s+'</span></span><span></span></div></section>';}
 if(REAL){
+ try{if(localStorage.getItem(CLAVE_BAJA)==='1')setTimeout(function(){bajaPantalla(true);},0);}catch(e){}
  setTimeout(function(){var c=null;try{c=JSON.parse(localStorage.getItem(CLAVE_RC)||'null');}catch(e){}if(c){nombreReal(c);AM_PANEL(c,{silencio:true});}traerCliente();enviarPuente();},0);
  setInterval(function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();revisarEstado();}},120000);
  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();revisarEstado();}});
