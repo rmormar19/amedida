@@ -1139,6 +1139,8 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .tile .gfal,.tile .gok{line-height:1.35}
 .ej .ob.ind{display:block;margin-top:4px;color:var(--a1);font-weight:600}
 .hoyl .sx b{white-space:normal;text-align:right;line-height:1.3;overflow-wrap:anywhere}
+.hoyt{display:flex;align-items:center;justify-content:space-between;width:100%;margin:12px 0 4px;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--surf2,rgba(127,127,127,.06));color:var(--tx);font:inherit;font-weight:700;font-size:14.5px;cursor:pointer}
+.hoyt svg{width:18px;height:18px;color:var(--a1)}
 
 .logo .lg2{display:flex;flex-direction:column;line-height:1.05}
 .logo .lg2 b{font-size:16px;font-weight:700;letter-spacing:-.01em}
@@ -2383,6 +2385,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  case 'calMx':U.cal.mx=U.cal.mx===+v?-1:+v;break;
  case 'calMet':U.cal.met=v;window.__forzar=true;break;
  case 'hvLog':toast('Acá vas a poder cargar un entreno de ese día');return;
+ case 'verEj':U.verEj=!U.verEj;break;
  case 'soloC':U.hoja={t:'solo',ct:'caminata',m:'45',a:(scOpciones().filter(function(o){return !o.g;})[0]||scOpciones()[0]||{}).k||''};break;
  case 'scT':U.hoja.ct=v;break;
  case 'scM':U.hoja.m=v;break;
@@ -2644,7 +2647,9 @@ vHoy=function(){if(!PANEL)return vHoy0();
   var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(sc?(PANEL.hoy?'Empezar cardio':'Adelantar cardio'):(PANEL.hoy?'Empezar sesión':'Adelantar sesión'));
   s+='<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':'<img src="cuerpo/'+imgG(ses.grupo)+'.webp" alt="Músculos de la sesión resaltados en azul">')+'<span class="chip">'+(PANEL.hoy?'Entreno de hoy':'Próximo · '+ses.dia)+'</span></div><div class="in">'+(PANEL.hoy?'':'<span class="ey prox">'+proxTxt(ses.dia)+'</span>')+'<h2>'+(titDia(ses.grupo)||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
    top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'<span class="chip">~'+Math.round(ns*3+czMin)+' min</span></div>'+
-   '<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>'+
+   /* desplegable de ejercicios (7 nov 2026): cerrado de entrada para que Hoy no quede tan largo */
+   ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
+   (U.verEj?'<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
    (regE==='verde'&&ses.soloCardio?'<div class="regok" role="status"><span class="ck">'+I.chk+'</span><span><b>Hoy hiciste solo cardio</b><span class="s">Cuenta como entrenado.'+(ses.soloCardio.g?(ses.soloCardio.a?' '+ses.soloCardio.g+' pasó al '+String(ses.soloCardio.a).toLowerCase()+'.':' '+ses.soloCardio.g+' no se recupera esta semana.'):'')+'</span></span></div>':
    regE==='verde'?'<div class="regok" role="status"><span class="ck">'+I.chk+'</span><span><b>Sesión registrada por tu entrenador</b><span class="s">Ya cuenta en tu semana y en tu progreso.</span></span></div>':
     regE==='rojo'?'<div class="regok no" role="status"><span class="ck">!</span><span><b>Tu entrenador la marcó como falta</b><span class="s">Si querés, recuperala otro día desde el calendario.</span></span></div><button type="button" class="sec full" style="margin-top:10px" data-a="tab" data-v="cal">Ir al calendario</button>':
@@ -3286,6 +3291,7 @@ var PRU_CARGAS=[{id:'2026-11-08-pecho',fecha:'2026-11-08',dia:'Domingo',grupo:'P
 function pruSemana(c,mon){if(c.lun===mon)return c.rutina;var h=(c.historial||[]).filter(function(x){return +lunesOp(new Date(x.fecha))===mon;}).pop();return h?h.rutina:null;}
 function pruCargas(c){c.cargadas=c.cargadas||[];PRU_CARGAS.forEach(function(k){if(c.cargadas.indexOf(k.id)>=0)return;
   var f=new Date(k.fecha+'T12:00:00'),m=lunes(new Date(f.getFullYear(),f.getMonth(),f.getDate())),mon=+new Date(m.getFullYear(),m.getMonth(),m.getDate()),R=pruSemana(c,mon);
+  if(!R&&mon<c.lun&&!k.quitar){var sb=new Date(mon);sb.setDate(sb.getDate()+5);sb.setHours(12);c.historial=c.historial||[];var hn={fecha:sb.toISOString(),rutina:[]};c.historial.push(hn);c.historial.sort(function(a,b){return String(a.fecha).localeCompare(String(b.fecha));});R=hn.rutina;}
   if(!R){if(mon<c.lun)c.cargadas.push(k.id);return;}
   var nd={dia:k.dia,grupo:k.grupo,estado:null,ejercicios:JSON.parse(JSON.stringify(k.ejercicios))},d0=R.filter(function(d){return nrmP(d.dia)===nrmP(k.dia);})[0];
   if(d0){Object.keys(d0).forEach(function(x){delete d0[x];});Object.assign(d0,nd);}else R.push(nd);c.cargadas.push(k.id);});}
