@@ -3132,6 +3132,10 @@ function cardioPro(S,lab){var all=[],tipos=[];S.forEach(function(w,wi){w.car.for
    Sin link, la app sigue siendo la demo. */
 var REAL=null,CLAVE_REAL='amedida-real',CLAVE_ENV='amedida-envios',CLAVE_RC='amedida-real-c';
 (function(){var q=new URLSearchParams(location.search),c=q.get('c'),p=q.get('p'),g=(q.get('g')||'').toLowerCase();
+ /* app de prueba de Ricky (7 nov 2026): ?prueba=1 saca el link de cliente guardado en este celular y deja la app con su rutina; abrir un link de cliente la saca del modo prueba */
+ try{if(q.get('prueba')==='1'){localStorage.setItem('amedida-prueba','1');[CLAVE_REAL,CLAVE_RC,CLAVE_ENV,'amedida-panel-h','amedida-ses-v1','amedida-notas-v1'].forEach(function(k){localStorage.removeItem(k);});}
+  if(c&&p)localStorage.removeItem('amedida-prueba');
+  if(localStorage.getItem('amedida-prueba')==='1')return;}catch(e){}
  try{var prev=JSON.parse(localStorage.getItem(CLAVE_REAL)||'null');
   if(c&&p&&/^[\w-]{20,}$/.test(c)&&/^[\w-]{20,}$/.test(p)){
    if(!prev||prev.token!==c){['amedida-nueva-v1','amedida-notas-v1','amedida-ses-v1','amedida-cardio-v1','amedida-panel-h',CLAVE_ENV,CLAVE_RC].forEach(function(k){localStorage.removeItem(k);});
