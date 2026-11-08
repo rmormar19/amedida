@@ -2108,7 +2108,7 @@ function vCalBase(){var c=U.cal,mes=c.mes,pri=new Date(2026,mes,1),ult=new Date(
   '<div class="kgr"><div class="kpa"><small>Entrenaste</small><b>'+hechos+'<em>/ '+(plan||'—')+'</em></b></div><div class="kpa"><small>Asistencia</small><b>'+(adh!=null?adh+'<em>%</em>':'—')+'</b></div><div class="kpa"><small>Series</small><b>'+ser+'</b></div></div>'+
   '<div class="calx">'+cells+'</div>'+
   '<div class="legend"><span><i style="background:rgba(var(--grnrgb),.5)"></i>Entrenado</span><span><i style="background:rgba(229,96,74,.5)"></i>Faltó</span><span><i style="border:1px dashed var(--a1)"></i>Planificado</span><span><i style="background:rgba(79,209,230,.4)"></i>Vacaciones</span></div></section>';
- s+=constanciaHM();
+ /* 8 nov 2026: la constancia se mudó a Progreso (pestaña Constancia) */
  s+='<section class="card" id="calDet">'+detalleActual(dk(c.sel))+'</section>';
  return s;}
 /* detalle del día, como en la app actual */
@@ -3022,18 +3022,18 @@ function motivosSem(m,nom){var k=isoL(m),L=((PANEL&&PANEL.c&&PANEL.c.motivos)||[
  L.forEach(function(x){if(nom==null&&x.t==='molestia')return;var t=x.t==='falta'&&L.some(function(z){return z.t==='enfermedad';})?null:x.t;if(!t||ya[t])return;ya[t]=1;out.push(t);});
  if(ya.falta){var nf=L.filter(function(x){return x.t==='falta';}).length;if(nf>1)out[out.indexOf('falta')]='falta:'+nf;}return out;}
 function chipsMot(ts){return ts.map(function(t){var p=t.split(':'),m=MOTIV[p[0]];if(!m)return '';return '<span class="chip mot '+m[1]+'">'+(p[1]?'Faltó a '+p[1]+' sesiones':m[0])+'</span>';}).join('');}
-function ppTabs(){return '<div class="seg" role="tablist" style="margin:2px 0 14px">'+[['carga','Semanas'],['ej','Ejercicios'],['grp','Músculos'],['cz','Cardio']].map(function(t){return '<button type="button" role="tab" data-pp="tab:'+t[0]+'" aria-pressed="'+(PP.tab===t[0])+'">'+t[1]+'</button>';}).join('')+'</div>';}
+function ppTabs(){return '<div class="seg" role="tablist" style="margin:2px 0 14px">'+[['carga','Constancia'],['ej','Fuerza'],['grp','Músculos'],['cz','Cardio']].map(function(t){return '<button type="button" role="tab" data-pp="tab:'+t[0]+'" aria-pressed="'+(PP.tab===t[0])+'">'+t[1]+'</button>';}).join('')+'</div>';}
 /* ---------- Progreso ---------- */
 vPro=function(){if(!PANEL)return vPro0();var S=semanasP(),cer=S.filter(function(w){return !w.hoy;}),pl=0,he=0,sm=0;cer.forEach(function(w){pl+=w.pl;he+=w.he;sm+=w.sm||0;});
  var conDatos=S.filter(function(w){return w.he>0;}).length;
  var s='<div class="hd"><span class="ey">Tu progreso</span><h1>Progreso</h1><p>'+(cer.length?he+' de '+pl+' entrenamientos hechos en '+cer.length+' semana'+(cer.length===1?'':'s')+(sm?' · '+sm+' sin anotar en la app':''):(function(){var w=S.filter(function(x){return x.hoy;})[0];return w&&w.he?'Esta semana llevás '+w.he+' entrenamiento'+(w.he===1?'':'s')+' hecho'+(w.he===1?'':'s')+'.':'Tu progreso aparece acá a medida que entrenes.';})())+'</p></div>'+ppTabs()+
-  (conDatos<3?'<section class="card"><div class="fila" style="padding:0"><span class="ico">'+(I.info||'')+'</span><span><b>Tu evolución se ve a partir de 3 semanas</b><span class="s">Llevás '+conDatos+' semana'+(conDatos===1?'':'s')+' con entrenamientos anotados. Con unas semanas más, acá vas a ver cómo subís de peso y de repeticiones.</span></span><span></span></div></section>':'');
+  (conDatos<3&&PP.tab==='ej'?'<section class="card"><div class="fila" style="padding:0"><span class="ico">'+(I.info||'')+'</span><span><b>Tu evolución se ve a partir de 3 semanas</b><span class="s">Llevás '+conDatos+' semana'+(conDatos===1?'':'s')+' con entrenamientos anotados. Con unas semanas más, acá vas a ver cómo subís de peso y de repeticiones.</span></span><span></span></div></section>':'');
  var lab=S.map(function(w){return w.hoy?'Esta':w.lab;});
  if(PP.tab==='carga'){
-  s+='<section class="card"><div class="ct"><h3>Sesiones por semana</h3></div><p class="sub">Hechas sobre las que tenías planificadas.</p>'+barP(S.map(function(w){return w.he;}),lab,{max:Math.max.apply(null,S.map(function(w){return w.pl;})),fmt:function(v){return String(v);},ultimo:'var(--a2)',aria:'Sesiones hechas por semana'})+
-   (function(){var M=S.map(function(w){return {w:w,t:motivosSem(w.m)};}).filter(function(x){return x.t.length;});
-    return M.length?'<div class="motl">'+M.slice().reverse().slice(0,6).map(function(x){return '<div class="motr"><span>'+(x.w.hoy?'Esta semana':x.w.lab)+'</span><span>'+chipsMot(x.t)+'</span></div>';}).join('')+'</div>':
-    '<p class="mu" style="font-size:12.5px;margin:4px 0 0">'+S.map(function(w){var q=[];if(w.fa)q.push(w.fa+' falta'+(w.fa>1?'s':''));if(w.sm)q.push(w.sm+' sin anotar en la app');return q.length?(w.hoy?'esta semana':w.lab)+': '+q.join(', '):'';}).filter(String).join(' · ')+'</p>';})()+'</section>';
+  /* 8 nov 2026 (boceto A): la constancia del calendario abre Progreso; sale «Sesiones por semana», que decía lo mismo */
+  s+=constanciaHM();
+  s+=(function(){var M=S.map(function(w){return {w:w,t:motivosSem(w.m)};}).filter(function(x){return x.t.length;});
+    return M.length?'<section class="card" style="margin-top:12px"><div class="ct"><h3>Por qué faltaste</h3></div><div class="motl">'+M.slice().reverse().slice(0,6).map(function(x){return '<div class="motr"><span>'+(x.w.hoy?'Esta semana':x.w.lab)+'</span><span>'+chipsMot(x.t)+'</span></div>';}).join('')+'</div></section>':'';})();
   s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Series que contaron</h3></div><p class="sub">Cuánto trabajo hiciste cada semana (las de calentamiento no cuentan).</p>'+barP(S.map(function(w){return w.ser;}),lab,{fmt:function(v){return String(v);},ultimo:'var(--a2)',aria:'Series efectivas por semana'})+'</section>';
   s+='<section class="card" style="margin-top:12px"><div class="ct"><h3>Qué tan cerca del fallo</h3></div><p class="sub">Repeticiones que te sobraban en promedio (RIR). Más bajo = más exigente.</p>'+lineaP(S.map(function(w){return w.rir;}),lab,{col:'var(--vio)',aria:'RIR promedio por semana',min:0,max:3*Math.max(1,Math.ceil(Math.max.apply(null,S.map(function(w){return w.rir||0;}))/3))})+'</section>';
   var hayE=S.some(function(w){return w.esf.length;});
