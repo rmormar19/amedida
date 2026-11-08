@@ -992,7 +992,7 @@ a.fila{color:inherit;text-decoration:none}
 .hq.au{background:rgba(79,209,230,.28)}
 .hq.pl{background:transparent;box-shadow:inset 0 0 0 1px rgba(var(--fg),.16)}
 .hq.hoy{background:transparent;box-shadow:inset 0 0 0 1.5px var(--a1)}
-.hq.l1,.hml i.l1{background:#1d3a66}.hq.l2,.hml i.l2{background:#2a5ba6}.hq.l3,.hml i.l3{background:#3a80e0}.hq.l4,.hml i.l4{background:#64a9f6}.hq.l5,.hml i.l5{background:#a8d6ff}
+.hq.l1,.hml i.l1{background:#c4e2ff}.hq.l2,.hml i.l2{background:#86bff8}.hq.l3,.hml i.l3{background:#4c90ea}.hq.l4,.hml i.l4{background:#2c62c6}.hq.l5,.hml i.l5{background:#18398a}
 html.claro .hq.l1,html.claro .hml i.l1{background:#cfdcf5}html.claro .hq.l2,html.claro .hml i.l2{background:#9db9ee}html.claro .hq.l3,html.claro .hml i.l3{background:#5a86e2}html.claro .hq.l4,html.claro .hml i.l4{background:#2c5bc9}html.claro .hq.l5,html.claro .hml i.l5{background:#15339a}
 .hq.hy{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--a1)}
 .hq.on{box-shadow:0 0 0 1.5px var(--bg),0 0 0 3px var(--tx);position:relative;z-index:1}
@@ -1133,6 +1133,15 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .cd.smr small{color:var(--tx4)}
 .ent .in .ey.prox{display:block;margin:0 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--a1)}
 
+/* Tu día · boceto A1 (8 nov 2026) */
+.tile.td2{position:relative;display:flex;flex-direction:column;align-items:stretch}
+.tdra{display:flex;align-items:center;gap:4px;color:var(--yel)}.tdra svg{flex:none}.tdra small{color:var(--tx3)}
+.tdrd{display:flex;gap:4px;margin-top:8px}.tdrd i{flex:1;height:9px;border-radius:3px;background:var(--yel)}.tdrd i.hoy{background:transparent;border:1.5px dashed var(--yel)}
+.tdb{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-top:2px;line-height:1.2;padding-right:30px}
+.tdg{align-self:flex-start;margin-top:6px;font-size:12px;font-weight:600;color:var(--cya);background:rgba(79,209,230,.14);border-radius:8px;padding:3px 8px}
+.tdtro{position:absolute;top:12px;right:12px;width:30px;height:30px;border-radius:9px;background:rgba(232,194,90,.14);color:#e8c25a;display:flex;align-items:center;justify-content:center}.tdtro svg{width:18px;height:18px}
+.tile .s b.tdbe{font-size:12.5px;color:#e8c25a;letter-spacing:0}
+.tdpb{height:8px;border-radius:4px;background:var(--surf3);overflow:hidden;margin-top:8px}.tdpb i{display:block;height:100%;border-radius:4px;background:var(--yel)}
 .ib.syp{width:auto;padding:0 10px 0 8px;gap:5px;display:inline-flex;align-items:center;border-radius:99px}
 .ib.syp .syt{font-size:11.5px;font-weight:700;color:var(--tx3);white-space:nowrap}
 .ib.syp.pend .syt{color:var(--yel,#ef8d45)}
@@ -2670,12 +2679,35 @@ vHoy=function(){if(!PANEL)return vHoy0();
   (PANEL.macros?'<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Macros</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>':'')+
   '<button type="button" class="tile" data-a="tab" data-v="cal"><span class="lbl">Semana</span><div class="big">'+he+'<small>de '+pl+' días</small></div><div class="dots">'+dots.map(function(d){return '<span class="'+d[1]+'"><i></i>'+d[0]+'</span>';}).join('')+'</div>'+(function(){var G=faltaSemana(c);if(!G)return '';return '<div class="s '+(G.ok?'gok':'gfal')+'">'+G.t+'</div>';})()+'</button>'+
   (pesoS.length?'<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Peso</span><div class="big">'+co(pesoS[pesoS.length-1])+'<small>kg</small></div><div class="s">'+dlt(pesoS,'kg')+'</div>'+(pesoS.length>1?spark(pesoS,'var(--vio)',130,30):'')+'</button>':'')+
-  (cinS.length?'<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Cintura</span><div class="big">'+co(cinS[cinS.length-1])+'<small>cm</small></div><div class="s">'+dlt(cinS,'cm')+'</div>'+(cinS.length>1?spark(cinS,'var(--cya)',130,30):'')+'</button>':'')+'</div>';
+  (cinS.length&&!pesoS.length?'<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Cintura</span><div class="big">'+co(cinS[cinS.length-1])+'<small>cm</small></div><div class="s">'+dlt(cinS,'cm')+'</div>'+(cinS.length>1?spark(cinS,'var(--cya)',130,30):'')+'</button>':'')+tuDiaMas()+'</div>';
  if(PANEL.macros||MEDT)s+='<div class="sh"><h2>Para hoy</h2></div><section class="card lista" style="padding:2px 16px">'+
   (PANEL.macros?aviso('gota','cy','Proteína: te faltan '+fal.p+' g','Llevás '+t.p+' de '+NUT.obj.p+' g.','mac'):'')+
   (MEDT?aviso('regla','ok','Próxima toma de medidas: '+MEDT.prox,'Cada 4 semanas. La última fue el '+MED_ULT+'.','med'):'')+'</section>';
  s+=(window.instalarCard?instalarCard():'')+(window.pushCard?pushCard():'');
  return s;};
+
+/* ---------- «Tu día» (8 nov 2026, boceto A1): racha, próximo entreno, último récord y cardio de la semana ---------- */
+var escP=function(x){return String(x==null?'':x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+var IC_FUEGO='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-3 2-4 2-6 1 1 2 2 2 3 1-2 1-4 1-7z"/></svg>';
+var DIA_LG=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+function fechaDiaP(w,d){var i=iDia(d.dia);if(i==null||i<0)return null;var f=new Date(w.m);f.setDate(f.getDate()+(i+6)%7);return f;}
+function ultimoRecordP(){var W=semanasP().slice().sort(function(a,b){return +a.m-+b.m;}),best={},rec=null;
+ W.forEach(function(w){var ds=(w.r||[]).filter(function(d){return hechoP(d,w);}).map(function(d){return {d:d,f:fechaDiaP(w,d)};}).filter(function(x){return x.f&&+x.f<=+HOYC;}).sort(function(a,b){return +a.f-+b.f;});
+  ds.forEach(function(x){(x.d.ejercicios||[]).forEach(function(e){if(!e||!e.nombre)return;var k=nrmP(e.nombre),v=null,r=null,u='kg';
+   seriesP(e).forEach(function(q){var p=numP(q.peso),rp=numP(q.reps);if(p==null||!(p>0))return;if(v==null||p>v||(p===v&&rp>r)){v=p;r=rp;u=uniP(q.peso);}});
+   if(v==null)return;var b=best[k];if(b&&b.u===u&&v>b.v)rec={n:e.nombre,v:v,r:r,u:u,f:x.f};if(!b||b.u!==u||v>b.v)best[k]={v:v,u:u};});});});
+ return rec;}
+function proximoP(){for(var k=1;k<=7;k++){var f=new Date(HOYC);f.setDate(f.getDate()+k);var x=diaInfo(f);if(x.g&&x.e!=='ok'){var dd=diaDeFecha(f),n=dd?(dd.ejercicios||[]).filter(function(e){return e&&e.nombre;}).length:0;return {f:f,g:dd?titDia(grupoDia(dd)):titDia(x.g),n:n,h:dd&&dd.hora?String(dd.hora).slice(0,5):''};}}return null;}
+function tuDiaMas(){var t='',R=null;try{R=rachasAnio(HOYC.getFullYear());}catch(e){}
+ var ra=R&&R.actual?R.actual.b-R.actual.a+1:0,be=R&&R.best?R.best.b-R.best.a+1:0;
+ t+='<button type="button" class="tile td2" data-a="tab" data-v="pro"><span class="lbl">Racha</span><div class="big tdra">'+IC_FUEGO+ra+'<small>'+(ra===1?'semana':'semanas')+'</small></div><div class="tdrd">'+Array.apply(null,{length:Math.min(ra,5)}).map(function(){return '<i></i>';}).join('')+'<i class="hoy"></i></div><div class="s">'+(ra?'completas seguidas'+(be>ra?' · tu mejor: '+be:''):'completá esta semana para empezar una')+'</div></button>';
+ var P=proximoP();
+ t+='<button type="button" class="tile td2" data-a="tab" data-v="cal"><span class="lbl">Próximo entreno</span>'+(P?'<div class="tdb">'+DIA_LG[P.f.getDay()]+' '+P.f.getDate()+'</div><span class="tdg">'+escP(P.g)+'</span><div class="s">'+(P.n?P.n+' ejercicio'+(P.n===1?'':'s'):'')+(P.h?(P.n?' · ':'')+P.h:'')+'</div>':'<div class="tdb">—</div><div class="s">Aparece cuando tu entrenador cargue la semana que viene.</div>')+'</button>';
+ var Rc=ultimoRecordP();
+ t+='<button type="button" class="tile td2" data-a="tab" data-v="pro"><span class="lbl">Último récord</span><span class="tdtro">'+(I.trofeo||'★')+'</span>'+(Rc?'<div class="tdb">'+escP(Rc.n)+'</div><div class="s"><b class="tdbe">'+co(Rc.v)+' '+(Rc.u==='pl'?'placas':Rc.u)+(Rc.r?' × '+Rc.r:'')+'</b><br>'+DIA_LG[Rc.f.getDay()].toLowerCase()+' '+Rc.f.getDate()+'</div>':'<div class="s" style="margin-top:6px">Aparece cuando levantes más que tu mejor marca en un ejercicio.</div>')+'</button>';
+ var S=semanasP(),w=S.filter(function(x){return x.hoy;})[0],car=w?w.car:[],min=0;car.forEach(function(z){min+=z.min||0;});
+ t+='<button type="button" class="tile td2" data-a="tab" data-v="pro"><span class="lbl">Cardio esta semana</span>'+(car.length?'<div class="big">'+Math.round(min)+'<small>min</small></div><div class="tdpb"><i style="width:'+Math.min(100,min/150*100)+'%"></i></div><div class="s">'+car.length+' sesi'+(car.length===1?'ón':'ones')+'</div>':'<div class="big">0<small>min</small></div><div class="s">Sin cardio anotado esta semana.</div>')+'</button>';
+ return t;}
 
 /* ---------- detalle de un día del calendario con lo que está en el panel ---------- */
 var sesDe0=sesDe;
