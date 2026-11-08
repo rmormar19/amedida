@@ -1137,6 +1137,7 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .ib.syp .syt{font-size:11.5px;font-weight:700;color:var(--tx3);white-space:nowrap}
 .ib.syp.pend .syt{color:var(--yel,#ef8d45)}
 .tile .gfal,.tile .gok{line-height:1.35}
+.ej .ob.ind{display:block;margin-top:4px;color:var(--a1);font-weight:600}
 
 .logo .lg2{display:flex;flex-direction:column;line-height:1.05}
 .logo .lg2 b{font-size:16px;font-weight:700;letter-spacing:-.01em}
@@ -2042,7 +2043,7 @@ function vSesion(){var h=hechas(),b=BLQ[U.ses.b];
  var s=tipSesion()+'<div class="prog"><span class="bar"><i style="width:'+(h[0]/h[1]*100)+'%"></i></span><b>'+h[0]+'/'+h[1]+' series</b></div>';
  s+='<div class="ruta">'+BLQ.map(function(x,i){var ok=x.h.every(function(r){return r.every(Boolean);});return '<button type="button" data-a="blq" data-v="'+i+'" class="'+(ok?'ok':'')+'" aria-pressed="'+(i===U.ses.b)+'"><i></i>'+x.n+'</button>';}).join('')+'</div>';
  s+='<div class="bk"><b>'+b.n+'</b><span>'+(b.ss?'sin descanso entre los dos · '+mmss(b.d)+' al terminar la vuelta':'descanso '+mmss(b.d))+'</span></div>';
- s+=b.ej.map(function(e,k){return '<div class="ej">'+lamBtn(e.lam,e.n,U.ses.b+'-'+k)+'<div><h4><button type="button" class="ejn" data-a="ficha" data-v="'+e.lam+'|s'+U.ses.b+'-'+k+'">'+(b.ss?'<span class="tg">'+b.k+(k+1)+'</span>':'')+e.n+'</button></h4><button type="button" class="vl" data-a="hojaVar" data-v="'+U.ses.b+'-'+k+'">'+resVar(e)+' '+I.edit+'</button><span class="ob">'+humO(e.o)+' · '+(e.u==='pl'?'en placas del aparato':'en kilos')+'</span>'+chipSug(e)+notaChip(e,U.ses.b+'-'+k)+'</div></div>';}).join('');
+ s+=b.ej.map(function(e,k){return '<div class="ej">'+lamBtn(e.lam,e.n,U.ses.b+'-'+k)+'<div><h4><button type="button" class="ejn" data-a="ficha" data-v="'+e.lam+'|s'+U.ses.b+'-'+k+'">'+(b.ss?'<span class="tg">'+b.k+(k+1)+'</span>':'')+e.n+'</button></h4><button type="button" class="vl" data-a="hojaVar" data-v="'+U.ses.b+'-'+k+'">'+resVar(e)+' '+I.edit+'</button><span class="ob">'+humO(e.o)+' · '+(e.u==='pl'?'en placas del aparato':'en kilos')+'</span>'+(e.ind?'<span class="ob ind">'+e.ind+'</span>':'')+''+chipSug(e)+notaChip(e,U.ses.b+'-'+k)+'</div></div>';}).join('');
  var sig=-1;
  s+=b.h.map(function(_r,i){var todas=b.h[i].every(Boolean);
   var filas=b.ej.map(function(e,k){var x=b.h[i][k],p=e.p[i],id=i*b.ej.length+k;if(x&&x.na)return '<div class="sr na"><span class="n">'+(b.ss?b.k+(k+1):'')+'</span><span class="nax">no lleva esta vuelta</span></div>';if(!x&&sig<0)sig=id;
@@ -2502,7 +2503,7 @@ function ejP(x){var ss=seriesP(x),p=ss.map(function(s){return [numP(s.peso)||0,p
  var rr=ss.map(function(s){return String(s.reps||'').trim().replace(/\s*-\s*/,'–');}),gr=[];rr.forEach(function(r){var g=gr[gr.length-1];if(g&&g.r===r)g.n++;else gr.push({n:1,r:r||'—'});});
  var drop=ss.some(function(s){return s.tipo==='drop'||(s.drops&&s.drops.length);});
  var v={lado:/uni/i.test(x.lateralidad||'')?'unilateral':'bilateral'};if(x.agarre)v.agarre=String(x.agarre).toLowerCase();
- return {id:slugP(x.nombre),n:x.nombre,lam:lamDe(x.nombre)||'',u:u,g:grupoEjP(x),rr:rr,sinPeso:!conPeso,o:txtSerP(x)+(conRir?' · RIR '+p[0][2]:''),p:p,v:v};}
+ return {id:slugP(x.nombre),n:x.nombre,ind:String(x.indicacion||'').trim(),lam:lamDe(x.nombre)||'',u:u,g:grupoEjP(x),rr:rr,sinPeso:!conPeso,o:txtSerP(x)+(conRir?' · RIR '+p[0][2]:''),p:p,v:v};}
 function phSer(e,i,j){var p=e.p[i]||e.p[e.p.length-1],rf=filaDe(e,i);if(j===1)return e.rr&&e.rr[i]?e.rr[i]:(p[1]?co(p[1]):'—');if(j===0){var w=e.sinPeso?0:(rf&&rf.t!=='ef'&&rf.t!=='rp'?p[0]:sugerido(e,i));return w?co(w):'—';}/* RIR: sólo la pauta escrita en el Monitor; sin pauta, raya (4 nov 2026) */return p[3]?co(p[2]):'—';}
 (function(){var c0=chipSug;chipSug=function(e){return e&&e.sinPeso?'':c0(e);};})();
 /* un día del panel → bloques de la sesión (los ejercicios seguidos con la misma superserie van juntos) */
@@ -3271,8 +3272,22 @@ function clientePrueba(){var t=new Date(),hoy=new Date(t.getFullYear(),t.getMont
    (sesiones, series, peso y medidas, días libres, solo cardio). La semana se archiva sola cuando empieza otra. Macros: todavía no. ===== */
 var CLAVE_PRU='amedida-prueba-c';
 function pruGuardar(c){try{localStorage.setItem(CLAVE_PRU,JSON.stringify(c));}catch(e){}}
+/* rutinas que Ricky pide cargar para un día puntual (se cargan una sola vez en su semana) */
+var PRU_CARGAS=[{id:'2026-11-08-pecho',fecha:'2026-11-08',dia:'Domingo',grupo:'Pecho, hombro y tríceps',ejercicios:[
+ {nombre:'Press inclinado con mancuernas',series:[{reps:'12',peso:'15 kg'},{reps:'10',peso:'17,5 kg'},{reps:'8',peso:'20 kg'},{reps:'8',peso:'25 kg'}]},
+ {nombre:'Aperturas en polea (sentado)',series:[{reps:'10',peso:'4 placas'},{reps:'10',peso:'4 placas'},{reps:'10',peso:'4 placas'},{reps:'10',peso:'4 placas'}]},
+ {nombre:'Press plano con barra',indicacion:'Los kilos son sin contar la barra (20 kg).',series:[{reps:'10',peso:'25 kg'},{reps:'8',peso:'30 kg'},{reps:'8',peso:'30 kg'}]},
+ {nombre:'Aperturas con mancuernas',ss:'1',series:[{reps:'12',peso:'10 kg'},{reps:'12',peso:'10 kg'},{reps:'12',peso:'10 kg'},{reps:'12',peso:'10 kg'}]},
+ {nombre:'Tríceps en polea trasnuca',ss:'1',series:[{reps:'12',peso:'6 placas'},{reps:'12',peso:'6 placas'},{reps:'12',peso:'6 placas'},{reps:'12',peso:'6 placas'}]}]}];
+function pruSemana(c,mon){if(c.lun===mon)return c.rutina;var h=(c.historial||[]).filter(function(x){return +lunesOp(new Date(x.fecha))===mon;}).pop();return h?h.rutina:null;}
+function pruCargas(c){c.cargadas=c.cargadas||[];PRU_CARGAS.forEach(function(k){if(c.cargadas.indexOf(k.id)>=0)return;
+  var f=new Date(k.fecha+'T12:00:00'),m=lunes(new Date(f.getFullYear(),f.getMonth(),f.getDate())),mon=+new Date(m.getFullYear(),m.getMonth(),m.getDate()),R=pruSemana(c,mon);
+  if(!R){if(mon<c.lun)c.cargadas.push(k.id);return;}
+  var nd={dia:k.dia,grupo:k.grupo,estado:null,ejercicios:JSON.parse(JSON.stringify(k.ejercicios))},d0=R.filter(function(d){return nrmP(d.dia)===nrmP(k.dia);})[0];
+  if(d0){Object.keys(d0).forEach(function(x){delete d0[x];});Object.assign(d0,nd);}else R.push(nd);c.cargadas.push(k.id);});}
 function pruCargar(){var c=null,lun=+lunesOp(new Date());try{c=JSON.parse(localStorage.getItem(CLAVE_PRU)||'null');}catch(e){}
- if(!c||c.v!==2){c=clientePrueba();c.v=2;c.lun=lun;pruGuardar(c);return c;}
+ if(!c||c.v!==2){c=clientePrueba();c.v=2;c.lun=lun;pruCargas(c);pruGuardar(c);return c;}
+ pruCargas(c);
  if(c.lun!==lun){var mon=new Date(c.lun),sab=new Date(mon);sab.setDate(mon.getDate()+5);sab.setHours(12);
   c.historial.push({fecha:sab.toISOString(),rutina:c.rutina});c.historial=c.historial.slice(-16);
   c.rutina=JSON.parse(JSON.stringify(c.rutina)).filter(function(d){return (d.ejercicios||[]).length||!d.soloCardio;}).map(function(d){
@@ -3281,7 +3296,8 @@ function pruCargar(){var c=null,lun=+lunesOp(new Date());try{c=JSON.parse(localS
   var base=clientePrueba().rutina;base.forEach(function(b){if(!c.rutina.some(function(d){return nrmP(d.dia)===nrmP(b.dia);})){b.estado=null;c.rutina.push(b);}});
   if(c.fase&&!c.fase.desc)c.fase.s=(c.fase.s%6)+1;c.lun=lun;pruGuardar(c);}
  return c;}
-function pruAplicar(c,d){var dia=function(n){return (c.rutina||[]).filter(function(x){return nrmP(x.dia)===nrmP(n);})[0];},dd;
+function pruAplicar(c,d){var R=c.rutina;if(d.fechaDia){var mo=+lunesOp(new Date(d.fechaDia+'T03:00:00'));if(mo!==c.lun)R=pruSemana(c,mo)||c.rutina;}
+ var dia=function(n){return (R||[]).filter(function(x){return nrmP(x.dia)===nrmP(n);})[0];},dd;
  switch(d.tipo){
   case 'serie':dd=dia(d.dia);if(!dd)return;var e=(dd.ejercicios||[]).filter(function(x){return d.ejercicio&&nrmP(x.nombre)===nrmP(d.ejercicio.nombre);})[0];if(!e)return;
    var i=Math.max(0,(+d.n||1)-1);e.series=e.series||[];var sr=e.series[i]||(e.series[i]={});if(d.serie){if(d.serie.peso)sr.peso=d.serie.peso;if(d.serie.reps)sr.reps=d.serie.reps;if(d.serie.rir!==''&&d.serie.rir!=null)sr.rir=d.serie.rir;}break;
@@ -3291,7 +3307,7 @@ function pruAplicar(c,d){var dia=function(n){return (c.rutina||[]).filter(functi
    if(k<0){m.fechas.push(f0);k=m.fechas.length-1;m.filas.forEach(function(r){r.valores[k]=null;});}
    (d.filas||[]).forEach(function(f){var r=m.filas.filter(function(x){return x.nombre===f.nombre;})[0];if(!r){r={nombre:f.nombre,unidad:f.u||'',valores:m.fechas.map(function(){return null;})};m.filas.push(r);}r.valores[k]=numP(f.valor);});break;
   case 'soloCardio':dd=dia(d.dia);if(!dd)return;var ej=(dd.ejercicios||[]).filter(function(x){return x&&x.nombre;}),g=dd.grupo||'',pasa=!!(d.a&&ej.length);
-   if(pasa){var a=dia(d.a);if(!a){a={dia:d.a,grupo:'',estado:null,ejercicios:[]};c.rutina.push(a);}var tn=(a.ejercicios||[]).some(function(x){return x&&x.nombre;})&&!a.libre;
+   if(pasa){var a=dia(d.a);if(!a){a={dia:d.a,grupo:'',estado:null,ejercicios:[]};R.push(a);}var tn=(a.ejercicios||[]).some(function(x){return x&&x.nombre;})&&!a.libre;
     a.ejercicios=(tn?a.ejercicios:[]).concat(JSON.parse(JSON.stringify(ej)));a.grupo=tn?[a.grupo,g].filter(Boolean).join(' + '):g;a.estado=null;delete a.libre;}
    dd.ejercicios=[];dd.grupo='Cardio';dd.estado='verde';delete dd.libre;
    dd.cardio=[{tipo:d.cardio,modo:'min',cant:String(d.min),minReal:String(d.min),estado:'hecho',cuando:'propio'}];
