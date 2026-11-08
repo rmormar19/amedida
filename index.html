@@ -3238,6 +3238,27 @@ resVar=function(e){var v=e.v||{},o=[];if(v.banco)o.push(v.banco);if(v.agarre)o.p
 /* la nube de arriba dice qué pasa */
 (function(r0){render=function(){r0.apply(this,arguments);try{var b=document.querySelector('#top [data-a="sync"]');if(b&&!b.querySelector('.syt')){var n=(typeof ENV!=='undefined'&&ENV)?ENV.length:0;
   b.classList.add('syp');b.classList.toggle('pend',n>0);b.insertAdjacentHTML('beforeend','<span class="syt">'+(n?'Sin enviar ('+n+')':'Enviado')+'</span>');b.setAttribute('aria-label',n?n+' cambios sin enviar: se mandan solos con internet':'Todo enviado a tu entrenador');}}catch(e){}};})(render);
+/* ===== Modo prueba de Ricky (7 nov 2026): la app de prueba usa el mismo camino que ven los clientes, con su rutina.
+   Se activa con ?prueba=1 (queda guardado en el celular) y se apaga con ?prueba=0. No manda nada al Monitor. ===== */
+var PRUEBA=false;
+function clientePrueba(){var t=new Date(),hoy=new Date(t.getFullYear(),t.getMonth(),t.getDate()),lun=lunesOp(t);
+ var R=[['Lunes','Pecho, hombro y tríceps',[['Press plano con barra',4,'6-8','60 kg','2'],['Press inclinado con mancuernas',3,'8-10','22 kg','2'],['Aperturas en polea',3,'12','4 placas','1'],['Press militar con mancuernas',3,'8-10','18 kg','2'],['Vuelos laterales con mancuernas',3,'12-15','8 kg','1'],['Extensión de tríceps en polea',3,'10-12','5 placas','1']]],
+  ['Martes','Espalda, bíceps y abdomen',[['Dorsal al pecho agarre abierto',4,'8-10','8 placas','2'],['Remo bajo en polea',3,'10','7 placas','2'],['Dorsal al pecho agarre estrecho',3,'10-12','7 placas','2'],['Curl de bíceps en polea',3,'12','4 placas','1'],['Curl en banco inclinado',3,'10','12 kg','1'],['Abdominales en polea',3,'15','5 placas','1']]],
+  ['Viernes','Brazos',[['Extensión de tríceps en polea con barra',3,'10-12','6 placas','1'],['Extensión de tríceps abajo hacia arriba',3,'12','4 placas','1'],['Extensión de tríceps unilateral',3,'12','2 placas','1'],['Curl de bíceps en polea',3,'10-12','4 placas','1'],['Curl martillo',3,'10','14 kg','1'],['Curl en banco inclinado',3,'10','12 kg','1']]],
+  ['Sábado','Piernas y abdomen',[['Sentadilla',4,'6-8','80 kg','2'],['Prensa 45°',3,'10','160 kg','2'],['Extensión de cuádriceps',3,'12','8 placas','1'],['Curl femoral',3,'12','6 placas','1'],['Aductores en máquina',3,'15','7 placas','1'],['Pantorrilla en prensa',4,'15','120 kg','1']]]];
+ var IDX={Lunes:0,Martes:1,Viernes:4,'Sábado':5};
+ var pesoK=function(p,f){var m=String(p).match(/^([\d.,]+)\s*(.*)$/);if(!m)return p;var v=parseFloat(m[1].replace(',','.'))*f;v=/placa/.test(m[2])?Math.max(1,Math.round(v)):Math.round(v/2.5)*2.5;return String(v).replace('.',',')+' '+m[2];};
+ var semana=function(f,mon,actual,falta){return R.map(function(d){var fd=new Date(mon);fd.setDate(mon.getDate()+IDX[d[0]]);
+   var est=actual?(+fd<+hoy?'verde':null):(falta===d[0]?'rojo':'verde');
+   return {dia:d[0],grupo:d[1],estado:est,ejercicios:d[2].map(function(e){var ss=[];for(var i=0;i<e[1];i++)ss.push({reps:e[2],peso:pesoK(e[3],f),rir:e[4]});return {nombre:e[0],series:ss};})};});};
+ var hist=[];for(var k=6;k>=1;k--){var m=new Date(lun);m.setDate(lun.getDate()-7*k);var sab=new Date(m);sab.setDate(m.getDate()+5);sab.setHours(12);hist.push({fecha:sab.toISOString(),rutina:semana(1-0.025*k,m,false,k===3?'Martes':null)});}
+ return {id:'PRUEBA',nombre:'Ricky',inicio:hist[0].fecha.slice(0,10),datos:{diasPauta:['Lunes','Martes','Viernes','Sábado'],objetivos:'Ganar masa muscular',sexo:'M',edad:null,betabloq:false},
+  rutina:semana(1,lun,true),historial:hist,medidas:null,pausa:false,fase:{s:3,f:'Progresión',rir:'RIR 2'},motivos:[],regionesEj:{}};}
+(function(){if(typeof REAL!=='undefined'&&REAL)return;var q=location.search;
+ try{if(/[?&]prueba=1/.test(q))localStorage.setItem('amedida-prueba','1');if(/[?&]prueba=0/.test(q))localStorage.removeItem('amedida-prueba');PRUEBA=localStorage.getItem('amedida-prueba')==='1';}catch(e){}
+ if(!PRUEBA)return;
+ setTimeout(function(){try{AM_PANEL(clientePrueba(),{silencio:true});render();}catch(e){if(window.console)console.error(e);}},0);})();
+(function(r0){render=function(){r0.apply(this,arguments);if(!PRUEBA)return;try{var t=document.querySelector('#top .syt');if(t)t.textContent='Prueba';}catch(e){}};})(render);
 
 render();
 (function(){var sp=document.getElementById('splash');if(!sp)return;var ya=false,salir=function(){if(ya)return;ya=true;sp.classList.add('out');window.__forzar=true;render();};sp.addEventListener('click',salir);setTimeout(salir,1700);})();
