@@ -3260,7 +3260,9 @@ function clientePrueba(){var t=new Date(),hoy=new Date(t.getFullYear(),t.getMont
  return {id:'PRUEBA',nombre:'Ricky',inicio:hist[0].fecha.slice(0,10),datos:{diasPauta:['Lunes','Martes','Viernes','Sábado'],objetivos:'Ganar masa muscular',sexo:'M',edad:null,betabloq:false},
   rutina:semana(1,lun,true),historial:hist,medidas:null,pausa:false,fase:{s:3,f:'Progresión',rir:'RIR 2'},motivos:[],regionesEj:{}};}
 (function(){if(typeof REAL!=='undefined'&&REAL)return;var q=location.search;
- try{if(/[?&]prueba=1/.test(q))localStorage.setItem('amedida-prueba','1');if(/[?&]prueba=0/.test(q))localStorage.removeItem('amedida-prueba');PRUEBA=localStorage.getItem('amedida-prueba')==='1';}catch(e){}
+ try{if(/[?&]prueba=1/.test(q))localStorage.setItem('amedida-prueba','1');if(/[?&]prueba=0/.test(q))localStorage.removeItem('amedida-prueba');PRUEBA=localStorage.getItem('amedida-prueba')==='1'||(localStorage.getItem('amedida-demo')==='1'&&window.top===window);}catch(e){}
+ /* sin link de cliente y fuera de la página web, la app es la de prueba de Ricky */
+ if(window.top===window)PRUEBA=true;
  if(!PRUEBA)return;
  setTimeout(function(){try{AM_PANEL(clientePrueba(),{silencio:true});render();}catch(e){if(window.console)console.error(e);}},0);})();
 (function(r0){render=function(){r0.apply(this,arguments);if(!PRUEBA)return;try{var t=document.querySelector('#top .syt');if(t)t.textContent='Prueba';}catch(e){}};})(render);
