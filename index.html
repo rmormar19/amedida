@@ -1138,6 +1138,7 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .ib.syp.pend .syt{color:var(--yel,#ef8d45)}
 .tile .gfal,.tile .gok{line-height:1.35}
 .ej .ob.ind{display:block;margin-top:4px;color:var(--a1);font-weight:600}
+.hoyl .sx b{white-space:normal;text-align:right;line-height:1.3;overflow-wrap:anywhere}
 
 .logo .lg2{display:flex;flex-direction:column;line-height:1.05}
 .logo .lg2 b{font-size:16px;font-weight:700;letter-spacing:-.01em}
@@ -3229,6 +3230,9 @@ if(REAL){guardarRealSW();setTimeout(function(){if(PUSH_OK&&Notification.permissi
 var TAGH={' aprox':' para entrar en calor',' rest-pause':' con pausas cortas',' drop set':' y bajás el peso al final'};
 function humRango(r){return String(r).replace(/\s*[–-]\s*/,' a ');}
 function humO(o){if(!o)return o;return String(o).split(' · ').map(function(x,i){var m;
+  if(i===0){var G=x.split(' + ').map(function(y){return y.match(/^(\d+) × (\S+)(.*)$/);});
+   /* pirámide (más de 2 tramos): «4 series: 12, 10, 8 y 8 repeticiones» */
+   if(G.length>2&&G.every(function(m){return m&&!m[3];})){var L=[];G.forEach(function(m){for(var r=0;r<+m[1];r++)L.push(humRango(m[2]));});return L.length+' series: '+(L.length>1?L.slice(0,-1).join(', ')+' y '+L[L.length-1]:L[0])+' repeticiones';}}
   if(i===0)return x.split(' + ').map(function(y,j){var mm=y.match(/^(\d+) × (\S+)(.*)$/);if(!mm)return y;var n=+mm[1];return (j?'después '+n:n+' serie'+(n===1?'':'s'))+' de '+humRango(mm[2])+(TAGH[mm[3]]!=null?TAGH[mm[3]]:mm[3]);}).join(', ');
   if((m=x.match(/^RIR (\S+)$/)))return 'que te sobren '+humRango(m[1]);
   return x;}).join(' · ');}
@@ -3286,10 +3290,15 @@ function pruCargas(c){c.cargadas=c.cargadas||[];PRU_CARGAS.forEach(function(k){i
   var nd={dia:k.dia,grupo:k.grupo,estado:null,ejercicios:JSON.parse(JSON.stringify(k.ejercicios))},d0=R.filter(function(d){return nrmP(d.dia)===nrmP(k.dia);})[0];
   if(d0){Object.keys(d0).forEach(function(x){delete d0[x];});Object.assign(d0,nd);}else R.push(nd);c.cargadas.push(k.id);});}
 function pruCargar(){var c=null,lun=+lunesOp(new Date());try{c=JSON.parse(localStorage.getItem(CLAVE_PRU)||'null');}catch(e){}
- if(!c||c.v!==2){c=clientePrueba();c.v=2;c.lun=lun;pruCargas(c);pruGuardar(c);return c;}
+ if(!c||c.v!==3){var habia=!!c;
+  /* arranca de cero (7 nov 2026): sin semanas inventadas, sin pesos, sin medidas; sólo lo que Ricky carga y anota */
+  ['amedida-nueva-v1','amedida-panel-h','amedida-ses-v1','amedida-notas-v1','amedida-cardio-v1','amedida-movs','amedida-solo','amedida-enviado'].forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
+  c={v:3,lun:lun,id:'PRUEBA',nombre:'Ricky',inicio:hoyISO(),datos:{diasPauta:[],objetivos:'',sexo:'M',edad:null,betabloq:false},rutina:[],historial:[],medidas:null,pausa:false,fase:null,motivos:[],regionesEj:{}};
+  pruCargas(c);pruGuardar(c);if(habia){setTimeout(function(){location.reload();},50);}return c;}
  pruCargas(c);
  if(c.lun!==lun){var mon=new Date(c.lun),sab=new Date(mon);sab.setDate(mon.getDate()+5);sab.setHours(12);
-  c.historial.push({fecha:sab.toISOString(),rutina:c.rutina});c.historial=c.historial.slice(-16);
+  if((c.rutina||[]).length)c.historial.push({fecha:sab.toISOString(),rutina:c.rutina});c.historial=c.historial.slice(-16);
+  c.rutina=[];c.lun=lun;pruCargas(c);pruGuardar(c);return c;
   c.rutina=JSON.parse(JSON.stringify(c.rutina)).filter(function(d){return (d.ejercicios||[]).length||!d.soloCardio;}).map(function(d){
    if(d.soloCardio&&d.soloCardio.g){d.grupo=d.soloCardio.g;}delete d.soloCardio;delete d.libre;delete d.esfuerzo;delete d.cardio;d.estado=null;return d;}).filter(function(d){return (d.ejercicios||[]).length;});
   /* los días de solo cardio vuelven a tener su fuerza: se arma de nuevo desde la pauta */
