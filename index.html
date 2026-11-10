@@ -2939,7 +2939,7 @@ function semHoy(h){var lun=LUNH(),hk=kd(HOYC),dias=[],sesK=null;
  var tira='<div class="hsem" role="group" aria-label="Tu semana">'+dias.map(function(f,i){var k=kd(f),di=diaInfo(f),dd=diaDeFecha(f),g=dd&&tieneDia(dd)?grupoDia(dd):di.g,cls='de';
    if(g){if(+f<+HOYC)cls=di.e==='fa'?'fa':'ok';else if(+f===+HOYC)cls=(U.ses.fin||di.e==='ok'||(dd&&dd.estado==='verde'))?'ok':'hoy';else cls='pl';}
    return '<button type="button" class="hs '+cls+(k===sel?' sel':'')+'" data-a="hdia" data-v="'+k+'" aria-pressed="'+(k===sel)+'" style="--c:'+(g?colG(g):'transparent')+'"><small>'+'LMMJVSD'[i]+'</small><b>'+f.getDate()+'</b><em>'+(g?cortoG(g):'—')+'</em></button>';}).join('')+'</div>';
- var G=faltaSemana(PANEL.c);if(G)tira+='<div class="hsemt '+(G.ok?'gok':'gfal')+'">'+G.t+'</div>';
+ /* 10 nov 2026 · Ricky: sin la línea «Te queda hoy… · el miércoles…» debajo de la semana */
  var a=h.indexOf('<section class="card ent"');if(a<0){var r=h.indexOf('<b>Hoy descansás</b>');if(r>=0)a=h.lastIndexOf('<section',r);}
  if(a<0){var t=h.indexOf('<div class="sh"><h2>Tu día');return t<0?h:h.slice(0,t)+tira+h.slice(t);}
  var b=h.indexOf('</section>',a)+10;
