@@ -1631,7 +1631,7 @@ return {vista:vista,accion:accion,contar:contar,histEj:histEj,PLANX:PLANX,H:H};
 /* ================= estado ================= */
 var U={tab:'hoy',pila:[],ses:{on:false,b:0,t0:null},t:{on:false,s:0,T:90,txt:''},
  cal:{sel:'2026-9-30',mes:9,w:0,mx:9},pro:{vista:'carga',per:'6 sem',met:'vol',sem:52,abre:{}},mac:{dia:4},med:{graf:'peso',per:'6 m',tabla:false},toma:{i:0},hoja:null,esf:7};
-var TITULO={hoy:'Hoy',cal:'Calendario',pro:'Progreso',mac:'Macros',med:'Medidas'};
+var TITULO={hoy:'Hoy',cal:'Calendario',pro:'Progreso',mac:'Nutrición',med:'Antropometría'};
 
 /* ================= extras (30 oct): guardado en el celular, cola para el panel, notificaciones, sesión de gimnasio ================= */
 var QS=new URLSearchParams(location.search),USUARIO=QS.get('usuario'),GUARDA=!USUARIO,NOMBRE=USUARIO||'Ricky';
@@ -2056,13 +2056,13 @@ function hojaInstalar(){return '<h2>Instalá A medida</h2><p class="sub">En iPho
 function render(){
  var push=U.pila[U.pila.length-1];
  var top=document.getElementById('top'),v=document.getElementById('view'),nav=document.getElementById('nav');
- if(push){var tt={sesion:SES_TIT(),resumen:'Sesión terminada',toma:'Nueva toma',rnueva:'Rutina nueva'}[push];var vol={sesion:TITULO[U.tab],resumen:'',toma:'Medidas',rnueva:TITULO[U.tab]}[push];
+ if(push){var tt={sesion:SES_TIT(),resumen:'Sesión terminada',toma:'Nueva toma',rnueva:'Rutina nueva'}[push];var vol={sesion:TITULO[U.tab],resumen:'',toma:'Antropometría',rnueva:TITULO[U.tab]}[push];
   top.innerHTML=(vol?'<button type="button" class="atras" data-a="volver">'+I.atras+vol+'</button>':'<span style="width:40px"></span>')+'<span class="tt">'+tt+'</span>'+(push==='sesion'?'<button type="button" class="ib" data-a="hojaVar" aria-label="Opciones de la sesión" style="visibility:hidden"></button>':'<span style="width:38px"></span>')+modoBtn();
  }else{top.innerHTML='<span class="logo"><i>'+LOGO+'</i><span class="lg2"><b>A medida</b><small>Entrenamiento integral</small></span></span><span class="sp"></span><button type="button" class="ib'+(COLA.length?' sync':'')+'" data-a="sync" aria-label="'+(COLA.length?COLA.length+' cambios sin mandar al panel':'Sin cambios pendientes')+'">'+I.nube+'</button><button type="button" class="ib campb" data-a="notifs" aria-label="Notificaciones'+(noLeidas()?', '+noLeidas()+' sin leer':'')+'">'+I.campana+(noLeidas()?'<i class="bdg">'+noLeidas()+'</i>':'')+'</button>'+modoBtn()+'<button type="button" class="yo" data-a="perfil" aria-label="Tu perfil">'+NOMBRE.charAt(0)+'</button>';}
  nav.hidden=!!push&&push!=='toma';
  if(push==='toma') nav.hidden=true;
  v.className='main'+(nav.hidden?' sinnav':'')+(U.ses.on&&!push?' conmini':'');
- nav.innerHTML=[['pro','Progreso'],['cal','Calendario'],['hoy','Hoy'],['mac','Macros'],['med','Medidas']].map(function(t){return '<button type="button" class="nv'+(U.tab===t[0]&&!push?' on':'')+'" data-a="tab" data-v="'+t[0]+'"'+(U.tab===t[0]?' aria-current="page"':'')+'>'+I[t[0]]+t[1]+(t[0]==='hoy'&&U.ses.on&&U.tab!=='hoy'?'<i class="pt"></i>':'')+'</button>';}).join('');
+ nav.innerHTML=[['pro','Progreso'],['cal','Calendario'],['hoy','Hoy'],['mac','Nutrición'],['med','Antropometría']].map(function(t){return '<button type="button" class="nv'+(U.tab===t[0]&&!push?' on':'')+'" data-a="tab" data-v="'+t[0]+'"'+(U.tab===t[0]?' aria-current="page"':'')+'>'+I[t[0]]+t[1]+(t[0]==='hoy'&&U.ses.on&&U.tab!=='hoy'?'<i class="pt"></i>':'')+'</button>';}).join('');
  v.innerHTML=push?({sesion:vSesion,resumen:vResumen2,toma:vToma2,rnueva:vRnueva}[push])():({hoy:vHoy,cal:vCal,pro:vPro,mac:vMac,med:vMed}[U.tab])();
  var clave=(push||'')+'|'+U.tab,prev=window.__pant;if(clave!==prev||window.__forzar){var pp=prev?prev.split('|')[0]:'';var dir=window.__forzar?'':(push&&!pp?'der':(!push&&pp?'izq':''));window.__pant=clave;window.__forzar=false;
   v.classList.remove('entra','der','izq');nav.classList.remove('salta');void v.offsetWidth;v.classList.add('entra');if(dir)v.classList.add(dir);if(!push&&(!pp||dir===''))nav.classList.add('salta');
@@ -2088,7 +2088,7 @@ function vHoy(){var t=tot(),h=hechas(),fal={p:NUT.obj.p-t.p};
  return '<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy()+
  '<section class="card ent"><div class="img"><img src="cuerpo/mapa_brazos.webp" alt="Músculos de la sesión resaltados en azul: bíceps y tríceps"><span class="chip">Entreno de hoy</span></div><div class="in"><h2>Brazos</h2><div class="meta"><span class="chip ac">Bíceps · 9</span><span class="chip ac">Tríceps · 9</span><span class="chip">6 ejercicios</span><span class="chip">~55 min</span></div><button type="button" class="pri full" data-a="'+(U.ses.fin||(U.ses.on&&h[0]===h[1])?'resumen':'sesion')+'">'+btn+'</button></div></section>'+
  '<div class="sh"><h2>Tu día</h2></div><div class="gr2">'+
-  '<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Macros</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>'+
+  '<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Nutrición</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>'+
   '<button type="button" class="tile" data-a="tab" data-v="cal"><span class="lbl">Semana</span><div class="big">2<small>de 4 días</small></div><div class="dots">'+[['L','ok'],['M','ok'],['M',''],['J',''],['V','hoy'],['S','pl'],['D','']].map(function(d){return '<span class="'+d[1]+'"><i></i>'+d[0]+'</span>';}).join('')+'</div></button>'+
   '<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Peso</span><div class="big">78,5<small>kg</small></div><div class="s"><span class="up">−0,5</span> en 3 meses</div>'+spark([79,79,79,79,78.5,78.5],'var(--vio)',130,30)+'</button>'+
   '<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Cintura</span><div class="big">83,5<small>cm</small></div><div class="s"><span class="up">−1 cm</span> desde junio</div>'+spark(SERIE.cint,'var(--cya)',130,30)+'</button></div>'+
@@ -2316,7 +2316,7 @@ var EJS=[['PPB','Press plano con barra','gen_ppb','72,5 kg × 9','94,3 kg',[88,8
 function vPro(){return PROG.vista();}
 /* ---------- Macros ---------- */
 function vMac(){var t=tot(),o=NUT.obj,f={p:Math.max(0,o.p-t.p),c:Math.max(0,o.c-t.c),g:Math.max(0,o.g-t.g)};
- var s='<div class="hd"><div class="row"><div><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Macros</h1></div><button type="button" class="sec" data-a="objetivos" style="min-height:38px;font-size:13px">'+I.edit+'Objetivos</button></div></div>';
+ var s='<div class="hd"><div class="row"><div><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Nutrición</h1></div><button type="button" class="sec" data-a="objetivos" style="min-height:38px;font-size:13px">'+I.edit+'Objetivos</button></div></div>';
  s+='<div class="wstrip">'+[['L',26],['M',27],['M',28],['J',29],['V',30],['S',31],['D',1]].map(function(d,i){return '<button type="button" data-a="macD" data-v="'+i+'" aria-pressed="'+(U.mac.dia===i)+'" class="'+(i>4?'fut':'')+'">'+d[0]+'<b>'+d[1]+'</b></button>';}).join('')+'</div>';
  s+='<section class="card"><div class="mac"><svg viewBox="0 0 100 100" role="img" aria-label="'+Math.round(t.k/OBJK*100)+' por ciento del objetivo">'+ring(t.k/OBJK,'var(--a1)',10,42)+'<text x="50" y="47" text-anchor="middle" font-size="12" fill="var(--tx3)">te faltan</text><text x="50" y="64" text-anchor="middle" font-size="19" font-weight="700" fill="var(--tx)">'+kf(Math.max(0,OBJK-t.k))+'</text></svg><div class="mb">'+
   [['Proteína',t.p,o.p,'var(--cya)'],['Carbohidratos',t.c,o.c,'var(--a1)'],['Grasas',t.g,o.g,'var(--vio)']].map(function(m){return '<div><span class="t">'+m[0]+'<b>'+m[1]+' / '+m[2]+' g</b></span><i><u style="width:'+Math.min(100,m[1]/m[2]*100)+'%;background:'+m[3]+'"></u></i></div>';}).join('')+
@@ -2327,7 +2327,7 @@ function vMac(){var t=tot(),o=NUT.obj,f={p:Math.max(0,o.p-t.p),c:Math.max(0,o.c-
  return s;}
 
 /* ---------- Medidas ---------- */
-function vMed(){var m=U.med,s='<div class="hd"><div class="row"><div><span class="ey">Tu cuerpo</span><h1>Medidas</h1></div></div><p>Protocolo ISAK · 14 tomas · última el 25 oct · próxima el 22 nov</p></div>';
+function vMed(){var m=U.med,s='<div class="hd"><div class="row"><div><span class="ey">Tu cuerpo</span><h1>Antropometría</h1></div></div><p>Protocolo ISAK · 14 tomas · última el 25 oct · próxima el 22 nov</p></div>';
  s+='<div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Mi peso</button><button type="button" class="sec" data-a="toma">'+I.regla+'Toma completa</button></div>';
  var T=[['Peso','78,5','kg','0','peso'],['Cintura','83,5','cm','−0,5','cint'],['Brazo','35,5','cm','0','brazo'],['Pliegues','90,5','mm','−2','s6']];
  s+='<div class="tk">'+T.map(function(t){var est=t[3]==='0';return '<button type="button" class="tile" data-a="medG" data-v="'+t[4]+'" style="'+(m.graf===t[4]?'border-color:var(--a1)':'')+'"><span class="lbl">'+t[0]+'</span><b>'+t[1]+'<small>'+t[2]+'</small></b><div class="s">'+(est?'<span class="chip">estable</span>':'<span class="chip ok">'+t[3]+'</span>')+' vs. anterior</div></button>';}).join('')+'</div>';
@@ -2740,7 +2740,7 @@ vHoy=function(){if(!PANEL)return vHoy0();
  var sp=function(a){return a.filter(function(x){return x!=null;});},pesoS=sp(SERIE.peso),cinS=sp(SERIE.cint);
  var dlt=function(a,u){if(a.length<2)return '<span class="chip">sin comparar</span>';var d=Math.round((a[a.length-1]-a[0])*10)/10;return '<span class="'+(d<=0?'up':'')+'">'+(d>0?'+':d<0?'−':'')+co(Math.abs(d))+' '+u+'</span> desde '+TOMAS[0];};
  s+='<div class="sh"><h2>Tu día</h2></div><div class="gr2">'+
-  (PANEL.macros?'<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Macros</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>':'')+
+  (PANEL.macros?'<button type="button" class="tile" data-a="tab" data-v="mac"><span class="lbl">Nutrición</span><div class="ringw"><svg viewBox="0 0 100 100">'+ring(t.k/OBJK,'var(--a1)',11,40)+'<text x="50" y="57" text-anchor="middle" font-size="21" font-weight="700" fill="var(--tx)">'+Math.round(t.k/OBJK*100)+'%</text></svg><div><div class="big" style="font-size:20px">'+kf(t.k)+'</div><div class="s">de '+kf(OBJK)+' kcal</div></div></div></button>':'')+
   seriesTile()+
   (pesoS.length?'<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Peso</span><div class="big">'+co(pesoS[pesoS.length-1])+'<small>kg</small></div><div class="s">'+dlt(pesoS,'kg')+'</div>'+(pesoS.length>1?spark(pesoS,'var(--vio)',130,30):'')+'</button>':'')+
   (cinS.length&&!pesoS.length?'<button type="button" class="tile" data-a="tab" data-v="med"><span class="lbl">Cintura</span><div class="big">'+co(cinS[cinS.length-1])+'<small>cm</small></div><div class="s">'+dlt(cinS,'cm')+'</div>'+(cinS.length>1?spark(cinS,'var(--cya)',130,30):'')+'</button>':'')+tuDiaMas()+'</div>';
@@ -2788,7 +2788,7 @@ sesDe=function(g,d){if(!PANEL)return sesDe0(g,d);var dd=diaDeFecha(d),mv=MOVS[kd
 
 /* ---------- Medidas con los datos del panel ---------- */
 var vMed0=vMed;
-vMed=function(){if(!MEDT)return vMed0();var m=U.med,s='<div class="hd"><div class="row"><div><span class="ey">Tu cuerpo</span><h1>Medidas</h1></div></div><p>Protocolo ISAK · '+MEDT.n+' toma'+(MEDT.n===1?'':'s')+' · última el '+MED_ULT+' · próxima el '+MEDT.prox+'</p></div>';
+vMed=function(){if(!MEDT)return vMed0();var m=U.med,s='<div class="hd"><div class="row"><div><span class="ey">Tu cuerpo</span><h1>Antropometría</h1></div></div><p>Protocolo ISAK · '+MEDT.n+' toma'+(MEDT.n===1?'':'s')+' · última el '+MED_ULT+' · próxima el '+MEDT.prox+'</p></div>';
  s+='<div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Mi peso</button><button type="button" class="sec" data-a="toma">'+I.regla+'Toma completa</button></div>';
  var ult=function(a){a=a.filter(function(x){return x!=null;});return a.length?a[a.length-1]:null;},dif=function(a){a=a.filter(function(x){return x!=null;});if(a.length<2)return 0;return Math.round((a[a.length-1]-a[a.length-2])*10)/10;};
  var T=[['Peso','peso','kg'],['Cintura','cint','cm'],['Brazo','brazo','cm'],['Pliegues','s6','mm']].filter(function(t){return ult(SERIE[t[1]])!=null;});
@@ -2846,7 +2846,7 @@ vPro=function(){if(!PANEL)return vPro0();var c=PANEL.c,sem=(c.historial||[]).sli
  return s;};
 var vMac0=vMac;
 vMac=function(){if(!PANEL||PANEL.macros)return vMac0();
- return '<div class="hd"><span class="ey">Nutrición</span><h1>Macros</h1></div><section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.info+'</span><span><b>Todavía no tenés plan de comidas</b><span class="s">Cuando tu entrenador cargue tu plan de comidas, vas a ver acá tus objetivos y lo que llevás en el día.</span></span><span></span></div></section>';};
+ return '<div class="hd"><span class="ey">Tu alimentación</span><h1>Nutrición</h1></div><section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.info+'</span><span><b>Todavía no tenés plan de comidas</b><span class="s">Cuando tu entrenador cargue tu plan de comidas, vas a ver acá tus objetivos y lo que llevás en el día.</span></span><span></span></div></section>';};
 /* más ejercicios con lámina, y sin lámina no se muestra una imagen rota */
 LAMDE.unshift([/aductor/i,'aductores'],[/extensi[oó]n de cu[aá]driceps|camilla de cu[aá]driceps/i,'extension'],[/femoral/i,'curl'],[/vuelos? laterales? con mancuernas/i,'vuelosmanc'],[/vuelos? laterales?/i,'vuelospolea'],[/curl martillo/i,'gen_cma'],[/curl.*predicador|scott/i,'curlpred'],[/tr[ií]ceps.*barra/i,'gen_etb'],[/tr[ií]ceps.*unilateral/i,'gen_etu'],[/tr[ií]ceps.*(cuerda|polea)/i,'gen_etp'],[/press (plano|de banca)/i,'gen_ppb'],[/patada/i,'patada'],[/abdominal.*polea|crunch.*polea/i,'gen_abp'],[/^(?!.*prensa).*(gemelo|pantorrilla)/i,'gen_pan']);
 lamina=(function(l0){return function(f,a){return f?l0(f,a):'<div class="lam lam0" aria-hidden="true"></div>';};})(lamina);
@@ -3197,11 +3197,11 @@ vPro=function(){if(!PANEL)return vPro0();var S=semanasP(),cer=S.filter(function(
  return s;};
 /* ---------- Medidas: todas, con gráfico de cada una y la tabla entera ---------- */
 var GMED=[['Básicas',function(f){return /^(masa corporal|peso|talla)/.test(nrmP(f.n));}],['Pliegues (mm)',function(f){return f.u==='mm';}],['Perímetros (cm)',function(f){return f.u==='cm'&&!/humero|biestiloideo|femur|talla/.test(nrmP(f.n));}],['Diámetros (cm)',function(f){return /humero|biestiloideo|femur/.test(nrmP(f.n));}],['Otras',function(){return true;}]];
-vMed=function(){if(!MEDT&&PANEL)return '<div class="hd"><span class="ey">Tu cuerpo</span><h1>Medidas</h1></div><div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Anotar mi peso</button></div><section class="card"><p class="sub">Todavía no hay medidas cargadas. Cuando tu entrenador te tome las medidas, vas a ver acá cada una con su gráfico.</p></section>';if(!MEDT)return vMed0();var T=MEDT,lab=T.idx.map(function(i){return fCorta(T.fechas[i]);}),filas=T.F.map(function(f){return {n:f.n,u:f.u,v:T.idx.map(function(i){return f.v[i];})};});
+vMed=function(){if(!MEDT&&PANEL)return '<div class="hd"><span class="ey">Tu cuerpo</span><h1>Antropometría</h1></div><div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Anotar mi peso</button></div><section class="card"><p class="sub">Todavía no hay medidas cargadas. Cuando tu entrenador te tome las medidas, vas a ver acá cada una con su gráfico.</p></section>';if(!MEDT)return vMed0();var T=MEDT,lab=T.idx.map(function(i){return fCorta(T.fechas[i]);}),filas=T.F.map(function(f){return {n:f.n,u:f.u,v:T.idx.map(function(i){return f.v[i];})};});
  if(T.sum.some(function(x){return x!=null;}))filas.push({n:'Σ 8 pliegues',u:'mm',v:T.sum,sum:true});
  if(!PM.sel||!filas.some(function(f){return f.n===PM.sel;})){var p=filas.filter(function(f){return /masa corporal|^peso/.test(nrmP(f.n));})[0]||filas[0];PM.sel=p&&p.n;}
  var sel=filas.filter(function(f){return f.n===PM.sel;})[0],uv=function(a){a=a.filter(function(x){return x!=null;});return a;};
- var s='<div class="hd"><span class="ey">Tu cuerpo</span><h1>Medidas</h1><p>'+T.n+' toma'+(T.n===1?'':'s')+' · última el '+MED_ULT+' · próxima el '+T.prox+'</p></div>';
+ var s='<div class="hd"><span class="ey">Tu cuerpo</span><h1>Antropometría</h1><p>'+T.n+' toma'+(T.n===1?'':'s')+' · última el '+MED_ULT+' · próxima el '+T.prox+'</p></div>';
  s+='<div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Anotar mi peso</button>'+(window.REAL?'':'<button type="button" class="sec" data-a="toma">'+I.regla+'Toma completa</button>')+'</div>';
  if(sel){var a=uv(sel.v),d1=a.length>1?Math.round((a[a.length-1]-a[a.length-2])*10)/10:null,d0=a.length>1?Math.round((a[a.length-1]-a[0])*10)/10:null,un=sel.u||'';
   s+='<section class="card"><div class="ct"><div><h3>'+sel.n+'</h3><p class="sub">'+(a.length?co(a[a.length-1])+' '+un:'sin dato')+(d1!=null?' · '+(d1>0?'+':d1<0?'−':'')+co(Math.abs(d1))+' vs. la anterior':'')+(d0!=null&&a.length>2?' · '+(d0>0?'+':d0<0?'−':'')+co(Math.abs(d0))+' desde '+lab[0]:'')+'</p></div></div>'+lineaP(sel.v,lab,{col:sel.u==='mm'?'var(--cya)':'var(--a1)',aria:'Evolución de '+sel.n})+(sel.sum?'<p class="sub">La suma de los pliegues sigue la grasa debajo de la piel.</p>':'')+'</section>';}
