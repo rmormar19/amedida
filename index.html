@@ -2547,9 +2547,12 @@ function gKey(g){var w=String(g||'').trim().split(/[\s,:;]+/)[0]||'Entreno';   /
    Sin ejercicios reconocidos queda la imagen de siempre. Con una clienta, modelo.js cambia solo cuerpo/X por cuerpo/mujer/X
    (modelo mujer dibujado con app-cliente/cuerpo_mujer.js, mismas capas y mismos nombres). */
 var CAPA_G={espalda:'espalda',core:'core',abdomen:'core',biceps:'biceps',triceps:'triceps',brazos:'biceps triceps',pecho:'pecho',hombro:'hombro',hombros:'hombro',
- cuadriceps:'piernas',femoral:'piernas',gluteo:'piernas',aductor:'piernas',pantorrilla:'piernas',pierna:'piernas',piernas:'piernas'};
-function capasDia(d){var o={};((d&&d.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;var c=CAPA_G[nrmP(grupoEjP(e))];if(c)c.split(' ').forEach(function(x){o[x]=1;});});
- return ['piernas','espalda','core','pecho','hombro','biceps','triceps'].filter(function(k){return o[k];});}
+ cuadriceps:'piernas',femoral:'piernas',gluteo:'gluteo',gluteos:'gluteo',aductor:'piernas',pantorrilla:'piernas',pierna:'piernas',piernas:'piernas'};
+/* 11 nov 2026 · glúteos: con sus ejercicios, con los compuestos de pierna que los trabajan fuerte, y si el día se llama «glúteo» */
+var GLU_COMP=/sentadilla|prensa|zancada|estocada|bulgara|hack|peso muerto|rumano|step|subida al cajon|hip thrust|puente/;
+function capasDia(d){var o={};((d&&d.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;var c=CAPA_G[nrmP(grupoEjP(e))];if(c)c.split(' ').forEach(function(x){o[x]=1;});if(GLU_COMP.test(nrmP(e.nombre)))o.gluteo=1;});
+ if(o.piernas&&/glute/.test(nrmP(d&&d.grupo)))o.gluteo=1;
+ return ['piernas','gluteo','espalda','core','pecho','hombro','biceps','triceps'].filter(function(k){return o[k];});}
 function modeloHTML(d,g,alt){var L=capasDia(d);
  if(!L.length)return '<img src="cuerpo/'+imgG(g)+'.webp" alt="'+alt+'">';
  return '<img src="cuerpo/modelo_base.webp" alt="'+alt+'">'+L.map(function(k){return '<img class="cp" src="cuerpo/capa_'+k+'.webp" alt="" aria-hidden="true">';}).join('');}
