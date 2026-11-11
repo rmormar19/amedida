@@ -1106,6 +1106,7 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .hoyl{margin:2px 0 14px}.hoyl .sx{font-size:13.5px}.hoyl .sx b{white-space:nowrap;font-weight:600}
 .lam0{background:var(--surf2)}
 .ent .img:has(img.sin-modelo),.mapa:has(img.sin-modelo){display:none}
+.hero .img{position:relative}.ent .img img.cp,.hero .img img.cp{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;pointer-events:none}
 /* ---------- progreso y medidas del cliente ---------- */
 .ppx{display:grid;grid-template-columns:minmax(0,1fr) auto 64px;gap:10px;align-items:center;width:100%;padding:11px 0;border:0;border-bottom:1px solid var(--line);background:none;color:inherit;text-align:left;font:inherit;cursor:pointer}
 .ppx:last-child{border-bottom:0}.ppx b{display:block;font-size:15px}.ppx .s{display:block;font-size:12.5px;color:var(--tx3);margin-top:1px}
@@ -1841,7 +1842,7 @@ function vResumen2(){var hp=hechas(),hec=[],ej={},volH=0,volA=0,repH=0,repA=0,du
   (ej[e.id]=ej[e.id]||{e:e,x:[]}).x.push([x,a]);});});});
  var min=U.ses.t0?Math.max(1,Math.round((Date.now()-U.ses.t0)/60000)):null,rir=hec.length?hec.reduce(function(s,x){return s+x[2];},0)/hec.length:null;
  var pct=function(a,b){if(!b)return '—';var v=Math.round((a-b)/b*100);return (v>0?'+':'')+v+' %';},dif=function(a,b){var v=a-b;return (v>0?'+':'')+v;};
- var s='<section class="card hero"><div class="img"><img src="cuerpo/'+IMG_SES()+'.webp" alt="Músculos trabajados: bíceps y tríceps"></div><div class="in"><h2><i>'+I.chk+'</i>'+(hp[0]===hp[1]?'¡Sesión completa!':'¡Listo por hoy!')+'</h2><p class="sub">'+SES_TIT()+' · '+hp[0]+' de '+hp[1]+' series'+(hp[0]<hp[1]?' · te faltaron '+(hp[1]-hp[0]):'')+'</p>'+
+ var s='<section class="card hero"><div class="img">'+MODELO_SES()+'</div><div class="in"><h2><i>'+I.chk+'</i>'+(hp[0]===hp[1]?'¡Sesión completa!':'¡Listo por hoy!')+'</h2><p class="sub">'+SES_TIT()+' · '+hp[0]+' de '+hp[1]+' series'+(hp[0]<hp[1]?' · te faltaron '+(hp[1]-hp[0]):'')+'</p>'+
   '<div class="k4"><div><b>'+(min==null?'—':min)+'</b><span>min</span></div><div><b>'+hp[0]+'/'+hp[1]+'</b><span>series</span></div><div><b>'+(rir==null?'—':co(rir.toFixed(1)))+'</b><span>RIR medio</span></div><div><b>'+(hec.length?pct(volH,volA):'—')+'</b><span>volumen</span></div></div></div></section>';
  if(hec.length){var C=[['Volumen',volA,volH,pct(volH,volA)],['Reps totales',repA,repH,dif(repH,repA)],['Series RIR 0–1',durA,dur,dif(dur,durA)]];
   s+='<section class="card"><h3>Contra la semana pasada</h3><p class="sub">Las mismas series que hiciste hoy. Gris: viernes 23 · azul: hoy.</p><div class="cmp">'+C.map(function(r){var m=Math.max(r[1],r[2])*1.05||1,neg=String(r[3]).charAt(0)==='-';return '<div class="r"><span>'+r[0]+'</span><span class="br"><i class="a" style="width:'+(r[1]/m*100)+'%"></i><i class="b" style="width:'+(r[2]/m*100)+'%"></i></span><b class="'+(neg?'dn':'up')+'">'+r[3]+'</b></div>';}).join('')+'</div></section>';
@@ -2118,7 +2119,7 @@ function resVar(e){var v=e.v,o=[];if(v.banco)o.push(v.banco);if(v.agarre)o.push(
 /* ---------- Resumen ---------- */
 function vResumen(){var h=hechas();
  var C=[['Volumen',4050,4300,'+6 %'],['Reps totales',212,218,'+6'],['Series RIR 0–1',11,12,'+1']];
- return '<section class="card hero"><div class="img"><img src="cuerpo/'+IMG_SES()+'.webp" alt="Músculos trabajados: bíceps y tríceps"></div><div class="in"><h2><i>'+I.chk+'</i>¡Listo!</h2><p class="sub">'+SES_TIT()+' · '+h[0]+' de '+h[1]+' series</p><div class="k4"><div><b>52</b><span>min</span></div><div><b>'+h[0]+'/'+h[1]+'</b><span>series</span></div><div><b>1,2</b><span>RIR medio</span></div><div><b>+6 %</b><span>volumen</span></div></div></div></section>'+
+ return '<section class="card hero"><div class="img">'+MODELO_SES()+'</div><div class="in"><h2><i>'+I.chk+'</i>¡Listo!</h2><p class="sub">'+SES_TIT()+' · '+h[0]+' de '+h[1]+' series</p><div class="k4"><div><b>52</b><span>min</span></div><div><b>'+h[0]+'/'+h[1]+'</b><span>series</span></div><div><b>1,2</b><span>RIR medio</span></div><div><b>+6 %</b><span>volumen</span></div></div></div></section>'+
  '<section class="card"><h3>Contra la semana pasada</h3><p class="sub">Gris: viernes 23 · azul: hoy.</p><div class="cmp">'+C.map(function(r){var m=Math.max(r[1],r[2])*1.05;return '<div class="r"><span>'+r[0]+'</span><span class="br"><i class="a" style="width:'+(r[1]/m*100)+'%"></i><i class="b" style="width:'+(r[2]/m*100)+'%"></i></span><b class="up">'+r[3]+'</b></div>';}).join('')+'</div></section>'+
  '<section class="card lista" style="padding:4px 16px">'+
   '<div class="fila"><span class="ico wa">'+I.trofeo+'</span><span><b>Curl martillo · 16 kg × 10</b><span class="s">Mejor marca: 1RM estimado 21,3 kg (antes 20,5)</span></span><span></span></div>'+
@@ -2541,19 +2542,30 @@ function numP(v){if(v==null||v==='')return null;var n=parseFloat(String(v).repla
 var GPAL=['var(--a1)','var(--cya)','var(--vio)','var(--yel)','var(--grn)','var(--red)'];
 function gKey(g){var w=String(g||'').trim().split(/[\s,:;]+/)[0]||'Entreno';   /* 10 nov 2026: "Torso: espalda…" salía "Torso:" en el calendario */if(/^(tren|full|cuerpo)$/i.test(w))return String(g).trim();
  w=w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();if(w==='Piernas')w='Pierna';return w;}
+/* 10 nov 2026 · el modelo pinta sólo los músculos de los ejercicios del día. Antes era una imagen fija por grupo y un día
+   de espalda mostraba también los bíceps aunque no se hicieran. Las capas salen de los mapa_*.webp (app-cliente/cuerpo_capas.js).
+   Sin ejercicios reconocidos, o con modelos mujer (todavía no hay capas mujer), queda la imagen de siempre. */
+var CAPA_G={espalda:'espalda',core:'core',abdomen:'core',biceps:'biceps',triceps:'triceps',brazos:'biceps triceps',pecho:'pecho',hombro:'hombro',hombros:'hombro',
+ cuadriceps:'piernas',femoral:'piernas',gluteo:'piernas',aductor:'piernas',pantorrilla:'piernas',pierna:'piernas',piernas:'piernas'};
+function capasDia(d){var o={};((d&&d.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;var c=CAPA_G[nrmP(grupoEjP(e))];if(c)c.split(' ').forEach(function(x){o[x]=1;});});
+ return ['piernas','espalda','core','pecho','hombro','biceps','triceps'].filter(function(k){return o[k];});}
+function modeloHTML(d,g,alt){var L=(typeof MUJER!=='undefined'&&MUJER)?[]:capasDia(d);
+ if(!L.length)return '<img src="cuerpo/'+imgG(g)+'.webp" alt="'+alt+'">';
+ return '<img src="cuerpo/modelo_base.webp" alt="'+alt+'">'+L.map(function(k){return '<img class="cp" src="cuerpo/capa_'+k+'.webp" alt="" aria-hidden="true">';}).join('');}
 function imgG(g){var n=nrmP(g);return /pierna|cuadri|glute|femoral|lower|inferior|gemel|aductor/.test(n)?'mapa_pierna':/espalda|dorsal/.test(n)?'mapa_espalda':/pecho|hombro/.test(n)?'mapa_pecho':'mapa_brazos';}
 /* músculo por el nombre del ejercicio, cuando el panel no lo trae */
 /* el mismo músculo con o sin tilde (el Monitor guarda 'Biceps', la app 'Bíceps') → un solo nombre (4 nov 2026) */
 var CANON_G={biceps:'Bíceps',triceps:'Tríceps',cuadriceps:'Cuádriceps',gluteo:'Glúteo',gluteos:'Glúteo',aductor:'Aductor',aductores:'Aductor',femoral:'Femoral',femorales:'Femoral',espalda:'Espalda',hombro:'Hombro',hombros:'Hombro',pecho:'Pecho',core:'Core',abdomen:'Core',pantorrilla:'Pantorrilla',pantorrillas:'Pantorrilla',otros:'Otros'};
 function canonG(g){var k=nrmP(g);return CANON_G[k]||String(g||'');}
 function grupoEjP(e){return canonG(e.grupo||musculoP(e.nombre));}
-function musculoP(n){n=nrmP(n);var R=[[/aductor/,'Aductor'],[/abductor/,'Glúteo'],[/gemel|pantorr/,'Pantorrilla'],[/femoral|peso muerto|rumano|isquio/,'Femoral'],[/hip thrust|glute|patada/,'Glúteo'],[/sentadilla|prensa|extension de cuadri|camilla de cuadri|bulgara|zancada|estocada|hack|sissy/,'Cuádriceps'],[/tricep|frances|fondos/,'Tríceps'],[/curl/,'Bíceps'],[/press militar|vuelo|(^| )lateral|frontal|face ?pull|hombro/,'Hombro'],[/remo|jalon|dorsal|dominada|pullover/,'Espalda'],[/press|apertura|pec ?deck|cruce|pecho|flexion/,'Pecho'],[/abdom|crunch|plancha|elevacion de piernas/,'Core']];
+function musculoP(n){n=nrmP(n);var R=[[/aductor/,'Aductor'],[/abductor/,'Glúteo'],[/gemel|pantorr/,'Pantorrilla'],[/femoral|peso muerto|rumano|isquio/,'Femoral'],[/hip thrust|glute|patada/,'Glúteo'],[/sentadilla|prensa|extension de cuadri|camilla de cuadri|bulgara|zancada|estocada|hack|sissy/,'Cuádriceps'],[/tricep|frances|fondos/,'Tríceps'],[/curl/,'Bíceps'],[/press militar|vuelo|(^| )lateral|frontal|face ?pull|hombro|invertid/,'Hombro'],[/remo|jalon|dorsal|dominada|pullover|trapecio|encogimiento/,'Espalda'],[/press|apertura|pec ?deck|cruce|pecho|flexion/,'Pecho'],[/abdom|crunch|plancha|elevacion(es)? de piernas|oblicuo/,'Core']];
  for(var i=0;i<R.length;i++)if(R[i][0].test(n))return R[i][1];return 'Otros';}
 function uniP(p){p=String(p||'').toLowerCase();return /placa/.test(p)?'pl':/lb|libra/.test(p)?'lb':'kg';}
 function seriesP(e){return (e.series||[]).filter(function(s){return s&&s.tipo!=='aprox';});}
 function corto(n){n=String(n||'');return n.length>24?n.slice(0,22)+'…':n;}
 function SES_TIT(){return PANEL&&PANEL.ses?(titDia(PANEL.ses.grupo)||'Entreno'):'Brazos';}
 function IMG_SES(){return PANEL&&PANEL.ses?imgG(PANEL.ses.grupo):'mapa_brazos';}
+function MODELO_SES(){return PANEL&&PANEL.ses?modeloHTML(PANEL.ses,PANEL.ses.grupo,'Músculos trabajados'):'<img src="cuerpo/mapa_brazos.webp" alt="Músculos trabajados">';}
 function HOY_TXT(){return HOYC.getDate()+' de '+MESES_L[HOYC.getMonth()];}
 var MED_ULT='25 oct';
 var MESC=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
@@ -2706,7 +2718,7 @@ vHoy=function(){if(!PANEL)return vHoy0();
   /* la marcó el entrenador (desde el Monitor o su celular): no se ofrece empezarla */
   var regE=PANEL.hoy&&!U.ses.on&&!U.ses.fin&&(ses.estado==='verde'||ses.estado==='rojo')?ses.estado:null;
   var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(sc?(PANEL.hoy?'Empezar cardio':'Adelantar cardio'):(PANEL.hoy?'Empezar sesión':'Adelantar sesión'));
-  s+='<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':'<img src="cuerpo/'+imgG(ses.grupo)+'.webp" alt="Músculos de la sesión resaltados en azul">')+'<span class="chip">'+(PANEL.hoy?'Entreno de hoy':'Próximo · '+ses.dia)+'</span></div><div class="in">'+(PANEL.hoy?'':'<span class="ey prox">'+proxTxt(ses.dia)+'</span>')+'<h2>'+(titDia(ses.grupo)||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
+  s+='<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(ses,ses.grupo,'Músculos de la sesión resaltados en azul'))+'<span class="chip">'+(PANEL.hoy?'Entreno de hoy':'Próximo · '+ses.dia)+'</span></div><div class="in">'+(PANEL.hoy?'':'<span class="ey prox">'+proxTxt(ses.dia)+'</span>')+'<h2>'+(titDia(ses.grupo)||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
    top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'<span class="chip">~'+Math.round(ns*3+czMin)+' min</span></div>'+
    /* desplegable de ejercicios (7 nov 2026): cerrado de entrada para que Hoy no quede tan largo */
    ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
@@ -2987,7 +2999,7 @@ function diaCardP(f){var dd=diaDeFecha(f),di=diaInfo(f),nm=DIA_LG[f.getDay()]+' 
  var mus={},nej=0,ns=0;(dd.ejercicios||[]).forEach(function(e){if(!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=grupoEjP(e);mus[g]=(mus[g]||0)+n;});
  var top=Object.keys(mus).sort(function(x,y){return mus[y]-mus[x];}).slice(0,2),czL=(dd.cardio||[]).filter(function(z){return z&&z.tipo;}),sc=!nej&&czL.length;
  var pas=+f<+HOYC,ok=di.e==='ok'||dd.estado==='verde',fa=di.e==='fa'||dd.estado==='rojo',est=pas?(fa?'faltaste':ok?'hecho':'sin registrar'):'planificado';
- return '<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':'<img src="cuerpo/'+imgG(grupoDia(dd))+'.webp" alt="Músculos de ese día resaltados en azul">')+'<span class="chip">'+nm+' · '+est+'</span></div><div class="in"><h2>'+(titDia(grupoDia(dd))||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
+ return '<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(dd,grupoDia(dd),'Músculos de ese día resaltados en azul'))+'<span class="chip">'+nm+' · '+est+'</span></div><div class="in"><h2>'+(titDia(grupoDia(dd))||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
   top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'</div>'+
   ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
   (U.verEj?'<div class="lista hoyl">'+(dd.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
