@@ -3391,7 +3391,8 @@ function envioCard(){var sin,nv;if(!REAL){/* app de prueba: ?ver=enviado o ?ver=
 if(REAL){
  try{if(localStorage.getItem(CLAVE_BAJA)==='1')setTimeout(function(){bajaPantalla(true);},0);}catch(e){}
  setTimeout(function(){var c=null;try{c=JSON.parse(localStorage.getItem(CLAVE_RC)||'null');}catch(e){}if(c){nombreReal(c);AM_PANEL(c,{silencio:true});}traerCliente();enviarPuente();},0);
- setInterval(function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();revisarEstado();}},120000);
+ /* 12 nov 2026 · cada minuto (antes cada 2): lo que cambia el Monitor aparece enseguida; si nada cambió el puente responde lo mismo de su memoria */
+ setInterval(function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();revisarEstado();}},60000);
  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){traerCliente();enviarPuente();revisarEstado();}});
  setTimeout(revisarEstado,2500);
  window.addEventListener('online',enviarPuente);
@@ -3548,6 +3549,143 @@ function pruAplicar(c,d){var R=c.rutina;if(d.fechaDia){var mo=+lunesOp(new Date(
    dd.soloCardio={t:d.cardio,min:d.min,a:pasa?d.a:'',g:g,ej:pasa?[]:ej.map(function(x){return {n:x.nombre};})};break;}}
 (function(c0){cola=function(txt,d){c0.apply(this,arguments);if(!PRUEBA||!d||!d.tipo||d.tipo==='comida')return;
  try{var c=pruCargar();pruAplicar(c,d);pruGuardar(c);setTimeout(function(){try{AM_PANEL(c,{silencio:true});render();}catch(e){}},0);}catch(e){if(window.console)console.error(e);}};})(cola);
+
+/* 11 nov 2026 · Efectos (pedido de Ricky, inspirados en otra app de entrenamiento, con los colores y el diseño de A medida):
+   1) Cierre de sesión animado: la semana L a D se llena cuadradito por cuadradito, el de hoy cae como un sello,
+      se pintan los músculos trabajados y los números cuentan hacia arriba.
+   2) Récords del cierre con un cartelito «▲ +1 placa» / «▲ +2 reps» que salta.
+   3) Racha en Inicio: el número cuenta y los cuadraditos se llenan.
+   4) «Deslizá para terminar» en lugar del botón Terminar sesión (con una flecha, sin bandera: Ricky).
+   5) En el cierre, el modelo de Inicio (hombre o mujer, lo cambia modelo.js) muestra los músculos de TODA la semana:
+      más color = más veces trabajado.
+   No cambia ninguna pantalla: se aplica después de cada render(). Las animaciones corren sólo al entrar a la pantalla,
+   no en cada re-render, y no corren si el teléfono pide menos movimiento. */
+(function(){
+var MENOS=function(){try{return window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+var IC_FLECHA='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6l6 6-6 6"/><path d="M12 6l6 6-6 6"/></svg>';
+var IC_OK='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="efok" d="M5 12.5l4.2 4.2L19 7"/></svg>';
+var LET='LMMJVSD';
+
+/* ---------- 1 · la semana en el cierre ---------- */
+function semanaCierre(){var hoy=+HOYC,dias;try{dias=semDias(lunes(HOYC));}catch(e){return '';}
+ var celdas=dias.map(function(d,i){var x={e:'de'};try{x=diaInfo(d)||x;}catch(e){}var esHoy=+new Date(d.getFullYear(),d.getMonth(),d.getDate())===hoy;
+  var e=esHoy?'hoy':x.e,cls='efd',txt='',lab=DSEM[d.getDay()]+' '+d.getDate()+': ';
+  if(esHoy){cls+=' ok hoy';txt=IC_OK;lab+='hoy, entrenaste';}
+  else if(e==='ok'){cls+=' ok';txt=IC_OK;lab+='entrenaste';}
+  else if(e==='fa'){cls+=' fa';txt='–';lab+='no entrenaste';}
+  else if(e==='sm'){cls+=' sm';lab+='sin registrar';}
+  else if(e==='pl'||e==='cur'){cls+=' pl';lab+='te toca';}
+  else {cls+=' de';lab+='descanso';}
+  return '<div class="efc"><span class="efl'+(esHoy?' on':'')+'" aria-hidden="true">'+LET.charAt(i)+'</span><span class="'+cls+'" role="img" aria-label="'+lab+'">'+txt+'</span></div>';}).join('');
+ var n=dias.filter(function(d){var x={};try{x=diaInfo(d)||{};}catch(e){}return x.e==='ok'||+new Date(d.getFullYear(),d.getMonth(),d.getDate())===hoy;}).length;
+ return '<section class="card efsem"><div class="efh"><h3>Tu semana</h3><i aria-hidden="true"></i><span class="efn">'+n+' entreno'+(n===1?'':'s')+'</span></div><div class="efg">'+celdas+'</div></section>';}
+
+/* ---------- 5 · el modelo con los músculos de la semana (lo hecho antes de hoy + la sesión de hoy) ---------- */
+function diasSemana(){var hoy=+HOYC,o=[];try{semDias(lunes(HOYC)).forEach(function(d){var t=+new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  if(t===hoy){if(window.PANEL&&PANEL.ses)o.push(PANEL.ses);return;}if(t>hoy)return;var x=diaInfo(d)||{};if(x.e!=='ok')return;var dd=diaDeFecha(d);if(dd)o.push(dd);});}catch(e){}return o;}
+function modeloSemana(hero){var img=hero.querySelector('.img');if(!img||typeof capasDia!=='function')return;var D=diasSemana(),n={},orden=[];
+ D.forEach(function(d){var L=[];try{L=capasDia(d)||[];}catch(e){}L.forEach(function(k){if(!n[k]){n[k]=0;orden.push(k);}n[k]++;});});
+ if(!orden.length)return;var base=['piernas','gluteo','abductor','espalda','core','pecho','hombro','biceps','triceps'];orden.sort(function(a,b){return base.indexOf(a)-base.indexOf(b);});
+ var chip=img.querySelector('.chip');img.innerHTML='<img src="cuerpo/modelo_base.webp" alt="Músculos que trabajaste esta semana: '+orden.join(', ')+'">'+orden.map(function(k){return '<img class="cp efv'+Math.min(3,n[k])+'" src="cuerpo/capa_'+k+'.webp" alt="" aria-hidden="true">';}).join('')+
+  '<span class="chip efchip">Tus músculos de la semana</span>'+(D.length>1?'<span class="efley" aria-hidden="true">menos<i class="efv1"></i><i class="efv2"></i><i class="efv3"></i>más</span>':'');}
+
+/* ---------- 2 · cartelito en los récords del cierre ---------- */
+function cartelRecord(fila){if(fila.querySelector('.efup'))return;var b=fila.querySelector('b'),s=fila.querySelector('.s');if(!b)return;
+ var tb=b.textContent,ts=s?s.textContent:'',m,t=null;
+ if((m=ts.match(/Subiste de ([\d.,]+) a ([\d.,]+) ?(pl|kg)/))){var a=parseFloat(m[1].replace(',','.')),z=parseFloat(m[2].replace(',','.')),d=Math.round((z-a)*100)/100;
+  if(d>0)t='+'+String(d).replace('.',',')+' '+(m[3]==='pl'?(d===1?'placa':'placas'):'kg');}
+ else if((m=tb.match(/\+(\d+) reps/)))t='+'+m[1]+' rep'+(m[1]==='1'?'':'s');
+ if(!t)return;var sp=fila.lastElementChild;if(!sp||sp.tagName!=='SPAN')return;
+ sp.innerHTML='<span class="efup">▲ '+t+'</span>';}
+
+/* ---------- números que cuentan ---------- */
+function contar(el,ms,demora){var txt=el.textContent,m=txt.match(/-?\d+(?:,\d+)?/);if(!m)return;var fin=parseFloat(m[0].replace(',','.'));if(!(fin>0))return;
+ var dec=(m[0].split(',')[1]||'').length,i0=m.index,ant=txt.slice(0,i0),des=txt.slice(i0+m[0].length),t0=null;
+ var pinta=function(v){el.textContent=ant+(dec?v.toFixed(dec).replace('.',','):String(Math.round(v)))+des;};pinta(0);
+ setTimeout(function(){var paso=function(ts){if(t0==null)t0=ts;var p=Math.min(1,(ts-t0)/ms),e=1-Math.pow(1-p,3);pinta(fin*e);if(p<1)requestAnimationFrame(paso);else el.textContent=txt;};requestAnimationFrame(paso);},demora||0);}
+
+function cierre(v,entro){if(v.querySelector('.efsem'))return;var hero=v.querySelector('.card.hero');if(!hero)return;
+ modeloSemana(hero);
+ hero.insertAdjacentHTML('afterend',semanaCierre());
+ var filas=[].slice.call(v.querySelectorAll('.card.lista .fila')).filter(function(f){return f.querySelector('.ico.wa');});filas.forEach(cartelRecord);
+ if(!entro||MENOS())return;
+ v.classList.add('efanim');
+ var C=[].slice.call(v.querySelectorAll('.efsem .efd.ok:not(.hoy)')),hoyC=v.querySelector('.efsem .efd.hoy'),otros=[].slice.call(v.querySelectorAll('.efsem .efd:not(.ok)'));
+ otros.forEach(function(c,i){c.style.animationDelay=(0.15+i*0.04)+'s';c.classList.add('efin');});
+ var tilde=function(c,t){var p=c.querySelector('.efok');if(p)p.style.animationDelay=t+'s';};
+ C.forEach(function(c,i){c.style.animationDelay=(0.3+i*0.11)+'s';c.classList.add('efllena');tilde(c,0.5+i*0.11);});
+ var tSello=0.45+C.length*0.11;if(hoyC){hoyC.style.animationDelay=tSello+'s';hoyC.classList.add('efsello');tilde(hoyC,tSello+0.45);}
+ var capas=[].slice.call(hero.querySelectorAll('.img img.cp'));var tCapa=tSello+0.55;
+ capas.forEach(function(c,i){c.style.animationDelay=(tCapa+i*0.22)+'s';c.classList.add('efcapa');});
+ if(!capas.length){var im=hero.querySelector('.img img');if(im){im.style.animationDelay=(tSello+0.4)+'s';im.classList.add('efcapa');}}
+ [].slice.call(hero.querySelectorAll('.k4 b')).forEach(function(b,i){contar(b,900,250+i*120);});
+ var tF=tCapa+Math.max(1,capas.length)*0.22+0.1;
+ filas.concat([].slice.call(v.querySelectorAll('.card.lista .fila')).filter(function(f){return filas.indexOf(f)<0;})).forEach(function(f,i){f.style.animationDelay=(Math.min(tF,2.2)+i*0.14)+'s';f.classList.add('effila');var u=f.querySelector('.efup');if(u)u.style.animationDelay=(Math.min(tF,2.2)+i*0.14+0.3)+'s';});}
+
+/* ---------- 3 · racha en Inicio ---------- */
+function racha(v,entro){if(!entro||MENOS())return;var big=v.querySelector('.tdra');if(!big)return;
+ var nodo=null;[].slice.call(big.childNodes).forEach(function(n){if(n.nodeType===3&&/\d/.test(n.nodeValue))nodo=n;});
+ if(nodo){var fin=parseInt(nodo.nodeValue,10);if(fin>0){var sp=document.createElement('span');sp.textContent=nodo.nodeValue;big.replaceChild(sp,nodo);contar(sp,700,200);}}
+ var D=[].slice.call(v.querySelectorAll('.tdrd i'));D.forEach(function(d,i){d.style.animationDelay=(0.25+i*0.09)+'s';d.classList.add(d.classList.contains('hoy')?'efpunto':'efbarra');});
+ var ic=big.querySelector('svg');if(ic)ic.classList.add('effuego');}
+
+/* ---------- 4 · deslizá para terminar ---------- */
+function deslizar(v){var b=v.querySelector('.bajo button.pri.full[data-a="terminar"]');if(!b||b.dataset.efd)return;b.dataset.efd='1';
+ var w=document.createElement('div');w.className='efdes';w.setAttribute('role','button');w.tabIndex=0;w.setAttribute('aria-label','Terminar sesión. Deslizá la flecha hacia la derecha');
+ w.innerHTML='<span class="eftr" aria-hidden="true"></span><span class="eftx" aria-hidden="true">Deslizá para terminar</span><span class="efpe" aria-hidden="true">'+IC_FLECHA+'</span>';
+ b.hidden=true;b.style.display='none';b.parentNode.insertBefore(w,b);
+ var pe=w.querySelector('.efpe'),tr=w.querySelector('.eftr'),tx=w.querySelector('.eftx'),x0=null,dx=0,max=0,hecho=false;
+ var pon=function(x,anim){pe.style.transition=tr.style.transition=tx.style.transition=anim?'transform .3s cubic-bezier(.3,1.4,.5,1),width .3s cubic-bezier(.3,1.4,.5,1),opacity .2s':'none';pe.style.transform='translateX('+x+'px)';tr.style.width=(x+pe.offsetWidth+8)+'px';tx.style.opacity=String(Math.max(0,1-x/(max*0.6||1)));};
+ var listo=function(){if(hecho)return;hecho=true;pon(max,true);w.classList.add('eflisto');try{if(navigator.vibrate)navigator.vibrate(18);}catch(e){}setTimeout(function(){b.click();},260);};
+ w.addEventListener('pointerdown',function(e){if(hecho)return;var r=pe.getBoundingClientRect();max=w.clientWidth-pe.offsetWidth-8;if(e.clientX<r.left-12||e.clientX>r.right+40){w.classList.remove('efavisa');void w.offsetWidth;w.classList.add('efavisa');return;}x0=e.clientX;dx=0;try{w.setPointerCapture(e.pointerId);}catch(er){}e.preventDefault();});
+ w.addEventListener('pointermove',function(e){if(x0==null)return;dx=Math.max(0,Math.min(max,e.clientX-x0));pon(dx,false);});
+ var suelta=function(){if(x0==null)return;x0=null;if(dx>=max*0.82)listo();else{pon(0,true);if(dx<10){w.classList.remove('efavisa');void w.offsetWidth;w.classList.add('efavisa');}}};
+ w.addEventListener('pointerup',suelta);w.addEventListener('pointercancel',suelta);
+ w.addEventListener('click',function(e){if(e.detail===0)listo();});
+ w.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();max=w.clientWidth-pe.offsetWidth-8;listo();}});
+ requestAnimationFrame(function(){max=w.clientWidth-pe.offsetWidth-8;pon(0,false);});}
+
+/* ---------- después de cada render ---------- */
+var render0=render;
+render=function(){var prev=window.__pant;var r=render0.apply(this,arguments);try{var v=document.getElementById('view'),entro=window.__pant!==prev,push=U.pila[U.pila.length-1];v.classList.remove('efanim');
+  if(push==='resumen')cierre(v,entro);else if(push==='sesion')deslizar(v);else if(!push&&U.tab==='hoy')racha(v,entro);}catch(e){}
+ return r;};
+
+var st=document.createElement('style');st.textContent=
+ '.hero .img{position:relative}.hero .img .efchip{position:absolute;left:10px;top:10px;margin:0;background:rgba(255,255,255,.92);color:#0e1a2b}.hero .img .efley{position:absolute;right:10px;bottom:8px;display:flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#5b6475;background:rgba(255,255,255,.75);padding:3px 7px;border-radius:8px}'+
+ '.efley i{width:12px;height:8px;border-radius:2px;background:#5b8cff}.efley i.efv1{opacity:.5}.efley i.efv2{opacity:.75}.hero .img img.efv1{opacity:.62}.hero .img img.efv2{opacity:.84}.hero .img img.efv3{opacity:1}'+
+ '.efsem .efh{display:flex;align-items:center;gap:10px}.efsem h3{margin:0}.efsem .efh i{flex:1;height:1px;background:var(--line2)}.efsem .efn{font-size:12.5px;color:var(--tx3);font-weight:600}'+
+ '.efg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:12px}.efc{display:flex;flex-direction:column;align-items:center;gap:6px}'+
+ '.efl{font-size:12px;font-weight:700;color:var(--tx3)}.efl.on{color:var(--tx)}'+
+ '.efd{width:100%;aspect-ratio:1;max-width:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}'+
+ '.efd.ok{background:var(--a1);color:var(--ink);box-shadow:0 6px 16px -8px rgba(var(--a1rgb),.8)}.efd.hoy{background:var(--grn);box-shadow:0 8px 20px -8px rgba(var(--grnrgb),.9)}'+
+ '.efd.fa{background:var(--surf2);color:var(--tx4);border:1px solid var(--line2)}.efd.sm{background:var(--surf2);border:1px dashed var(--line2)}'+
+ '.efd.pl{border:1.5px dashed var(--line2)}.efd.de{background:transparent}.efd.de:after{content:"";width:5px;height:5px;border-radius:50%;background:var(--line2)}'+
+ '.efanim .efin{opacity:0;animation:efIn .3s ease forwards}'+
+ '.efanim .efllena{opacity:0;transform:scale(.4);animation:efLlena .38s cubic-bezier(.3,1.6,.5,1) forwards}'+
+ '.efanim .efllena .efok,.efanim .efsello .efok{stroke-dasharray:24;stroke-dashoffset:24;animation:efTilde .3s ease forwards}'+
+ '.efanim .efsello{opacity:0;animation:efSello .62s cubic-bezier(.2,.9,.3,1.25) forwards}'+
+ '.efanim .efcapa{opacity:0;animation:efCapa .7s ease forwards}'+
+ '.efanim .effila{opacity:0;transform:translateX(26px);animation:efFila .45s cubic-bezier(.2,.9,.3,1) forwards}'+
+ '.efup{display:inline-block;white-space:nowrap;font-size:12.5px;font-weight:800;color:var(--ink);background:var(--grn);padding:4px 8px;border-radius:8px}'+
+ '.efanim .efup{transform:scale(0);animation:efPop .4s cubic-bezier(.3,1.7,.5,1) forwards}'+
+ '.efbarra{transform:scaleX(0);transform-origin:left;animation:efBarra .35s ease forwards}.efpunto{opacity:0;animation:efIn .3s ease forwards,efLate 1.6s ease-in-out 1.2s infinite}'+
+ '.effuego{transform-origin:50% 90%;animation:efFuego .7s cubic-bezier(.3,1.6,.5,1) .15s both}'+
+ '.efdes{position:relative;width:100%;height:56px;border-radius:16px;background:var(--surf2);border:1px solid var(--line2);overflow:hidden;touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab}'+
+ '.efdes:focus-visible{outline:2px solid var(--a1);outline-offset:2px}'+
+ '.eftr{position:absolute;left:0;top:0;bottom:0;width:64px;background:var(--grad);opacity:.28;border-radius:16px}'+
+ '.eftx{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-left:52px;font-weight:700;font-size:15px;color:var(--tx2)}'+
+ '.efpe{position:absolute;left:4px;top:4px;width:56px;height:46px;border-radius:12px;background:var(--grad);color:var(--ink);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px -6px rgba(var(--a1rgb),.9)}'+
+ '.efdes.efavisa .efpe{animation:efEmpuja .7s ease}.efdes.eflisto .efpe{background:var(--grn)}'+
+ '@keyframes efIn{to{opacity:1}}@keyframes efLlena{to{opacity:1;transform:scale(1)}}@keyframes efTilde{to{stroke-dashoffset:0}}'+
+ '@keyframes efSello{0%{opacity:0;transform:translate(-26px,-70px) rotate(-28deg) scale(1.5)}60%{opacity:1;transform:translate(0,4px) rotate(4deg) scale(.94)}80%{transform:translate(0,-2px) rotate(-1deg) scale(1.03)}100%{opacity:1;transform:none}}'+
+ '@keyframes efCapa{0%{opacity:0;filter:brightness(1.8)}60%{filter:brightness(1.35)}100%{filter:none}}'+
+ '@keyframes efFila{to{opacity:1;transform:none}}@keyframes efPop{to{transform:scale(1)}}@keyframes efBarra{to{transform:scaleX(1)}}'+
+ '@keyframes efLate{0%,100%{opacity:1}50%{opacity:.35}}@keyframes efFuego{0%{transform:scale(.3) rotate(-12deg)}100%{transform:none}}'+
+ '@keyframes efEmpuja{0%,100%{transform:translateX(0)}30%{transform:translateX(22px)}55%{transform:translateX(0)}75%{transform:translateX(9px)}}'+
+ '@media (prefers-reduced-motion: reduce){.efanim *,.efbarra,.efpunto,.effuego,.efdes .efpe{animation:none!important;opacity:1!important;transform:none!important}}';
+document.head.appendChild(st);
+})();
 
 render();
 (function(){var sp=document.getElementById('splash');if(!sp)return;var ya=false,salir=function(){if(ya)return;ya=true;sp.classList.add('out');window.__forzar=true;render();};sp.addEventListener('click',salir);setTimeout(salir,1700);})();
