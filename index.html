@@ -2550,9 +2550,12 @@ var CAPA_G={espalda:'espalda',core:'core',abdomen:'core',biceps:'biceps',triceps
  cuadriceps:'piernas',femoral:'piernas',gluteo:'gluteo',gluteos:'gluteo',aductor:'piernas',pantorrilla:'piernas',pierna:'piernas',piernas:'piernas'};
 /* 11 nov 2026 · glúteos: con sus ejercicios, con los compuestos de pierna que los trabajan fuerte, y si el día se llama «glúteo» */
 var GLU_COMP=/sentadilla|prensa|zancada|estocada|bulgara|hack|peso muerto|rumano|step|subida al cajon|hip thrust|puente/;
-function capasDia(d){var o={};((d&&d.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;var c=CAPA_G[nrmP(grupoEjP(e))];if(c)c.split(' ').forEach(function(x){o[x]=1;});if(GLU_COMP.test(nrmP(e.nombre)))o.gluteo=1;});
+/* 11 nov 2026 · abductores (glúteo medio y tensor de la fascia lata): son parte del glúteo, así que siempre van juntos (Ricky) */
+var ABD_RE=/abductor|abduccion/;
+function capasDia(d){var o={};((d&&d.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;if(ABD_RE.test(nrmP(e.nombre))){o.abductor=1;return;}var c=CAPA_G[nrmP(grupoEjP(e))];if(c)c.split(' ').forEach(function(x){o[x]=1;});if(GLU_COMP.test(nrmP(e.nombre)))o.gluteo=1;});
  if(o.piernas&&/glute/.test(nrmP(d&&d.grupo)))o.gluteo=1;
- return ['piernas','gluteo','espalda','core','pecho','hombro','biceps','triceps'].filter(function(k){return o[k];});}
+ if(o.gluteo||o.abductor){o.gluteo=1;o.abductor=1;}
+ return ['piernas','gluteo','abductor','espalda','core','pecho','hombro','biceps','triceps'].filter(function(k){return o[k];});}
 function modeloHTML(d,g,alt){var L=capasDia(d);
  if(!L.length)return '<img src="cuerpo/'+imgG(g)+'.webp" alt="'+alt+'">';
  return '<img src="cuerpo/modelo_base.webp" alt="'+alt+'">'+L.map(function(k){return '<img class="cp" src="cuerpo/capa_'+k+'.webp" alt="" aria-hidden="true">';}).join('');}
@@ -2864,6 +2867,9 @@ rutinaDesdePanel=(function(r0){return function(d){var o=r0(d);(o.ejercicios||[])
 function planLista(dt){if(!PANEL)return '';var L=sesDe(null,dt),dd=diaDeFecha(dt),cz=cardioLista(dd&&dd.cardio);if(!L.length&&!cz)return '';return '<div class="lista" style="margin-top:6px">'+L.map(function(x){return '<div class="sx"><span>'+x.n+'</span><b>'+(x.txt||x.plan[2]+' × '+x.plan[1])+'</b><span></span></div>';}).join('')+cz+'</div>';}
 /* aductores: lámina animada propia (antes mostraba la de abductores) */
 if(ANIM.indexOf('aductores')<0)ANIM.push('aductores');
+/* 11 nov 2026 · abductores en máquina: su lámina (la máquina con las almohadillas por fuera de las rodillas) y su ficha */
+LAMDE.unshift([/^(?!.*(polea|banda|cable|el[aá]stico)).*(abductor|abducci[oó]n de cadera)/i,'gen_adu']);
+FICHAS.gen_adu={m:['Glúteo medio','Tensor de la fascia lata'],p:['Sentado con la espalda apoyada; las almohadillas por fuera de las rodillas.','Abrí las piernas empujando las almohadillas hacia afuera, hasta donde te resulte cómodo, y sostené 1–2 segundos.','Volvé a cerrar despacio, sin que el peso golpee.'],x:['Cerrar de golpe y dejar caer el peso.','Despegar la espalda o la cadera del asiento para ayudarte.']};
 FICHAS.aductores={m:['Aductores'],p:['Sentado con la espalda apoyada; las almohadillas por dentro de las rodillas.','Arrancá con las piernas abiertas hasta donde te resulte cómodo y sostené 2 segundos.','Cerrá las piernas juntando las almohadillas, sostené 2 segundos y volvé despacio.'],x:['Soltar el peso de golpe al abrir.','Despegar la espalda o la cadera del asiento para ayudarte.']};
 /* texto series × reps de un ejercicio de un aviso guardado: si el aviso es viejo (sin txt) se busca en la rutina del panel */
 function txtEj(e){if(e.txt)return e.txt;if(!PANEL)return '';var n=nrmP(e.n||e.nombre||''),r='';
