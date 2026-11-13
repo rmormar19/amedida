@@ -2714,6 +2714,7 @@ function medP(m){var vacio=function(){MEDT=null;TOMAS=[];SERIE={s6:[],peso:[],ci
 function sumaPrev(){return MEDT?MEDT.sum[MEDT.sum.length-1]:90.5;}
 
 /* ---------- Hoy con los datos del panel ---------- */
+/* 12 nov 2026 · Ricky: el cartel «Próximo · …» ya no va arriba del modelo (le tapaba la cabeza): va abajo, arriba del título */
 function proxTxt(dia){var n=nrmP(dia),idx=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'].indexOf(n),man=(HOYC.getDay()+1)%7;return 'Próximo entreno · '+(idx===man?'mañana, ':'')+String(dia||'').toLowerCase().replace(/^sabado$/,'sábado').replace(/^miercoles$/,'miércoles');}
 var vHoy0=vHoy;
 vHoy=function(){if(!PANEL)return vHoy0();
@@ -2725,7 +2726,7 @@ vHoy=function(){if(!PANEL)return vHoy0();
   /* la marcó el entrenador (desde el Monitor o su celular): no se ofrece empezarla */
   var regE=PANEL.hoy&&!U.ses.on&&!U.ses.fin&&(ses.estado==='verde'||ses.estado==='rojo')?ses.estado:null;
   var btn=U.ses.fin?I.chk+'Hecha · esfuerzo '+U.esf:U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(sc?(PANEL.hoy?'Empezar cardio':'Adelantar cardio'):(PANEL.hoy?'Empezar sesión':'Adelantar sesión'));
-  s+='<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(ses,ses.grupo,'Músculos de la sesión resaltados en azul'))+'<span class="chip">'+(PANEL.hoy?'Entreno de hoy':'Próximo · '+ses.dia)+'</span></div><div class="in">'+(PANEL.hoy?'':'<span class="ey prox">'+proxTxt(ses.dia)+'</span>')+'<h2>'+(titDia(ses.grupo)||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
+  s+='<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(ses,ses.grupo,'Músculos de la sesión resaltados en azul'))+'</div><div class="in"><span class="ey prox">'+(PANEL.hoy?'Entreno de hoy':proxTxt(ses.dia))+'</span><h2>'+(titDia(ses.grupo)||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
    top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'<span class="chip">~'+Math.round(ns*3+czMin)+' min</span></div>'+
    /* desplegable de ejercicios (7 nov 2026): cerrado de entrada para que Hoy no quede tan largo */
    ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
@@ -3009,7 +3010,7 @@ function diaCardP(f){var dd=diaDeFecha(f),di=diaInfo(f),nm=DIA_LG[f.getDay()]+' 
  var mus={},nej=0,ns=0;(dd.ejercicios||[]).forEach(function(e){if(!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=grupoEjP(e);mus[g]=(mus[g]||0)+n;});
  var top=Object.keys(mus).sort(function(x,y){return mus[y]-mus[x];}).slice(0,2),czL=(dd.cardio||[]).filter(function(z){return z&&z.tipo;}),sc=!nej&&czL.length;
  var pas=+f<+HOYC,ok=di.e==='ok'||dd.estado==='verde',fa=di.e==='fa'||dd.estado==='rojo',est=pas?(fa?'faltaste':ok?'hecho':'sin registrar'):'planificado';
- return '<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(dd,grupoDia(dd),'Músculos de ese día resaltados en azul'))+'<span class="chip">'+nm+' · '+est+'</span></div><div class="in"><h2>'+(titDia(grupoDia(dd))||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
+ return '<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(dd,grupoDia(dd),'Músculos de ese día resaltados en azul'))+'</div><div class="in"><span class="ey prox">'+nm+' · '+est+'</span><h2>'+(titDia(grupoDia(dd))||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
   top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'</div>'+
   ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
   (U.verEj?'<div class="lista hoyl">'+(dd.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
@@ -3561,6 +3562,11 @@ function pruAplicar(c,d){var R=c.rutina;if(d.fechaDia){var mo=+lunesOp(new Date(
    7) Al completar un ejercicio (o un bloque): chispitas, el punto de la ruta se pinta y un aviso «¡Ejercicio completo!».
    8) Cierre: el tilde verde entra con chispas y vibra; los récords brillan en dorado y el trofeo se mueve.
    9) Al pasar de un ejercicio a otro dentro de la sesión, la pantalla se desliza (las otras ya tenían transición).
+   12 nov 2026 (Ricky: «al pasar los días en Hoy, efectos en el modelo con los músculos que se van marcando»):
+   10) Al tocar otro día de la semana en Hoy, fundido (Ricky eligió la opción 6 «pero mejoralo aún más»): los músculos
+       del día anterior se apagan con desenfoque y pierden el color, los que se repiten brillan suave, los nuevos entran
+       uno tras otro de borrosos a nítidos con un brillo azul que se apaga, y el modelo respira. El día elegido salta y
+       el texto entra del lado del día.
    No cambia ninguna pantalla: se aplica después de cada render(). Las animaciones corren sólo al entrar a la pantalla,
    no en cada re-render, y no corren si el teléfono pide menos movimiento. */
 (function(){
@@ -3686,11 +3692,36 @@ function cambioBloque(v,entro){var b=U.ses.b;if(!entro&&BANT!=null&&b!==BANT&&!M
 
 /* ---------- después de cada render ---------- */
 var render0=render;
-render=function(){var prev=window.__pant;var r=render0.apply(this,arguments);try{var v=document.getElementById('view'),entro=window.__pant!==prev,push=U.pila[U.pila.length-1];v.classList.remove('efanim');
-  if(push!=='sesion')BANT=null;if(push==='resumen')cierre(v,entro);else if(push==='sesion'){cambioBloque(v,entro);deslizar(v);serieHecha(v);}else if(!push&&U.tab==='hoy')racha(v,entro);}catch(e){}
+/* ---------- 10 · Hoy: al cambiar de día, fundido de los músculos ---------- */
+var DIA_ANT=null,CAP_ANT=[];
+function tsDia(k){var m=String(k||'').split('-');return m.length===3?+new Date(+m[0],+m[1],+m[2]):0;}
+function capasVista(){var v=document.getElementById('view'),i=v&&v.querySelector('.hsem + .card.ent .img');return i?[].map.call(i.querySelectorAll('img.cp:not(.efvieja)'),function(c){return c.getAttribute('src');}):[];}   /* las que se están yendo no cuentan */
+function diaModelo(v,capAnt){var s=v.querySelector('.hsem .hs.sel');if(!s){DIA_ANT=null;return;}var k=s.getAttribute('data-v'),ant=DIA_ANT;DIA_ANT=k;
+ if(ant===null||ant===k||MENOS())return;
+ var dir=tsDia(k)>tsDia(ant)?1:-1;s.classList.add('efdsel');
+ var card=s.parentNode.nextElementSibling;if(card&&card.tagName==='SECTION'){card.style.setProperty('--efdir',dir);card.classList.add('efdcard');}
+ var img=v.querySelector('.hsem + .card.ent .img');if(!img||!img.querySelector('img'))return;
+ img.classList.add('efdia');var nuevas=0,ahora=[];
+ img.querySelectorAll('img.cp').forEach(function(c){var src=c.getAttribute('src');ahora.push(src);if(capAnt.indexOf(src)>=0)c.classList.add('efsigue');else{c.classList.add('efnueva');c.style.setProperty('--efi',nuevas++);}});
+ var base=img.querySelector('img:not(.cp)');
+ capAnt.filter(function(src){return ahora.indexOf(src)<0;}).forEach(function(src){var o=document.createElement('img');o.className='cp efvieja';o.src=src;o.alt='';o.setAttribute('aria-hidden','true');
+  if(base&&base.nextSibling)img.insertBefore(o,base.nextSibling);else img.appendChild(o);setTimeout(function(){if(o.parentNode)o.parentNode.removeChild(o);},900);});}
+render=function(){var prev=window.__pant;try{CAP_ANT=capasVista();}catch(e){CAP_ANT=[];}var r=render0.apply(this,arguments);try{var v=document.getElementById('view'),entro=window.__pant!==prev,push=U.pila[U.pila.length-1];v.classList.remove('efanim');
+  if(push!=='sesion')BANT=null;if(push==='resumen')cierre(v,entro);else if(push==='sesion'){cambioBloque(v,entro);deslizar(v);serieHecha(v);}else if(!push&&U.tab==='hoy'){racha(v,entro);diaModelo(v,CAP_ANT);}if(push||U.tab!=='hoy')DIA_ANT=null;}catch(e){}
  return r;};
 
 var st=document.createElement('style');st.textContent=
+ '.efdia{overflow:hidden}.efdia>img:not(.cp){animation:efRespira .75s ease both}'+
+ '.efdia>img.cp.efvieja{animation:efSale .62s ease both}.efdia>img.cp.efsigue{animation:efSigue .95s ease .12s both}'+
+ '.efdia>img.cp.efnueva{animation:efEntra 1.15s cubic-bezier(.2,.75,.25,1) calc(.2s + var(--efi,0)*.15s) both}'+
+ '.hs.efdsel{animation:efDsel .42s cubic-bezier(.3,1.7,.5,1)}.efdcard .in{animation:efDin .38s ease both}'+
+ '@keyframes efRespira{0%,100%{filter:none}40%{filter:brightness(.9) saturate(.82)}}'+
+ '@keyframes efSale{0%{opacity:1;filter:none}100%{opacity:0;filter:blur(5px) grayscale(1) brightness(1.15)}}'+
+ '@keyframes efSigue{0%,100%{filter:none}45%{filter:brightness(1.28) drop-shadow(0 0 6px rgba(var(--a1rgb),.7))}}'+
+ '@keyframes efEntra{0%{opacity:0;transform:scale(1.025);filter:blur(9px) brightness(1.9)}45%{opacity:1;transform:none;filter:blur(0) brightness(1.45) drop-shadow(0 0 12px rgba(var(--a1rgb),.9))}100%{opacity:1;transform:none;filter:none}}'+
+ '@keyframes efDsel{0%{transform:scale(.88)}60%{transform:scale(1.08)}100%{transform:none}}'+
+ '@keyframes efDin{from{opacity:0;transform:translateX(calc(var(--efdir,1)*18px))}to{opacity:1;transform:none}}'+
+ '@media (prefers-reduced-motion: reduce){.efdia>img,.hs.efdsel,.efdcard .in{animation:none!important}.efdia>img.efvieja{display:none}}'+
  '.hero .img{position:relative}.hero .img .efchip{position:absolute;left:10px;top:10px;margin:0;background:rgba(255,255,255,.92);color:#0e1a2b}.hero .img .efley{position:absolute;right:10px;bottom:8px;display:flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#5b6475;background:rgba(255,255,255,.75);padding:3px 7px;border-radius:8px}'+
  '.efley i{width:12px;height:8px;border-radius:2px;background:#5b8cff}.efley i.efv1{opacity:.5}.efley i.efv2{opacity:.75}.hero .img img.efv1{opacity:.62}.hero .img img.efv2{opacity:.84}.hero .img img.efv3{opacity:1}'+
  '.efsem .efh{display:flex;align-items:center;gap:10px}.efsem h3{margin:0}.efsem .efh i{flex:1;height:1px;background:var(--line2)}.efsem .efn{font-size:12.5px;color:var(--tx3);font-weight:600}'+
