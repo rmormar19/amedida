@@ -3928,6 +3928,47 @@ var st=document.createElement('style');st.textContent=
 document.head.appendChild(st);
 })();
 
+/* 14 nov 2026 · Láminas animadas nuevas que pasó Ricky (laminas-animadas-1411.zip: 68 ejercicios, cada uno con
+   foto .webp y video .mp4, el mismo modelo realista de siempre). 49 reemplazan a las que ya estaban y 19 son nuevas.
+   · Todas tienen video: van a ANIM.
+   · Las que muestran a una mujer van a FEM_OK (a las clientas nunca se les muestra un varón: si la lámina es de varón
+     y no hay versión mujer, no se muestra ninguna; ver modelo.js).
+   · LAMDE: qué ejercicio usa cada lámina. Va adelante de las reglas viejas; el orden importa (la primera que coincide gana). */
+(function(){
+if(typeof LAMDE==='undefined'||typeof ANIM==='undefined')return;
+['abdpolea','abductores','aductores','aperturas','bulgara','cruce','crunch','crunchpeso','crunchpolea','curl','curlbayes','curlinclinado','curlmanc','curlmartillo','curlpolea','curlpred','curlsentado','curlw',
+ 'dominadas','elevpiernas','estocadasmith','extension','flexiones','fondos','frances','frontal','goblet','hack','hiper45','hipthrust','hipthrustmaq','jalon','patada','patadamaq','patadatric','pecdeck','pecdeckinv',
+ 'pendulo','pesomuerto','plancha','prensa45','prensahor','pressbancasmith','pressdecl','pressinclinado','pressinclsmith','pressmanc','pressmaq','pressmilitar','pressplano','pullover','remobarra','remomanc','remomaq',
+ 'remopolea','remot','rumano','sentadilla','smith','stepup','sumo','tricbarra','tricmanc','tricpolea','vuelopost','vuelosmanc','vuelospolea','zancadas'].forEach(function(k){if(ANIM.indexOf(k)<0)ANIM.push(k);});
+if(typeof FEM_OK!=='undefined')['abdpolea','abductores','aductores','aperturas','frontal','patadatric','prensahor','pullover','stepup','sumo'].forEach(function(k){FEM_OK['laminas/'+k]=1;FEM_OK['laminas_mp4/'+k]=1;});
+/* clientas: si la lámina es de varón, una del mismo movimiento con mujer */
+if(typeof ALT_FEM!=='undefined')ALT_FEM.hipthrustmaq='hipthrust';
+LAMDE.unshift(
+ [/abducci[oó]n.*polea|abductor.*polea|polea.*abducci[oó]n/i,'abdpolea'],
+ [/abductor|abducci[oó]n/i,'abductores'],
+ [/bayes/i,'curlbayes'],
+ [/curl (de b[ií]ceps )?(con )?barra|curl.*barra (w|z|ez)\b/i,'curlw'],
+ [/franc[eé]s|rompecr[aá]neos|skull ?crusher/i,'frances'],
+ [/sentadilla frontal|front squat/i,'frontal'],
+ [/goblet/i,'goblet'],
+ [/hiperextensi|hiper ?45|extensi[oó]n(es)? lumbar|banco romano/i,'hiper45'],
+ [/hip thrust.*m[aá]quina|m[aá]quina.*hip thrust|glute drive/i,'hipthrustmaq'],
+ [/patada.*tr[ií]ceps|tr[ií]ceps.*patada|kick ?back de tr[ií]ceps/i,'patadatric'],
+ [/p[eé]ndulo/i,'pendulo'],
+ [/sumo/i,'sumo'],
+ [/^(?!.*(rumano|sumo|piernas (r[ií]gidas|rectas))).*peso muerto/i,'pesomuerto'],
+ [/plancha|plank/i,'plancha'],
+ [/prensa horizontal|prensa sentad/i,'prensahor'],
+ [/pull ?over/i,'pullover'],
+ [/step ?up|subidas? al (caj[oó]n|banco|step)/i,'stepup'],
+ [/^(?!.*(smith|b[uú]lgara)).*(zancada|estocada|lunge)/i,'zancadas'],
+ [/^(?!.*(polea|m[aá]quina|cruce|pec ?deck|posterior|invertid|cadera)).*apertura/i,'aperturas'],
+ [/extensi[oó]n de rodilla|sill[oó]n de extensi/i,'extension'],
+ [/press de hombros?/i,'pressmilitar'],
+ [/tr[ií]ceps.*(acostad|tumbad)/i,'frances'],
+ [/^21\b|\b21 (en|con) barra/i,'curlw']);
+})();
+
 /* 13 nov 2026 · Unidades y tipos de serie nuevos (pedido de Ricky: «agregar las placas o libras a las apps de mi panel y la
    app del cliente así como sus conversiones» y «añadir los tipos de series (drop set, rest pause, etc.)»).
    · El peso se lee igual que en el Monitor (comun/pesos.js): «4» suelto en una polea son 4 placas, los kilos que salieron de
@@ -3947,7 +3988,9 @@ function conv(v,de,a,nom,g){if(!v)return v;if(de===a)return v;var c=PESOS.conver
 /* ---- tipos de serie ---- */
 tipoSerP=(function(t0){return function(s){var t=t0(s);if(t!=='ef'||!s)return t;return s.tipo==='fallo'?'fa':s.tipo==='neg'?'ng':s.tipo==='cluster'?'cl':'ef';};})(tipoSerP);
 TAGP.fa=' al fallo';TAGP.ng=' negativas';TAGP.cl=' cluster';
-if(typeof TAGH!=='undefined'){TAGH[' al fallo']=' hasta no poder hacer otra';TAGH[' negativas']=' con la bajada lenta';TAGH[' cluster']=' en bloques con pausas cortas';}
+if(typeof TAGH!=='undefined'){TAGH[' al fallo']=' hasta no poder hacer otra';TAGH[' negativas']=' con la bajada lenta';TAGH[' cluster']=' en bloques con pausas cortas';
+ /* 14 nov 2026 · Ricky: el drop va en CADA serie («8 pesadas + 8 livianas»); antes decía «y bajás el peso al final» */
+ TAGH[' drop set']=' con drop en cada una: al terminar, bajás el peso y seguís sin descansar';}
 filasP=(function(f0){return function(x,u){var R=f0(x,u),S=x.series||[],C=CONV[slugP(x.nombre)];
  R.forEach(function(r){var s=S[r.si];if(s&&r.t==='ef'){var t=tipoSerP(s);
    if(t==='fa')r.h+=' · al fallo: seguí hasta no poder hacer otra';
