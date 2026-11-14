@@ -2104,12 +2104,12 @@ function vSesion(){var h=hechas(),b=BLQ[U.ses.b];
  var s=tipSesion()+'<div class="prog"><span class="bar"><i style="width:'+(h[0]/h[1]*100)+'%"></i></span><b>'+h[0]+'/'+h[1]+' series</b></div>';
  s+='<div class="ruta">'+BLQ.map(function(x,i){var ok=x.h.every(function(r){return r.every(Boolean);});return '<button type="button" data-a="blq" data-v="'+i+'" class="'+(ok?'ok':'')+'" aria-pressed="'+(i===U.ses.b)+'"><i></i>'+x.n+'</button>';}).join('')+'</div>';
  s+='<div class="bk"><b>'+b.n+'</b><span>'+(b.ss?'sin descanso entre los dos · '+mmss(b.d)+' al terminar la vuelta':'descanso '+mmss(b.d))+'</span></div>';
- s+=b.ej.map(function(e,k){return '<div class="ej">'+lamBtn(e.lam,e.n,U.ses.b+'-'+k)+'<div><h4><button type="button" class="ejn" data-a="ficha" data-v="'+e.lam+'|s'+U.ses.b+'-'+k+'">'+(b.ss?'<span class="tg">'+b.k+(k+1)+'</span>':'')+e.n+'</button></h4><button type="button" class="vl" data-a="hojaVar" data-v="'+U.ses.b+'-'+k+'">'+resVar(e)+' '+I.edit+'</button><span class="ob">'+humO(e.o)+' · '+(e.u==='pl'?'en placas del aparato':'en kilos')+'</span>'+(e.ind?'<span class="ob ind">'+e.ind+'</span>':'')+''+chipSug(e)+notaChip(e,U.ses.b+'-'+k)+'</div></div>';}).join('');
+ s+=b.ej.map(function(e,k){return '<div class="ej">'+lamBtn(e.lam,e.n,U.ses.b+'-'+k)+'<div><h4><button type="button" class="ejn" data-a="ficha" data-v="'+e.lam+'|s'+U.ses.b+'-'+k+'">'+(b.ss?'<span class="tg">'+b.k+(k+1)+'</span>':'')+e.n+'</button></h4><button type="button" class="vl" data-a="hojaVar" data-v="'+U.ses.b+'-'+k+'">'+resVar(e)+' '+I.edit+'</button><span class="ob">'+humO(e.o)+' · '+(e.u==='pl'?'en placas del aparato':e.u==='lb'?'en libras':'en kilos')+'</span>'+(e.ind?'<span class="ob ind">'+e.ind+'</span>':'')+''+chipSug(e)+notaChip(e,U.ses.b+'-'+k)+'</div></div>';}).join('');
  var sig=-1;
  s+=b.h.map(function(_r,i){var todas=b.h[i].every(Boolean);
   var filas=b.ej.map(function(e,k){var x=b.h[i][k],p=e.p[i],id=i*b.ej.length+k;if(x&&x.na)return '<div class="sr na"><span class="n">'+(b.ss?b.k+(k+1):'')+'</span><span class="nax">no lleva esta vuelta</span></div>';if(!x&&sig<0)sig=id;
    return '<div class="sr'+rowSr(e,i)+(x?' h':'')+(sig===id&&!x?' sig':'')+'"><span class="n">'+rowN(b,e,k,i)+'</span>'+[0,1,2].map(function(j){return '<input inputmode="decimal" aria-label="'+['Peso','Reps','RIR'][j]+'" placeholder="'+phSer(e,i,j)+'"'+(j===0?' data-inc="'+incDe(e)+'" data-u="'+e.u+'" data-ant="'+co(p[0])+'"':'')+' value="'+(x&&x[j]!==''?co(x[j]):'')+'">';}).join('')+'<button type="button" class="ok" data-a="serie" data-v="'+i+'-'+k+'" aria-label="Marcar serie hecha">'+I.chk+'</button></div>'+(b.drop&&i===b.h.length-1?'<div class="drop"><span>↓ Drop: bajá 1 placa y seguí hasta RIR 0</span></div>':'');}).join('');
-  return '<div class="vt'+(todas?' hecha':'')+'"><div class="vh">'+rowH(b,i)+'<span>'+(todas?'hecha':'')+'</span></div>'+(i===0?'<div class="cab"><span></span><span>'+(b.ej[0].u==='pl'?'Placas':'Kilos')+'</span><span>Reps</span><span title="Cuántas repeticiones más podías hacer">Sobraban</span><span></span></div>':'')+filas+'</div>';}).join('');
+  return '<div class="vt'+(todas?' hecha':'')+'"><div class="vh">'+rowH(b,i)+'<span>'+(todas?'hecha':'')+'</span></div>'+(i===0?'<div class="cab"><span></span><span>'+(b.ej[0].u==='pl'?'Placas':b.ej[0].u==='lb'?'Libras':'Kilos')+'</span><span>Reps</span><span title="Cuántas repeticiones más podías hacer">Sobraban</span><span></span></div>':'')+filas+'</div>';}).join('');
  var ult=U.ses.b===BLQ.length-1;
  
  if(ult)s+=bloqueCardio();s+=bajoSesion(ult);
@@ -2507,6 +2507,82 @@ setTimeout(function(){if(getComputedStyle(document.body).paddingTop==='54px')doc
 BLQ[0].h[0]=[[7,12,1],[5,12,1]];
 extrasInit();
 (function(){var q=new URLSearchParams(location.search).get('cal');if(q){U.calV=q;U.tab='cal';}})();
+/* 13 nov 2026 · PESOS: kg, libras y placas, con las MISMAS tablas y reglas que el Monitor
+   (ver «UNIDADES DE PESO» en monitor/Monitor.html). Lo usan Mi panel y la app del cliente, así
+   los tres programas convierten igual. Pedido de Ricky: «agregar las placas o libras a las apps
+   de mi panel y la app del cliente así como sus conversiones», y que al cargar pesos y reps
+   no se carguen mal (el + saltaba de 9 a 13,6 kg, «6-7 placas» quedaba en kg, se perdían rangos).
+   Stacks del gimnasio (los dos en libras):
+   · poleas de tríceps, bíceps, pecho y hombro: placa n = 10·n lb, 17 placas.
+   · máquinas de piernas (extensión de rodilla/cuádriceps y curl femoral): placa n = 10+20·(n−1) lb, 15 placas.
+   Sin comentarios de doble barra: este archivo también se pega dentro de páginas. */
+var PESOS=(function(){
+var LB=0.45359237;
+var STK={polea:{base:10,paso:10,n:17,et:'poleas'},pierna:{base:10,paso:20,n:15,et:'máquina de piernas'}};
+var RE_PIERNA=/extensi(on|ones)( de)? (rodillas?|cuadriceps?|piernas?)|leg extension|(silla|sillon|maquina)( de)? (cuadriceps?|extension)|extensora|curl femoral|camilla femoral/;
+var RE_POLEA_GR=/tricep|bicep|curl|pecho|apertura|cruce|crossover|press|vuelo|elevaci|lateral|pajaro|face ?pull|hombro|deltoid|martillo|extension de codo|patada|copa|frances|pullover|fly/;
+function nrm(t){return String(t==null?'':t).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');}
+function r1(v){return Math.round(v*10)/10;}
+function fmt(v){return String(r1(v)).replace('.',',');}
+/* todos los números de un texto, con dónde están (la coma decimal cuenta) */
+function nums(t){var s=String(t==null?'':t),out=[],re=/\d+(?:[.,]\d+)?/g,m;while((m=re.exec(s)))out.push({v:+m[0].replace(',','.'),i:m.index,l:m[0].length});return out;}
+function num(t){var n=nums(t);return n.length?n[0].v:null;}
+function unidad(t){var n=nrm(t);if(/plac|palc|plca|plaa/.test(n))return 'placas';if(/\blbs?\b|libra|\d\s*lbs?\b/.test(n))return 'lb';if(/kg|kilo/.test(n))return 'kg';return '';}
+/* de qué stack es el ejercicio (null = no es de stack o no se sabe). grupo: el grupo muscular si la app lo sabe */
+function familia(nombre,grupo){var n=nrm(nombre);if(!n)return null;if(RE_PIERNA.test(n))return 'pierna';
+ if(/polea|cable/.test(n)){var g=nrm(grupo);if(/tricep|bicep|brazo|pecho|hombro/.test(g)||((!g||g==='otros')&&RE_POLEA_GR.test(n)))return 'polea';}return null;}
+function kgDePlacas(p,fam){var S=STK[fam];if(!S||!(p>0))return null;return r1((S.base+S.paso*(p-1))*LB);}
+function placasDeKg(kg,fam){var S=STK[fam];if(!S||!(kg>0))return null;var p=Math.round((kg/LB-S.base)/S.paso)+1;if(p<1||p>S.n)return null;return Math.abs(kgDePlacas(p,fam)-kg)<=0.3?p:null;}
+function esHombro(nombre,grupo){return /hombro/.test(nrm(grupo))||(!grupo&&/vuelo|elevaci|lateral|pajaro|face ?pull|hombro|deltoid/.test(nrm(nombre)));}
+/* cómo hay que leer un peso: {val, uni:'kg'|'lb'|'placas', kg (null si no se sabe), fam, ded (unidad deducida)} */
+function leer(txt,nombre,grupo){var v=num(txt);if(v==null)return null;var u=unidad(txt),fam=familia(nombre,grupo);
+ if(u==='placas')return {val:v,uni:'placas',kg:kgDePlacas(v,fam),fam:fam,ded:false};
+ if(u==='lb')return {val:v,uni:'lb',kg:r1(v*LB),fam:fam,ded:false};
+ /* regla del Monitor: en un stack conocido, un entero suelto que no llega al tope de placas y no es un kilaje del stack es número de placa (salvo hombro) */
+ if(!u&&fam&&Math.abs(v-Math.round(v))<0.001&&v<=STK[fam].n&&placasDeKg(v,fam)==null&&!esHombro(nombre,grupo))return {val:v,uni:'placas',kg:kgDePlacas(v,fam),fam:fam,ded:true};
+ return {val:v,uni:'kg',kg:v,fam:fam,ded:false};}
+function aKg(txt,nombre,grupo){var l=leer(txt,nombre,grupo);return l?l.kg:null;}
+function texto(v,u){return u==='placas'?fmt(v)+(r1(v)===1?' placa':' placas'):fmt(v)+(u==='lb'?' lb':' kg');}
+/* el mismo peso en otra unidad; null si no se puede (placas de una máquina que no está en las tablas) */
+function convertir(txt,uni,nombre,grupo){var l=leer(txt,nombre,grupo);if(!l)return null;if(l.uni===uni&&!l.ded)return String(txt).trim();
+ if(l.kg==null)return null;if(uni==='kg')return texto(l.kg,'kg');if(uni==='lb')return texto(Math.round(l.kg/LB),'lb');
+ var p=l.fam?placasDeKg(l.kg,l.fam):null;return p==null?null:texto(p,'placas');}
+/* «≡ 13,6 kg» o «≡ 3 placas»: la equivalencia que se muestra al lado del peso ('' si no hace falta) */
+function equiv(txt,nombre,grupo){var l=leer(txt,nombre,grupo);if(!l||l.kg==null)return '';
+ if(l.uni!=='kg'||l.ded)return '≡ '+texto(l.kg,'kg');var p=l.fam?placasDeKg(l.kg,l.fam):null;return p!=null?'≡ '+texto(p,'placas'):'';}
+/* ¿un kilaje que salió de pasar libras a kg? (13,6 · 22,7 · 31,8): no cae en la grilla de medio kilo y está cerca de un múltiplo de 10 lb */
+function deLibras(v){return v>0&&Math.round(v*10)%5!==0&&Math.abs(v/4.536-Math.round(v/4.536))<0.03;}
+/* qué unidad usar si en el texto no está escrita */
+function uniDe(txt,nombre,grupo){var l=leer(txt,nombre,grupo);return l?l.uni:(unidad(txt)||'kg');}
+/* un paso de la carga, para arriba (dir=1) o para abajo (dir=-1) */
+function pasoUno(v,u,fam,dir){
+ if(u==='placas')return Math.max(0,Math.round(v)+dir);
+ if(u==='lb')return Math.max(0,Math.round(v+dir*(fam?STK[fam].paso:(v<20?2.5:5))));
+ if(fam){var p=placasDeKg(v,fam);if(p!=null)return p+dir>=1?kgDePlacas(p+dir,fam):0;
+  var S=STK[fam],x=(v/LB-S.base)/S.paso+1,q=dir>0?Math.floor(x)+1:Math.ceil(x)-1;q=Math.max(0,Math.min(S.n,q));return q?kgDePlacas(q,fam):0;}
+ if(deLibras(v))return Math.max(0,Math.round((Math.round(v/4.536)+dir)*45.36)/10);
+ return Math.max(0,r1(v+dir*(v<10?1:2.5)));}
+/* sube o baja TODOS los números del texto (un rango «42-45 kg» sube entero) y deja el resto como está («+», «c/u», la unidad) */
+function paso(txt,dir,nombre,grupo){var s=String(txt==null?'':txt),N=nums(s),fam=familia(nombre,grupo);
+ if(!N.length){if(dir<0||s.trim())return s;return fam?'1 placa':'1 kg';}
+ var l=leer(s,nombre,grupo),u=l?l.uni:'kg',out='',k=0;
+ N.forEach(function(n){out+=s.slice(k,n.i)+fmt(pasoUno(n.v,u,fam,dir));k=n.i+n.l;});out+=s.slice(k);
+ if(!unidad(s))out=out.trim()+(u==='placas'?(r1(pasoUno(N[0].v,u,fam,dir))===1&&N.length===1?' placa':' placas'):u==='lb'?' lb':' kg');
+ if(u==='placas'&&N.length===1)out=out.replace(/(\d)\s*placas?\b/i,function(m,d){return d+(r1(pasoUno(N[0].v,u,fam,dir))===1?' placa':' placas');});
+ return out;}
+/* lo que se escribió a mano, prolijo: «62.5» → «62,5 kg» (con la unidad del ejercicio si no la escribió) */
+function prolijo(txt,uni){var s=String(txt==null?'':txt).trim();if(!s)return '';if(!nums(s).length)return s;
+ s=s.replace(/(\d)\.(\d)/g,'$1,$2');if(unidad(s))return s.replace(/(\d)(kg|lbs?|placas?)\b/i,'$1 $2');
+ var v=num(s);return /^[\d,]+$/.test(s)?texto(v,uni||'kg'):s;}
+/* repeticiones: ± a cada número; un valor roto (una fecha que guardó la planilla) cuenta como vacío */
+function repsRota(t){return /^\d{4}-\d{2}-\d{2}T/.test(String(t||''));}
+function pasoReps(t,dir){t=repsRota(t)?'':String(t==null?'':t);if(!/\d/.test(t))return dir>0?'1':t;return t.replace(/\d+/g,function(m){return String(Math.max(1,+m+dir));});}
+function stacks(){return STK;}
+return {LB:LB,nums:nums,num:num,unidad:unidad,familia:familia,kgDePlacas:kgDePlacas,placasDeKg:placasDeKg,leer:leer,aKg:aKg,texto:texto,fmt:fmt,
+ convertir:convertir,equiv:equiv,deLibras:deLibras,uniDe:uniDe,pasoUno:pasoUno,paso:paso,prolijo:prolijo,repsRota:repsRota,pasoReps:pasoReps,stacks:stacks};
+})();
+if(typeof module!=='undefined')module.exports=PESOS;
+
 /* ================= modelos mujer para las clientas =================
    Si la clienta es mujer, todas las imágenes de personas (láminas, animaciones, mapas de músculos)
    salen de la versión mujer. Las láminas que ya tienen una mujer se usan tal cual; para las demás
@@ -3771,6 +3847,199 @@ var st=document.createElement('style');st.textContent=
  '@keyframes efBrillo{to{transform:translateX(110%)}}@keyframes efTrofeo{0%,100%{transform:none}25%{transform:rotate(-14deg) scale(1.15)}50%{transform:rotate(10deg) scale(1.15)}75%{transform:rotate(-5deg)}}'+
  '@keyframes efHalo{0%{box-shadow:0 0 0 0 rgba(var(--grnrgb),.6)}100%{box-shadow:0 0 0 10px rgba(var(--grnrgb),0)}}'+
  '@media (prefers-reduced-motion: reduce){.efanim *,.efbarra,.efpunto,.effuego,.efdes .efpe,.sr.efserie input,.sr .ok.efokp,.sr .ok.efokp *,.prog b.efsube,.vt.efvtfin,.vh span.efpopt,.ruta button.efrutaok,.ruta button.efrutaok i{animation:none!important;opacity:1!important;transform:none!important}.vt.efvtfin{opacity:.55!important}.efchis,.efaviso{display:none!important}}';
+document.head.appendChild(st);
+})();
+
+/* 12 nov 2026 · Apple Watch (pedido de Ricky: «uso apple watch, armemos el atajo del reloj»).
+   Los entrenos que registra el reloj llegan solos: el atajo de iOS «A medida · reloj» los manda al puente al terminar
+   cada entreno y cada noche, el Monitor los guarda en la ficha (c.reloj) y la app los recibe con el resto de los datos.
+   En «Hoy»: una tarjeta con los entrenos del reloj de esta semana (minutos, calorías y pulso) o, si todavía no llegó
+   ninguno, cómo conectarlo. «Conectar» abre una hoja con los 3 pasos: instalar el atajo, copiar tu código y activarlo
+   solo. El código es la dirección del puente con tu token: lo mismo que ya usa la app, nada nuevo.
+   No cambia ninguna otra pantalla. */
+(function(){
+var ATAJO_URL='';   /* link de iCloud del atajo «A medida · reloj» (lo comparte Ricky desde su iPhone); vacío = «pedíselo a tu entrenador» */
+var IC_RELOJ='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="3.5"/><path d="M9 6l.6-3h4.8L15 6M9 18l.6 3h4.8l.6-3M12 9.5V12l1.6 1.2"/></svg>';
+var IC_COR='<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.2 0 3.6 1.2 4.3 2.4h2c.7-1.2 2.1-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+function esc(t){return String(t==null?'':t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function lista(){var L=window.PANEL&&PANEL.crudo&&PANEL.crudo.reloj||window.PANEL&&PANEL.c&&PANEL.c.reloj||[];return Array.isArray(L)?L.filter(function(x){return x&&x.inicio;}):[];}
+function fechaDe(x){var m=String(x.inicio).match(/^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}))?/);return m?new Date(+m[1],+m[2]-1,+m[3],+(m[4]||12),+(m[5]||0)):null;}
+function lunes(){try{return LUNH();}catch(e){var d=new Date();d.setHours(0,0,0,0);d.setDate(d.getDate()-((d.getDay()+6)%7));return d;}}
+var DLG=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+function cuando(f){var h=new Date();h.setHours(0,0,0,0);var d=new Date(f);d.setHours(0,0,0,0);var n=Math.round((h-d)/864e5);
+ return (n===0?'Hoy':n===1?'Ayer':DLG[f.getDay()]+' '+f.getDate())+' · '+('0'+f.getHours()).slice(-2)+':'+('0'+f.getMinutes()).slice(-2);}
+function tipoCorto(t){t=String(t||'Entreno').replace(/^HKWorkoutActivityType/,'');return t.charAt(0).toUpperCase()+t.slice(1);}
+/* hasta que esté el link del atajo, «Conectá tu Apple Watch» le aparece solo a Ricky (su cliente de prueba) */
+function esPrueba(){var c=window.PANEL&&PANEL.c||{};return /prueba/i.test(c.nombre||'')||/0addb09ac7/.test(String(c.id||''));}
+function codigo(){try{return window.REAL&&REAL.token&&REAL.p?'https://script.google.com/macros/s/'+REAL.p+'/exec?token='+encodeURIComponent(REAL.token):'';}catch(e){return '';}}
+
+function tarjeta(){var L=lista(),lun=+lunes(),sem=L.filter(function(x){var f=fechaDe(x);return f&&+f>=lun;}),min=0,kcal=0;
+ sem.forEach(function(x){min+=+x.min||0;kcal+=+x.kcal||0;});
+ if(!L.length&&!ATAJO_URL&&!esPrueba())return '';
+ if(!L.length)return '<section class="card rjc rjv"><span class="rji">'+IC_RELOJ+'</span><span class="rjt"><b>Conectá tu Apple Watch</b><span class="s">Tus caminatas, bici o lo que entrenes con el reloj llegan solos a la app y a tu entrenador.</span></span><button type="button" class="sec rjb" data-rj="abrir">Conectar</button></section>';
+ var ult=L.slice().sort(function(a,b){return String(a.inicio)<String(b.inicio)?1:-1;}).slice(0,3);
+ return '<section class="card rjc"><div class="rjh"><span class="rji">'+IC_RELOJ+'</span><span class="rjt"><b>Tu Apple Watch</b><span class="s">esta semana</span></span><button type="button" class="rjx" data-rj="abrir" aria-label="Ajustes del Apple Watch">…</button></div>'+
+  '<div class="rjk"><div><b>'+sem.length+'</b><span>entreno'+(sem.length===1?'':'s')+'</span></div><div><b>'+Math.round(min)+'</b><span>min</span></div><div><b>'+Math.round(kcal)+'</b><span>kcal</span></div></div>'+
+  '<div class="rjl">'+ult.map(function(x){var f=fechaDe(x);return '<div class="rjr"><span><b>'+esc(tipoCorto(x.tipo))+'</b><small>'+(f?cuando(f):esc(x.inicio))+'</small></span><span class="rjd">'+
+   (x.min?'<em>'+x.min+' min</em>':'')+(x.km?'<em>'+String(x.km).replace('.',',')+' km</em>':'')+(x.kcal?'<em>'+x.kcal+' kcal</em>':'')+(x.fcProm?'<em class="rjf">'+IC_COR+x.fcProm+'</em>':'')+'</span></div>';}).join('')+'</div></section>';}
+
+function hoja(){var cod=codigo();
+ return '<div class="rjfondo" data-rj="cerrar"></div><div class="rjhoja" role="dialog" aria-modal="true" aria-labelledby="rjtit"><div class="rjasa"></div><h3 id="rjtit">Conectar tu Apple Watch</h3>'+
+  '<p class="rjsub">Se hace una sola vez, en tu iPhone. Después todo llega solo.</p>'+
+  '<ol class="rjpasos"><li><b>Instalá el atajo</b><span>'+(ATAJO_URL?'Tocá el botón y elegí «Añadir atajo».':'Pedile a tu entrenador el link del atajo «A medida · reloj» y abrilo en tu iPhone.')+'</span>'+(ATAJO_URL?'<a class="pri rjbtn" href="'+esc(ATAJO_URL)+'" target="_blank" rel="noopener">Instalar el atajo</a>':'')+'</li>'+
+  '<li><b>Pegá tu código</b><span>Cuando el atajo te lo pida, pegá este código. Es solo tuyo: no se lo pases a nadie.</span>'+(cod?'<button type="button" class="pri rjbtn" data-rj="copiar">Copiar mi código</button>':'<span class="rjno">Abrí la app con el link que te mandó tu entrenador para ver tu código.</span>')+'</li>'+
+  '<li><b>Que mande solo</b><span>En la app Atajos: Automatización → Nueva → «Entreno del Apple Watch» → «Termina» → Ejecutar inmediatamente → elegí «A medida · reloj». Repetí con «Hora del día» a las 22:00.</span></li></ol>'+
+  '<p class="rjpie">La primera vez el iPhone te pregunta si el atajo puede leer tus entrenos de Salud: tocá «Permitir».</p>'+
+  '<button type="button" class="sec rjbtn" data-rj="cerrar">Listo</button></div>';}
+function abrir(){cerrar();var d=document.createElement('div');d.id='rjcapa';d.innerHTML=hoja();document.body.appendChild(d);var b=d.querySelector('.rjhoja button,.rjhoja a');setTimeout(function(){if(b)b.focus();},60);}
+function cerrar(){var d=document.getElementById('rjcapa');if(d)d.parentNode.removeChild(d);}
+function copiar(btn){var t=codigo();if(!t)return;var ok=function(){btn.textContent='Copiado ✓';setTimeout(function(){btn.textContent='Copiar mi código';},2200);};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,function(){viejo(t);ok();});else{viejo(t);ok();}}
+function viejo(t){var a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy');}catch(e){}a.parentNode.removeChild(a);}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-rj]');if(!b)return;var a=b.getAttribute('data-rj');e.preventDefault();
+ if(a==='abrir')abrir();else if(a==='cerrar')cerrar();else if(a==='copiar')copiar(b);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')cerrar();});
+
+/* en «Hoy», después de «Tu día» (antes de «Para hoy») */
+if(typeof vHoy==='function'){var vHoyR=vHoy;vHoy=function(){var h=vHoyR.apply(this,arguments);if(!window.PANEL)return h;var t=tarjeta(),k=h.indexOf('<div class="sh"><h2>Para hoy');
+ if(k<0){var td=h.indexOf('<div class="sh"><h2>Tu día');k=td>=0?finGr(h,td):-1;}
+ return k>=0?h.slice(0,k)+t+h.slice(k):h+t;};}
+function finGr(h,k){var a=h.indexOf('<div class="gr2">',k);if(a<0)return -1;var n=0,i=a;while(i<h.length){var o=h.indexOf('<div',i),c=h.indexOf('</div>',i);if(c<0)return -1;if(o>=0&&o<c){n++;i=o+4;}else{n--;i=c+6;if(n===0)return i;}}return -1;}
+
+var st=document.createElement('style');st.textContent=
+ '.rjc{margin-top:12px}.rjc.rjv{display:flex;align-items:center;gap:12px}.rjv .rjt{flex:1;min-width:0}'+
+ '.rji{width:42px;height:42px;flex:none;border-radius:13px;display:flex;align-items:center;justify-content:center;background:rgba(var(--a1rgb),.14);color:var(--a1)}'+
+ '.rjt b{display:block;font-size:15.5px}.rjt .s{display:block;font-size:12.5px;color:var(--tx3);margin-top:1px}.rjb{flex:none;min-height:40px;padding:0 14px}'+
+ '.rjh{display:flex;align-items:center;gap:12px}.rjh .rjt{flex:1}.rjx{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--tx3);font-weight:800;letter-spacing:.1em}'+
+ '.rjk{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}.rjk div{background:var(--surf2);border:1px solid var(--line);border-radius:14px;padding:9px 10px}'+
+ '.rjk b{display:block;font-size:22px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.rjk span{font-size:12px;color:var(--tx3);font-weight:600}'+
+ '.rjl{margin-top:6px}.rjr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}.rjr:first-child{border-top:0}'+
+ '.rjr b{display:block;font-size:14.5px}.rjr small{display:block;font-size:12px;color:var(--tx3)}.rjd{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px}'+
+ '.rjd em{font-style:normal;font-size:12px;font-weight:700;padding:3px 8px;border-radius:99px;background:var(--surf2);border:1px solid var(--line);color:var(--tx2);white-space:nowrap}'+
+ '.rjd em.rjf{color:#ff6b81;display:inline-flex;align-items:center;gap:3px}'+
+ '#rjcapa{position:fixed;inset:0;z-index:9990}.rjfondo{position:absolute;inset:0;background:rgba(4,10,20,.55)}'+
+ '.rjhoja{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--surf);border-radius:22px 22px 0 0;padding:10px 18px calc(18px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.35);animation:rjSube .28s ease}'+
+ '.rjasa{width:40px;height:5px;border-radius:9px;background:var(--line2,var(--line));margin:0 auto 12px}.rjhoja h3{margin:0;font-size:19px}.rjsub{margin:4px 0 12px;color:var(--tx3);font-size:13.5px}'+
+ '.rjpasos{list-style:none;counter-reset:p;margin:0;padding:0}.rjpasos li{counter-increment:p;position:relative;padding:0 0 14px 40px}'+
+ '.rjpasos li:before{content:counter(p);position:absolute;left:0;top:0;width:28px;height:28px;border-radius:9px;background:var(--grad);color:var(--ink);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}'+
+ '.rjpasos b{display:block;font-size:15px;margin:3px 0 2px}.rjpasos span{display:block;font-size:13.5px;color:var(--tx2)}.rjno{color:var(--tx3)!important;font-style:italic;margin-top:6px}'+
+ '.rjbtn{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;margin-top:10px;text-decoration:none}.rjpie{font-size:12.5px;color:var(--tx3);margin:2px 0 4px}'+
+ '@keyframes rjSube{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}@media (prefers-reduced-motion: reduce){.rjhoja{animation:none}}';
+document.head.appendChild(st);
+})();
+
+/* 13 nov 2026 · Unidades y tipos de serie nuevos (pedido de Ricky: «agregar las placas o libras a las apps de mi panel y la
+   app del cliente así como sus conversiones» y «añadir los tipos de series (drop set, rest pause, etc.)»).
+   · El peso se lee igual que en el Monitor (comun/pesos.js): «4» suelto en una polea son 4 placas, los kilos que salieron de
+     libras (13,6 · 22,7) suben de a una placa y no de a 2,5 kg.
+   · El cliente ve la unidad en la que cargó su entrenador con la equivalencia al lado («3 placas ≡ 13,6 kg») y puede cambiarla
+     por ejercicio (kg, lb o placas si la máquina está en las tablas). Lo que anota llega convertido a la unidad del entrenador.
+   · Tipos nuevos: al fallo, negativas y cluster, además de aproximación, drop set, rest-pause y superserie. Pirámide: se nota sola
+     cuando el peso sube (o baja) serie a serie. */
+(function(){
+if(typeof PESOS==='undefined'||typeof ejP!=='function')return;
+var UN={pl:'placas',lb:'lb',kg:'kg'},NU={placas:'pl',lb:'lb',kg:'kg'},CONV={};
+function pref(id){try{return localStorage.getItem('am.uni.'+id)||'';}catch(e){return '';}}
+function ponPref(id,u){try{if(u)localStorage.setItem('am.uni.'+id,u);else localStorage.removeItem('am.uni.'+id);}catch(e){}}
+/* un número de peso de una unidad a otra (null si no se puede) */
+function conv(v,de,a,nom,g){if(!v)return v;if(de===a)return v;var c=PESOS.convertir(PESOS.texto(v,UN[de]),UN[a],nom,g);return c==null?null:PESOS.num(c);}
+
+/* ---- tipos de serie ---- */
+tipoSerP=(function(t0){return function(s){var t=t0(s);if(t!=='ef'||!s)return t;return s.tipo==='fallo'?'fa':s.tipo==='neg'?'ng':s.tipo==='cluster'?'cl':'ef';};})(tipoSerP);
+TAGP.fa=' al fallo';TAGP.ng=' negativas';TAGP.cl=' cluster';
+if(typeof TAGH!=='undefined'){TAGH[' al fallo']=' hasta no poder hacer otra';TAGH[' negativas']=' con la bajada lenta';TAGH[' cluster']=' en bloques con pausas cortas';}
+filasP=(function(f0){return function(x,u){var R=f0(x,u),S=x.series||[],C=CONV[slugP(x.nombre)];
+ R.forEach(function(r){var s=S[r.si];if(s&&r.t==='ef'){var t=tipoSerP(s);
+   if(t==='fa')r.h+=' · al fallo: seguí hasta no poder hacer otra';
+   if(t==='ng')r.h+=' · negativas: bajá en '+(parseInt(s.bajada,10)||4)+' s';
+   if(t==='cl')r.h+=' · cluster: '+(parseInt(s.bloques,10)||3)+' bloques de '+(repsP(s.reps)||'—')+' con '+(parseInt(s.pausa,10)||15)+' s de pausa';}
+  if(C&&r.p&&r.p[0]){var c=conv(r.p[0],C.de,C.a,C.n,C.g);if(c!=null)r.p[0]=c;}});
+ return R;};})(filasP);
+
+/* ---- unidad de cada ejercicio ---- */
+ejP=(function(e0){return function(x){var e=e0(x),ss=seriesP(x),w=ss.filter(function(s){return numP(s.peso)!=null;})[0];
+ e.fam=PESOS.familia(x.nombre,e.g);
+ if(w){var l=PESOS.leer(w.peso,x.nombre,e.g);if(l)e.u=NU[l.uni]||e.u;}
+ e.u0=e.u;e.unis=['kg','lb'].concat(e.fam?['pl']:[]);if(e.unis.indexOf(e.u)<0)e.unis.push(e.u);
+ var pr=pref(e.id);delete CONV[e.id];
+ if(pr&&pr!==e.u&&!e.sinPeso&&e.unis.indexOf(pr)>=0&&e.p.every(function(p){return !p[0]||conv(p[0],e.u,pr,x.nombre,e.g)!=null;})){
+  CONV[e.id]={de:e.u,a:pr,n:x.nombre,g:e.g};e.p=e.p.map(function(p){var q=p.slice();if(q[0])q[0]=conv(q[0],e.u0,pr,x.nombre,e.g);return q;});e.u=pr;}
+ /* pirámide: el peso sube (o baja) en cada serie efectiva */
+ var W=ss.filter(function(s){return tipoSerP(s)!=='ap';}).map(function(s){return PESOS.aKg(s.peso,x.nombre,e.g);});
+ if(W.length>=3&&W.every(function(v){return v!=null;})){var up=W.every(function(v,i){return !i||v>W[i-1];}),dn=W.every(function(v,i){return !i||v<W[i-1];});
+  if(up||dn)e.o=e.o.replace(/^([^·]*)/,function(m){return m.replace(/\s+$/,'')+(up?' pirámide ↑ ':' pirámide ↓ ');}).replace(/\s+·/,' ·');}
+ return e;};})(ejP);
+/* lo anotado viaja en la unidad del entrenador */
+pesoTxt=function(e,w){var t=PESOS.texto(w,UN[e.u]||'kg');if(e.u0&&e.u!==e.u0){var c=PESOS.convertir(t,UN[e.u0],e.n,e.g);if(c)return c;}return t;};
+/* subir de peso: el paso que corresponde (una placa, 10 lb del stack, 2,5 kg…) */
+incDe=(function(i0){return function(e){if(!e)return i0(e);var S=PESOS.stacks();if(e.u==='lb')return e.fam?S[e.fam].paso:5;if(e.u==='kg'&&e.fam)return Math.round(S[e.fam].paso*PESOS.LB*10)/10;
+ if(e.u==='kg'&&e.p&&e.p[0]&&PESOS.deLibras(e.p[0][0]))return 4.5;return i0(e);};})(incDe);
+sugerido=function(e,i){if(!alTope(e))return e.p[i][0];return PESOS.pasoUno(e.p[0][0],UN[e.u]||'kg',e.fam,1);};
+function uniLinea(e){if(!e||e.sinPeso)return '';var i=efIdx(e),w=e.p[i]&&e.p[i][0],eq=w?PESOS.equiv(PESOS.texto(w,UN[e.u]),e.n,e.g):'';
+ return '<span class="unl"><span class="uns" role="group" aria-label="Unidad del peso">'+e.unis.map(function(u){return '<button type="button" data-a="uniEj" data-v="'+e.id+'|'+u+'" aria-pressed="'+(e.u===u)+'">'+(u==='pl'?'Placas':u)+'</button>';}).join('')+'</span>'+
+  (eq?'<span class="ueq">'+PESOS.texto(w,UN[e.u])+' '+eq+'</span>':'')+(e.u!==e.u0?'<span class="ueq">Tu entrenador lo carga en '+UN[e.u0]+': lo que anotás le llega así</span>':'')+'</span>';}
+chipSug=(function(){return function(e){if(!e||e.sinPeso)return '';var s=uniLinea(e);
+ if(alTope(e))s+='<span class="sugc">↑ Subí a '+PESOS.texto(sugerido(e,0),UN[e.u]||'kg')+': la semana pasada llegaste a '+topReps(e)+' reps en todas</span>';return s;};})();
+/* el paso exacto en el acceso rápido (− / +) para placas, libras y kilos de stack */
+document.addEventListener('focusin',function(ev){var t=ev.target;if(!t.matches||!t.matches('.sr input[data-inc]'))return;var b=t.parentNode&&t.parentNode.querySelector('[data-a="serie"]'),bl=BLQ[U.ses.b];
+ if(!b||!bl)return;var e=bl.ej[+String(b.dataset.v).split('-')[1]];if(!e)return;t.dataset.pu=UN[e.u]||'kg';t.dataset.pf=e.fam||'';},true);
+document.addEventListener('pointerdown',function(ev){var b=ev.target.closest&&ev.target.closest('#acc button');if(!b||!ACCIN||!ACCIN.dataset.pu)return;var d=+b.dataset.d;if(!d)return;
+ var u=ACCIN.dataset.pu,f=ACCIN.dataset.pf||null;if(u==='kg'&&!f){var c0=num(ACCIN.value!==''?ACCIN.value:ACCIN.placeholder);if(isNaN(c0)||!PESOS.deLibras(c0))return;}
+ ev.preventDefault();ev.stopImmediatePropagation();var cur=num(ACCIN.value!==''?ACCIN.value:ACCIN.placeholder);if(isNaN(cur))cur=0;ACCIN.value=co(PESOS.pasoUno(cur,u,f,d));mostrarAcc();},true);
+/* cambiar la unidad de un ejercicio */
+document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-a="uniEj"]');if(!b)return;ev.stopImmediatePropagation();var q=String(b.dataset.v).split('|'),id=q[0],u=q[1],e0=null,anot=false;
+ BLQ.forEach(function(bl){bl.ej.forEach(function(e,k){if(e.id!==id)return;e0=e;bl.h.forEach(function(r){if(r[k]&&!r[k].na)anot=true;});});});
+ if(!e0)return;if(anot){toast('Ya anotaste series de este ejercicio: cambiá la unidad antes de empezar');return;}
+ ponPref(id,u===e0.u0?'':u);try{if(PANEL&&PANEL.crudo)AM_PANEL(PANEL.crudo,{silencio:true});}catch(e){}render();
+ var e1=null;BLQ.forEach(function(bl){bl.ej.forEach(function(e){if(e.id===id)e1=e;});});if(e1&&e1.u!==u)toast('Esa máquina no está en las tablas: no se puede pasar a '+UN[u]);},true);
+var st=document.createElement('style');st.textContent=
+ '.unl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:6px}.uns{display:inline-flex;gap:4px}'+
+ '.uns button{min-height:28px;padding:0 10px;border-radius:99px;border:1px solid var(--line);background:var(--surf2);color:var(--tx2);font:inherit;font-size:12px;font-weight:600}'+
+ '.uns button[aria-pressed="true"]{border-color:var(--a1);color:var(--a1);box-shadow:0 0 0 1px var(--a1) inset}.ueq{font-size:12px;color:var(--tx3);font-weight:600}';
+document.head.appendChild(st);
+})();
+
+/* 14 nov 2026 · Tipos de serie en la sesión: etiqueta de color en cada fila (antes también un dibujo, sacado a pedido de Ricky) (lo eligió Ricky en banco/opciones/tipos.html).
+   · A: cada parte del tipo en su fila, con su color y una etiqueta (D1 drop, P1 pausa, F al fallo, N negativas, C cluster).
+   · B: arriba de la tabla, un dibujo que lo explica: la escalera del drop o de la pirámide, la línea de bloques y pausas
+     del rest-pause o del cluster, el medidor del «al fallo», el tiempo de la bajada de las negativas y A1 ⇄ A2 en superserie. */
+(function(){
+if(typeof filasP!=='function'||typeof chipSug!=='function')return;
+var COL={dr:'var(--vio,#b18cff)',rp:'var(--yel,#efb23b)',fa:'var(--red,#ff6b81)',ng:'var(--grn,#4cd6a0)',cl:'var(--cya,#4fd1e6)',ap:'var(--cya,#4fd1e6)',pi:'var(--a1)'};
+var NOM={dr:'Drop set',rp:'Rest-pause',fa:'Al fallo',ng:'Negativas',cl:'Cluster',ap:'Aproximación',pi:'Pirámide'};
+var QUE={dr:'al terminar, bajá el peso y seguí sin descansar. Cuenta como una serie.',rp:'cerca del fallo, 15 s de pausa y seguí con el mismo peso.',
+ fa:'hasta no poder hacer otra repetición con buena técnica.',ng:'la bajada lenta y controlada, contando los segundos.',cl:'la serie partida en bloques cortos con una pausa entre medio.',
+ ap:'series livianas para entrar en calor: no cuentan en el volumen.',pi:'el peso cambia en cada serie y las reps van al revés.'};
+/* a cada fila le queda el tipo de su serie */
+filasP=(function(f0){return function(x,u){var R=f0(x,u),S=x.series||[];R.forEach(function(r){var s=S[r.si];if(s){r.tp=tipoSerP(s);r.raw=s;}});return R;};})(filasP);
+rowSr=(function(f0){return function(e,i){var r=filaDe(e,i),c=f0(e,i);return r&&r.tp?c+' tp-'+r.tp:c;};})(rowSr);
+function fw(v,e){return v?co(v)+(e.u==='pl'?'':e.u==='lb'?' lb':' kg'):'—';}
+function dibujo(e){if(!e||!e.rt)return '';var R=e.rt,tp=null;R.forEach(function(r){if(!tp&&r.tp&&r.tp!=='ef')tp=r.tp;});
+ if(!tp&&/pirámide/.test(e.o||''))tp='pi';if(!tp)return '';var c=COL[tp]||'var(--a1)',s='<div class="tvd" style="--tc:'+c+'"><div class="tvh"><b>'+NOM[tp]+'</b><span>'+QUE[tp]+'</span></div>';
+ if(tp==='dr'||tp==='pi'||tp==='ap'){var B=[];if(tp==='dr'){var i0=-1;R.forEach(function(r,i){if(i0<0&&r.tp==='dr'&&r.t!=='d')i0=i;});if(i0>=0){B.push(R[i0]);for(var k=i0+1;k<R.length&&R[k].t==='d';k++)B.push(R[k]);}}
+  else B=R.filter(function(r){return r.t!=='na'&&r.t!=='d'&&r.t!=='p';});
+  var mx=Math.max.apply(null,B.map(function(r){return r.p[0]||0;}))||1;
+  s+='<div class="tve">'+B.map(function(r){return '<i style="height:'+Math.max(28,(r.p[0]||0)/mx*100)+'%"><b>'+fw(r.p[0],e)+'</b><small>'+(r.t==='ap'?'calor':(r.rr||r.p[1]||'—')+' reps')+'</small></i>';}).join('')+'</div>';}
+ else if(tp==='rp'||tp==='cl'){var r0=null;R.forEach(function(r){if(!r0&&r.tp===tp)r0=r;});var L=[r0];if(tp==='rp')R.forEach(function(r){if(r.t==='p'&&r.si===r0.si)L.push(r);});
+  else{var nb=parseInt(r0.raw.bloques,10)||3;for(var q=1;q<nb;q++)L.push({pz:parseInt(r0.raw.pausa,10)||15,rr:r0.rr});}
+  s+='<div class="tvl">'+L.map(function(r,i){return (i?'<em>'+(r.pz||15)+' s</em>':'')+'<i>'+(r.rr||(i?'+':'—'))+'</i>';}).join('')+'</div>';}
+ else if(tp==='fa')s+='<div class="tvg"><i></i></div><div class="tvgl"><span>te sobran 3+</span><span>1–2</span><span>0 · al fallo</span></div>';
+ else if(tp==='ng'){var bj=0;R.forEach(function(r){if(!bj&&r.tp==='ng')bj=parseInt(r.raw.bajada,10)||4;});s+='<div class="tvn">'+Array.from({length:bj}).map(function(_,i){return '<i>'+(i+1)+'</i>';}).join('')+'<span>bajá contando '+bj+' segundos</span></div>';}
+ return s+'</div>';}
+/* 14 nov 2026 (tarde) · Ricky: «quedó mal, quiero que las series queden como están hoy… queda todo muy grande». El dibujo
+   no se muestra: la tabla queda como siempre y el tipo se ve en la etiqueta de cada fila. (dibujo() queda por si se retoma.) */
+var st=document.createElement('style');st.textContent=
+ '.tvd{margin-top:8px;padding:10px 11px;border-radius:14px;background:color-mix(in srgb,var(--tc) 9%,var(--surf));border:1px solid color-mix(in srgb,var(--tc) 32%,transparent)}'+
+ '.tvh b{display:block;font-size:12.5px;color:var(--tc);text-transform:uppercase;letter-spacing:.5px}.tvh span{display:block;font-size:12.5px;color:var(--tx2);margin-top:1px}'+
+ '.tve{display:flex;align-items:flex-end;gap:5px;height:74px;margin-top:8px}.tve i{flex:1;font-style:normal;border-radius:8px 8px 3px 3px;background:color-mix(in srgb,var(--tc) 32%,var(--surf2));display:flex;flex-direction:column;align-items:center;padding-top:4px;min-width:0}'+
+ '.tve i b{font-size:11px;font-weight:800;white-space:nowrap}.tve i small{font-size:9.5px;color:var(--tx2);font-weight:700}'+
+ '.tvl{display:flex;align-items:center;gap:4px;margin-top:8px}.tvl i{flex:1;font-style:normal;height:28px;border-radius:8px;background:color-mix(in srgb,var(--tc) 30%,var(--surf2));display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800}.tvl i:first-child{flex:2}'+
+ '.tvl em{font-style:normal;font-size:10px;color:var(--tx3);font-weight:700}'+
+ '.tvg{height:12px;border-radius:9px;background:linear-gradient(90deg,var(--grn,#4cd6a0),var(--yel,#efb23b) 60%,var(--red,#ff6b81));position:relative;margin-top:10px}.tvg i{position:absolute;right:-2px;top:-4px;width:6px;height:20px;border-radius:3px;background:#fff;box-shadow:0 0 0 2px var(--bg)}'+
+ '.tvgl{display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);font-weight:700;margin-top:5px}'+
+ '.tvn{display:flex;align-items:center;gap:4px;margin-top:8px}.tvn i{font-style:normal;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--tc);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--tc)}.tvn span{font-size:12px;color:var(--tx2);margin-left:4px}'+
+ Object.keys(COL).map(function(k){return '.sr.tp-'+k+' .n{color:'+COL[k]+';font-weight:800}';}).join('')+'.sr.tp-fa .n:after{content:"F";display:block;font-size:9px}.sr.tp-ng .n:after{content:"N";display:block;font-size:9px}.sr.tp-cl .n:after{content:"C";display:block;font-size:9px}'+
+ '.sr.t-d input,.sr.t-p input{border-style:dashed}';
 document.head.appendChild(st);
 })();
 
