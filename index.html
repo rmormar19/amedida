@@ -2808,11 +2808,11 @@ vHoy=function(){if(!PANEL)return vHoy0();
    top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'<span class="chip">~'+Math.round(ns*3+czMin)+' min</span></div>'+
    /* desplegable de ejercicios (7 nov 2026): cerrado de entrada para que Hoy no quede tan largo */
    ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
-   (U.verEj?'<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
+   (U.verEj?'<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+(typeof dropsTxtEj==='function'?dropsTxtEj(e,ep.u):'')+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
    (regE==='verde'&&ses.soloCardio?'<div class="regok" role="status"><span class="ck">'+I.chk+'</span><span><b>Hoy hiciste solo cardio</b><span class="s">Cuenta como entrenado.'+(ses.soloCardio.g?(ses.soloCardio.a?' '+ses.soloCardio.g+' pasó al '+String(ses.soloCardio.a).toLowerCase()+'.':' '+ses.soloCardio.g+' no se recupera esta semana.'):'')+'</span></span></div>':
-   regE==='verde'?'<div class="regok" role="status"><span class="ck">'+I.chk+'</span><span><b>Sesión registrada por tu entrenador</b><span class="s">Ya cuenta en tu semana y en tu progreso.</span></span></div>':
+   regE==='verde'?'<div class="regok" role="status"><span class="ck">'+I.chk+'</span><span><b>Sesión registrada por tu entrenador</b><span class="s">Ya cuenta en tu semana y en tu progreso.</span></span></div>'+(nej?'<button type="button" class="sec full" style="margin-top:10px" data-a="sesion">Ver la sesión</button>':''):
     regE==='rojo'?'<div class="regok no" role="status"><span class="ck">!</span><span><b>Tu entrenador la marcó como falta</b><span class="s">Si querés, recuperala otro día desde el calendario.</span></span></div><button type="button" class="sec full" style="margin-top:10px" data-a="tab" data-v="cal">Ir al calendario</button>':
-   '<button type="button" class="pri full" data-a="'+(U.ses.fin||(U.ses.on&&h[0]===h[1])?'resumen':'sesion')+'">'+btn+'</button>'+
+   '<button type="button" class="pri full" data-a="'+(U.ses.fin||(U.ses.on&&h[0]===h[1])?'resumen':'sesion')+'">'+btn+'</button>'+(U.ses.fin&&nej?'<button type="button" class="sec full" style="margin-top:10px" data-a="sesion">Ver la sesión</button>':'')+   /* 14 nov 2026: ver la rutina aunque ya esté hecha */
    (PANEL.hoy&&nej&&!U.ses.on&&!U.ses.fin&&PANEL.crudo&&PANEL.crudo.regionesEj?'<button type="button" class="sec full" style="margin-top:8px" data-a="soloC">Hoy solo hice cardio</button>':''))+'</div></section>';}
  else s+='<section class="card"><div class="fila" style="padding:0"><span class="ico">'+I.reloj+'</span><span><b>Hoy descansás</b><span class="s">No tenés más entrenos pendientes esta semana.</span></span><span></span></div></section>';
  /* semana */
@@ -3091,7 +3091,7 @@ function diaCardP(f){var dd=diaDeFecha(f),di=diaInfo(f),nm=DIA_LG[f.getDay()]+' 
  return '<section class="card ent"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(dd,grupoDia(dd),'Músculos de ese día resaltados en azul'))+'</div><div class="in"><span class="ey prox">'+nm+' · '+est+'</span><h2>'+(titDia(grupoDia(dd))||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
   top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'</div>'+
   ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
-  (U.verEj?'<div class="lista hoyl">'+(dd.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
+  (U.verEj?'<div class="lista hoyl">'+(dd.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+(typeof dropsTxtEj==='function'?dropsTxtEj(e,ep.u):'')+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
   (pas&&ok?'<div class="regok" role="status"><span class="ck">'+I.chk+'</span><span><b>Entrenaste este día</b><span class="s">Ya cuenta en tu semana y en tu progreso.</span></span></div>':
    pas&&fa?'<div class="regok no" role="status"><span class="ck">!</span><span><b>Ese día faltaste</b><span class="s">Si querés, recuperalo otro día desde el calendario.</span></span></div>':
    pas?'<div class="regok no" role="status"><span class="ck">?</span><span><b>No quedó registrado</b><span class="s">Si lo hiciste, avisale a tu entrenador.</span></span></div>':
@@ -4071,6 +4071,12 @@ function dibujo(e){if(!e||!e.rt)return '';var R=e.rt,tp=null;R.forEach(function(
  else if(tp==='fa')s+='<div class="tvg"><i></i></div><div class="tvgl"><span>te sobran 3+</span><span>1–2</span><span>0 · al fallo</span></div>';
  else if(tp==='ng'){var bj=0;R.forEach(function(r){if(!bj&&r.tp==='ng')bj=parseInt(r.raw.bajada,10)||4;});s+='<div class="tvn">'+Array.from({length:bj}).map(function(_,i){return '<i>'+(i+1)+'</i>';}).join('')+'<span>bajá contando '+bj+' segundos</span></div>';}
  return s+'</div>';}
+/* 14 nov 2026 · los drops como en Mi panel: «S1 9 placas × 8 ↘ 7 placas × 8» (Ricky: «8 pesadas + 8 livianas») */
+function pesoCorto(p,u){var t=String(p==null?'':p).trim();if(!t)return '—';if(/^[\d.,]+$/.test(t))t+=(u==='pl'?' placas':u==='lb'?' lb':' kg');return t;}
+window.dropsTxtEj=function(x,u){var S=(x&&x.series)||[],out=[],n=0;S.forEach(function(s){if(!s||s.tipo==='aprox')return;n++;var D=(s.drops||[]).filter(Boolean);if(!D.length)return;
+  out.push('S'+n+' '+pesoCorto(s.peso,u)+' × '+(s.reps||'—')+D.map(function(d){return ' ↘ '+pesoCorto(d.peso,u)+(d.reps?' × '+d.reps:'');}).join(''));});
+ return out.length?'<span class="drl">'+out.join('<br>')+'</span>':'';};
+chipSug=(function(c0){return function(e){var raw=null;try{(PANEL.ses&&PANEL.ses.ejercicios||[]).forEach(function(z){if(z&&z.nombre===e.n)raw=z;});}catch(er){}return (raw?dropsTxtEj(raw,e.u):'')+c0(e);};})(chipSug);
 /* 14 nov 2026 (tarde) · Ricky: «quedó mal, quiero que las series queden como están hoy… queda todo muy grande». El dibujo
    no se muestra: la tabla queda como siempre y el tipo se ve en la etiqueta de cada fila. (dibujo() queda por si se retoma.) */
 var st=document.createElement('style');st.textContent=
@@ -4084,7 +4090,8 @@ var st=document.createElement('style');st.textContent=
  '.tvgl{display:flex;justify-content:space-between;font-size:10px;color:var(--tx3);font-weight:700;margin-top:5px}'+
  '.tvn{display:flex;align-items:center;gap:4px;margin-top:8px}.tvn i{font-style:normal;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--tc);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--tc)}.tvn span{font-size:12px;color:var(--tx2);margin-left:4px}'+
  Object.keys(COL).map(function(k){return '.sr.tp-'+k+' .n{color:'+COL[k]+';font-weight:800}';}).join('')+'.sr.tp-fa .n:after{content:"F";display:block;font-size:9px}.sr.tp-ng .n:after{content:"N";display:block;font-size:9px}.sr.tp-cl .n:after{content:"C";display:block;font-size:9px}'+
- '.sr.t-d input,.sr.t-p input{border-style:dashed}';
+ '.sr.t-d input,.sr.t-p input{border-style:dashed}'+
+ '.drl{display:block;margin-top:5px;font-size:12.5px;line-height:1.5;color:var(--vio,#8b6fe0);font-weight:700}';
 document.head.appendChild(st);
 })();
 
