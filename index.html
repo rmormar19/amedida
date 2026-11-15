@@ -2709,7 +2709,7 @@ function firmaDia(dd){return dd?JSON.stringify([dd.grupo,(dd.ejercicios||[]).map
 
 /* el día de la sesión: hoy si toca; si no, el próximo de la semana que esté pendiente */
 /* la semana del panel cierra el domingo 06:00: desde ese momento la rutina cargada es la de la semana que empieza el lunes */
-function lunesOp(d){var x=new Date(d);if(x.getDay()===0&&x.getHours()>=6)x.setDate(x.getDate()+1);var m=lunes(x);return new Date(m.getFullYear(),m.getMonth(),m.getDate());}
+function lunesOp(d){var x=new Date(d);if(x.getDay()===0&&x.getHours()>=22)x.setDate(x.getDate()+1);var m=lunes(x);return new Date(m.getFullYear(),m.getMonth(),m.getDate());}
 /* domingo (7 nov 2026): la semana de la planilla cierra el domingo 06:00. Si el domingo le toca entrenar y la sesión quedó en la semana que cerró, la app sigue mostrando esa semana hasta que la haga. */
 var SEM_ANT=null;
 /* 10 nov 2026 · un solo criterio con el puente y el Monitor: la semana EN CURSO es la de calendario (lunes 00:00).
@@ -2758,7 +2758,9 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
  if(ses&&guard&&guard.fecha===hoyISO()&&nrmP(guard.dia)===nrmP(ses.dia))nuevo.forEach(function(b){b.ej.forEach(function(e,k){var g=guard.h[e.id];if(g)b.h.forEach(function(r,s){if(g[s])r[k]=g[s];});});});
  if(ses&&U.ses&&U.ses.on){
   nuevo.forEach(function(b){b.ej.forEach(function(e,k){viejo.forEach(function(bo){bo.ej.forEach(function(eo,ko){if(eo.id===e.id)b.h.forEach(function(r,s){if(bo.h[s]&&bo.h[s][ko])r[k]=bo.h[s][ko];});});});});});}
- BLQ.length=0;nuevo.forEach(function(b){BLQ.push(b);});if(U.ses&&U.ses.b>=BLQ.length)U.ses.b=0;DIA_SES=ses?ses.dia:'';
+ BLQ.length=0;nuevo.forEach(function(b){BLQ.push(b);});
+ /* 14 nov 2026 · Ricky: «si presiono Hecho en Mi panel, la rutina queda hecha y todos los ejercicios en verde»: día verde = cada serie hecha con lo pautado (lo que el cliente anotó se respeta) */
+ if(ses&&ses.estado==='verde'&&!ses.parcial&&BLQ.every(function(b){return b.h.every(function(r){return r.every(function(x){return !x||x.na;});});}))BLQ.forEach(function(b){b.h.forEach(function(r,i){r.forEach(function(x,k){if(x)return;var e=b.ej[k],p=e&&(e.p[i]||e.p[e.p.length-1]);if(p)r[k]=[p[0],p[1],p[3]?p[2]:''];});});});if(U.ses&&U.ses.b>=BLQ.length)U.ses.b=0;DIA_SES=ses?ses.dia:'';
  /* cardio del día, tal como lo cargó el panel */
  if(window.CARDIO){CARDIO.length=0;(ses&&ses.cardio||[]).forEach(function(z){if(z&&z.tipo)CARDIO.push({tipo:z.tipo,modo:z.modo||'min',cant:z.cant||'',zona:z.zona||'',inclinacion:z.inclinacion||'',velocidad:z.velocidad||'',cuando:CUANDO_TXT[z.cuando]||z.cuando||'al final',minReal:z.minReal||'',fc:z.fc||'',estado:z.estado||''});});}
  PANEL={c:c,ses:ses,hoy:ds&&ds.hoy,firmas:firmas,lun:lunH,crudo:crudo};
