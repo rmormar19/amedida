@@ -2380,16 +2380,19 @@ function pintarHoja(){var c=document.getElementById('capa'),h=U.hoja;document.do
   var f=Math.max(0,NUT.obj.p-tot().p);s+='<div class="hint">Para llegar a 160 g de proteína te faltan <b>'+f+' g</b>.</div><button type="button" class="pri full" style="margin-top:12px" data-a="cerrar">Listo</button>';}
  if(h.t==='mover'){var fm=diaInfo(dk(h.k)),O=opcionesMover(h.k),rec=fm.e==='fa'||fm.e==='sm',oD=dk(h.k);
   var L0=lunes(new Date(HOYC)),L0=new Date(L0.getFullYear(),L0.getMonth(),L0.getDate()),W={},dm=function(d){return d.getDate()+'/'+(d.getMonth()+1);};
-  if(new Date().getDay()===0&&new Date().getHours()>=6)L0.setDate(L0.getDate()+7);
-  O.forEach(function(o,j){var sm=o.sem!=null?o.sem:Math.round((+new Date(o.d.getFullYear(),o.d.getMonth(),o.d.getDate()-((o.d.getDay()+6)%7))-+L0)/6048e5);o.sem=sm;(W[sm]=W[sm]||{})[o.k]=j;});
+  /* 15 nov 2026 · Ricky: «no me dejó elegir qué día quería recuperar»: el domingo desde las 6 la grilla ya arrancaba en la semana
+     siguiente pero los días se ubicaban con la semana de hoy, y no se dibujaba ninguno. Ahora la semana sale de la fecha de cada día
+     y el corte es a las 22 (el cierre). */
+  if(new Date().getDay()===0&&new Date().getHours()>=22)L0.setDate(L0.getDate()+7);
+  O.forEach(function(o,j){var sm=Math.round((+new Date(o.d.getFullYear(),o.d.getMonth(),o.d.getDate()-((o.d.getDay()+6)%7))-+L0)/6048e5);o.sem=sm;(W[sm]=W[sm]||{})[o.k]=j;});
   if(h.sel>=O.length)h.sel=0;var se=O[h.sel];
   s='<h2>'+(rec?'Recuperar ':'Mover ')+GFULL[fm.g]+'</h2><p class="sub">'+(rec?'Era el ':'Planificado para el ')+DSEM[oD.getDay()].toLowerCase()+' '+dm(oD)+'. Elegí el día nuevo: esta semana o las que vienen.</p>';
   var NS=Math.max(1,Object.keys(W).reduce(function(m,x){return Math.max(m,+x+1);},1));
-  for(var sm=0;sm<NS;sm++){var a0=new Date(L0);a0.setDate(L0.getDate()+7*sm);var a6=new Date(a0);a6.setDate(a0.getDate()+6);
+  for(var sm=0;sm<NS;sm++){if(!W[sm]&&sm===0&&NS>1)continue;var a0=new Date(L0);a0.setDate(L0.getDate()+7*sm);var a6=new Date(a0);a6.setDate(a0.getDate()+6);
    s+='<div class="mvw"><h4>'+(sm===0?'Esta semana':sm===1?'Semana que viene':'En '+sm+' semanas')+' <span>'+dm(a0)+' – '+dm(a6)+'</span></h4><div class="mvg">';
    for(var i=0;i<7;i++){var d=new Date(a0);d.setDate(a0.getDate()+i);var kk=kd(d),j=(W[sm]||{})[kk],lb=DSEM[d.getDay()].slice(0,2);
     if(j!=null){s+='<button type="button" class="mvd" data-a="destino" data-v="'+j+'" aria-pressed="'+(h.sel===j)+'" aria-label="'+DSEM[d.getDay()]+' '+dm(d)+'">'+lb+'<b>'+d.getDate()+'</b></button>';continue;}
-    var fi=+d>=+HOYC||kk===h.k?diaInfo(d):{},dot=fi.g?'<i style="background:'+(GCOL[fi.g]||'var(--tx4)')+'"></i>':'<i></i>';
+    var fi=+d>=+HOYC||kk===h.k?diaInfo(d):{},gP=fi.g||(typeof grupoPlantilla==='function'&&+d>=+HOYC?grupoPlantilla(d):null),dot=gP?'<i style="background:'+(GCOL[gP]||'var(--tx4)')+'"></i>':'<i></i>';
     s+='<span class="mvd off'+(kk===h.k?' org':'')+'" aria-hidden="true">'+lb+'<b>'+d.getDate()+'</b>'+dot+'</span>';}
    s+='</div></div>';}
   if(se)s+='<div class="mvs"><div><b>'+DSEM[se.d.getDay()]+' '+dm(se.d)+'</b><span>'+se.txt+'</span></div><span class="'+se.est[0]+'">'+se.est[1]+'</span></div>';
@@ -3198,9 +3201,11 @@ function movPendAplicar(c){var L=movPend();if(!L.length||!c||!c.rutina)return c;
  movPendGuardar(queda);if(!queda.length)return c;var c2=Object.assign({},c);c2.rutina=r;return c2;}
 var opcionesMover0=opcionesMover;
 var MOV_SEM=4;   /* esta semana y las tres que vienen */
+/* 15 nov 2026 · en las semanas que vienen la rutina se repite: ese día ya tiene sesión (para recuperar se ofrecen sólo días libres) */
+function grupoPlantilla(d){if(!PANEL)return null;if(+lun0(d)<=+LUNH())return null;var x=(PANEL.c.rutina||[]).filter(function(r){return iDia(r.dia)===d.getDay()&&tieneDia(r)&&!r.libre;})[0];return x?gKey(grupoDia(x)):null;}
 opcionesMover=function(k){if(!PANEL)return opcionesMover0(k);
  var f=diaInfo(dk(k)),g=f.g,lun=lunesCal(new Date()),fin=new Date(lun);fin.setDate(lun.getDate()+7*MOV_SEM-1);var o=[],fin0=new Date(lun);fin0.setDate(lun.getDate()+6);
- for(var d=new Date(HOYC);+d<=+fin;d.setDate(d.getDate()+1)){var kk=kd(d);if(kk===k)continue;var fi=diaInfo(d);if(fi.g)continue;
+ for(var d=new Date(HOYC);+d<=+fin;d.setDate(d.getDate()+1)){var kk=kd(d);if(kk===k)continue;var fi=diaInfo(d);if(fi.g||grupoPlantilla(d))continue;
   if(+d>+fin0){var sm=Math.round((+lun0(d)-+lun)/(7*864e5));o.push({k:kk,d:new Date(d),sem:sm,txt:sm===1?'Semana que viene':'En '+sm+' semanas',est:['chip','Otra semana']});continue;}
   var a=new Date(d);a.setDate(a.getDate()-1);var b=new Date(d);b.setDate(b.getDate()+1);var ga=diaInfo(a).g,gb=diaInfo(b).g;
   var choca=(ga===g&&kd(a)!==k)||(gb===g&&kd(b)!==k);var na=kd(a)===k?'queda libre':(ga||'descanso'),nb=kd(b)===k?'queda libre':(gb||'descanso');
@@ -3821,6 +3826,42 @@ var BANT=null;
 function cambioBloque(v,entro){var b=U.ses.b;if(!entro&&BANT!=null&&b!==BANT&&!MENOS()){v.classList.remove('entra','der','izq');void v.offsetWidth;v.classList.add('entra',b>BANT?'der':'izq');
   clearTimeout(window.__entT);window.__entT=setTimeout(function(){v.classList.remove('entra','der','izq');},900);}BANT=b;}
 
+/* ---------- 11 · calendario (15 nov 2026, Ricky: «que el calendario tenga más efectos al ingresar») ----------
+   Al entrar: los números del resumen cuentan, los días caen en diagonal, los entrenados se pintan de verde uno tras otro con
+   su tilde, las faltas tiemblan, hoy late con un anillo y el detalle sube. Al cambiar de mes la grilla se desliza y al tocar
+   un día, el día salta y el detalle se funde. */
+var CAL_MES=null,CAL_SEL=null;
+function calendario(v,entro){var c=U.cal||{},mesAnt=CAL_MES,selAnt=CAL_SEL;CAL_MES=c.mes;CAL_SEL=c.sel;if(MENOS())return;
+ var g=v.querySelector('.calx');if(!g)return;
+ if(entro){v.classList.add('efanim','efcal');
+  var C=[].slice.call(g.querySelectorAll('.cd:not(.pad)')),pads=g.querySelectorAll('.cd.pad').length;
+  C.forEach(function(el,i){var p=i+pads,fila=Math.floor(p/7),col=p%7;el.style.setProperty('--efc',((fila+col)*0.035+0.12).toFixed(3)+'s');el.classList.add('efcd');});
+  var ok=C.filter(function(el){return el.classList.contains('ok');});
+  ok.forEach(function(el,i){el.style.setProperty('--efo',(0.55+i*0.06).toFixed(2)+'s');el.classList.add('efcok');});
+  C.filter(function(el){return el.classList.contains('no');}).forEach(function(el,i){el.style.setProperty('--efo',(0.75+ok.length*0.06+i*0.08).toFixed(2)+'s');el.classList.add('efcno');});
+  var hoy=g.querySelector('.cd.hoy');if(hoy)hoy.classList.add('efchoy');
+  [].slice.call(v.querySelectorAll('.kgr .kpa b')).forEach(function(b,i){contar(b,800,150+i*110);});
+  [].slice.call(v.querySelectorAll('#view > section.card, #view .card')).forEach(function(cd,i){if(cd.querySelector('.calx'))return;cd.style.animationDelay=(0.35+i*0.1)+'s';cd.classList.add('efsube');});
+  return;}
+ if(mesAnt!=null&&c.mes!==mesAnt){g.style.setProperty('--efdir',c.mes>mesAnt?1:-1);g.classList.remove('efmes');void g.offsetWidth;g.classList.add('efmes');}
+ else if(selAnt!=null&&c.sel!==selAnt){var s=g.querySelector('.cd.sel');if(s){s.classList.add('efpick');setTimeout(function(){chispas(s,8,26);},40);}var det=v.querySelector('#calDet');if(det){det.classList.remove('efdet');void det.offsetWidth;det.classList.add('efdet');}}}
+var st2=document.createElement('style');st2.textContent=
+ '.efcal .calx .cd.efcd{animation:efCd .42s cubic-bezier(.3,1.45,.5,1) var(--efc,0s) both}'+
+ '.efcal .calx .cd.efcok{animation:efCd .42s cubic-bezier(.3,1.45,.5,1) var(--efc,0s) both,efCok .6s ease var(--efo,.6s) both}'+
+ '.efcal .calx .cd.efcno{animation:efCd .42s cubic-bezier(.3,1.45,.5,1) var(--efc,0s) both,efCno .5s ease var(--efo,.8s) both}'+
+ '.efcal .calx .cd.efchoy{position:relative}.efcal .calx .cd.efchoy:after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:2px solid var(--a1);pointer-events:none;animation:efChoy 1.4s ease-out 1s 3 both}'+
+ '.efsube{animation:efSubeC .5s cubic-bezier(.2,.8,.3,1) both}'+
+ '.calx.efmes{animation:efMes .38s cubic-bezier(.2,.8,.3,1)}.calx .cd.efpick{animation:efPick .4s cubic-bezier(.3,1.7,.5,1)}#calDet.efdet{animation:efDet .35s ease}'+
+ '@keyframes efCd{from{opacity:0;transform:translateY(-10px) scale(.6)}to{opacity:1;transform:none}}'+
+ '@keyframes efCok{0%{filter:none;box-shadow:0 0 0 0 rgba(var(--grnrgb),0)}40%{filter:brightness(1.35);box-shadow:0 0 0 5px rgba(var(--grnrgb),.35)}100%{filter:none;box-shadow:0 0 0 0 rgba(var(--grnrgb),0)}}'+
+ '@keyframes efCno{0%,100%{transform:none}20%{transform:translateX(-3px) rotate(-3deg)}40%{transform:translateX(3px) rotate(3deg)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}'+
+ '@keyframes efChoy{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.25)}}'+
+ '@keyframes efSubeC{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}'+
+ '@keyframes efMes{from{opacity:.2;transform:translateX(calc(var(--efdir,1)*28px))}to{opacity:1;transform:none}}'+
+ '@keyframes efPick{0%{transform:scale(.85)}60%{transform:scale(1.12)}100%{transform:none}}@keyframes efDet{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}'+
+ '@media (prefers-reduced-motion: reduce){.efcal .calx .cd,.efsube,.calx.efmes,.calx .cd.efpick,#calDet.efdet{animation:none!important}.efcal .calx .cd.efchoy:after{display:none}}';
+document.head.appendChild(st2);
+
 /* ---------- después de cada render ---------- */
 var render0=render;
 /* ---------- 10 · Hoy: al cambiar de día, fundido de los músculos ---------- */
@@ -3838,7 +3879,7 @@ function diaModelo(v,capAnt){var s=v.querySelector('.hsem .hs.sel');if(!s){DIA_A
  capAnt.filter(function(src){return ahora.indexOf(src)<0;}).forEach(function(src){var o=document.createElement('img');o.className='cp efvieja';o.src=src;o.alt='';o.setAttribute('aria-hidden','true');
   if(base&&base.nextSibling)img.insertBefore(o,base.nextSibling);else img.appendChild(o);setTimeout(function(){if(o.parentNode)o.parentNode.removeChild(o);},900);});}
 render=function(){var prev=window.__pant;try{CAP_ANT=capasVista();}catch(e){CAP_ANT=[];}var r=render0.apply(this,arguments);try{var v=document.getElementById('view'),entro=window.__pant!==prev,push=U.pila[U.pila.length-1];v.classList.remove('efanim');
-  if(push!=='sesion')BANT=null;if(push==='resumen')cierre(v,entro);else if(push==='sesion'){cambioBloque(v,entro);deslizar(v);serieHecha(v);}else if(!push&&U.tab==='hoy'){racha(v,entro);diaModelo(v,CAP_ANT);}if(push||U.tab!=='hoy')DIA_ANT=null;}catch(e){}
+  if(push!=='sesion')BANT=null;if(push==='resumen')cierre(v,entro);else if(push==='sesion'){cambioBloque(v,entro);deslizar(v);serieHecha(v);}else if(!push&&U.tab==='hoy'){racha(v,entro);diaModelo(v,CAP_ANT);}else if(!push&&U.tab==='cal')calendario(v,entro);if(push||U.tab!=='hoy')DIA_ANT=null;}catch(e){}
  return r;};
 
 var st=document.createElement('style');st.textContent=
