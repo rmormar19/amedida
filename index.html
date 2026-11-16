@@ -4112,6 +4112,105 @@ var st=document.createElement('style');st.textContent=
 document.head.appendChild(st);
 })();
 
+/* ================= 16 nov 2026 · mover el entreno desde «Hoy» manteniendo presionado un día de la semana =================
+   Ricky: «en el panel de Hoy, al mantener presionado sobre un día de la semana, pueda mover el entreno al día que yo elija».
+   Abre la misma hoja que el Calendario («Mover» o «Recuperar»), así el cambio sale igual: se manda solo al puente, el Monitor
+   lo aplica y avisa en la campana, y Mi panel lo muestra en Novedades. Un toque corto sigue eligiendo el día.
+   - Mantener ~450 ms (dedo o mouse). Si el dedo se mueve (desplazamiento), se cancela. Sin menú ni selección de iOS.
+   - Día hecho, libre, sin entreno o con la sesión en curso: un aviso corto que explica por qué, sin abrir nada.
+   - Teclado y lector: en un día, la tecla M (o Mayús+F10 / tecla de menú) abre la hoja; además, el día elegido tiene un
+     botón «Mover … a otro día» que sólo se ve al llegar con el teclado. */
+(function(){
+var MENOS=function(){try{return window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
+var vibra=function(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
+var CLAVE_PISTA='amedida-pista-mover',ESPERA=450,ARRANCA=110,TOL=10;
+function pistaVista(){try{return localStorage.getItem(CLAVE_PISTA)==='1';}catch(e){return false;}}
+function pistaCerrar(){try{localStorage.setItem(CLAVE_PISTA,'1');}catch(e){}}
+function diasSem(){var lun=LUNH(),o=[];for(var i=0;i<7;i++){var f=new Date(lun);f.setDate(lun.getDate()+i);o.push(f);}return o;}
+function nomDia(f){return DSEM[f.getDay()].toLowerCase()+' '+f.getDate();}
+/* ¿se puede mover este día? {ok, rec} o {msg} con el porqué */
+function puedeMover(k){if(!PANEL)return {msg:''};var f=dk(k),di=diaInfo(f),t=+f,h=+HOYC,sesK=null;
+ if(PANEL.ses)try{sesK=kd(fechaDia(PANEL.ses,PANEL.lun));}catch(e){}
+ if(!di.g)return {msg:di.libre?'Ese día quedó libre: no hay entreno para mover.':'Ese día no tenés entreno para mover.'};
+ if(di.e==='cur'||(U.ses.on&&sesK===k))return {msg:'Tenés la sesión de ese día en curso: terminala antes de cambiarla de día.'};
+ if(di.e==='ok'||(t===h&&U.ses.fin))return {msg:'Ese entreno ya está hecho: queda en su día.'};
+ if(di.movido)return {msg:'Ese entreno ya lo pasaste a este día. Si querés cambiarlo otra vez, avisale a tu entrenador.'};
+ var rec=di.e==='fa'||di.e==='sm';
+ if(!rec&&!((di.e==='hoy'||di.e==='pl')&&t>=h))return {msg:'Ese entreno no se puede cambiar de día desde acá.'};
+ var op=[];try{op=opcionesMover(k);}catch(e){}
+ if(!op.length)return {msg:'No quedan días libres para '+(rec?'recuperarlo':'moverlo')+'.'};
+ return {ok:true,rec:rec};}
+window.puedeMoverHoy=puedeMover;
+
+/* ---------- la tira: pista la primera vez + botón para teclado/lector ---------- */
+var IC_MANO='<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="3.2"/><path d="M12 2.5v1.6M5.5 9H4M20 9h-1.5M7.4 4.4l1.1 1.1M16.6 4.4l-1.1 1.1"/><path d="M8 21l1-5.5h6l1 5.5"/></svg>';
+var semHoyMH=semHoy;
+semHoy=function(h){var r=semHoyMH(h);try{var i=r.indexOf('<div class="hsem"');if(i<0)return r;var j=r.indexOf('</div>',i);if(j<0)return r;
+ var D=diasSem(),K=D.map(kd),hk=kd(HOYC),sel=U.hdia&&K.indexOf(U.hdia)>=0?U.hdia:hk,ps=puedeMover(sel),fs=dk(sel);
+ var btn=ps.ok?'<button type="button" class="mhbtn" data-a="mover" data-v="'+sel+'">'+(ps.rec?'Recuperar':'Mover')+' el entreno del '+nomDia(fs)+' a otro día</button>':'';
+ var ayuda='<span class="mhsr" id="mhAyuda">Mantené presionado un día, o presioná la tecla M, para cambiar su entreno de día.</span>';
+ var pista=!pistaVista()&&K.some(function(k){return puedeMover(k).ok;})?'<p class="mhpista" role="note">'+IC_MANO+'<span>Mantené presionado un día para cambiarlo de día</span><button type="button" data-mh="pista" aria-label="Cerrar la pista">×</button></p>':'';
+ var ini=r.slice(i,j).replace('<div class="hsem" role="group" aria-label="Tu semana"','<div class="hsem" role="group" aria-label="Tu semana" aria-describedby="mhAyuda"');
+ return r.slice(0,i)+pista+ini+ayuda+btn+r.slice(j);}catch(e){return r;}};
+
+/* ---------- abrir la hoja: por la misma acción del Calendario ---------- */
+var DESDE_HOY=false;
+function abrirMover(k){var x=document.createElement('button');x.type='button';x.hidden=true;x.setAttribute('data-a','mover');x.setAttribute('data-v',k);
+ document.body.appendChild(x);try{x.click();}finally{x.remove();}}
+function marcar(k,cls){var e=document.querySelector('.hsem .hs[data-v="'+k+'"]');if(!e||MENOS())return;e.classList.remove(cls);void e.offsetWidth;e.classList.add(cls);setTimeout(function(){e.classList.remove(cls);},700);}
+function disparar(b,teclado){var k=b.getAttribute('data-v'),p=puedeMover(k);
+ if(!p.ok){vibra([12,50,12]);if(!MENOS()){b.classList.remove('mhno');void b.offsetWidth;b.classList.add('mhno');}if(p.msg)toast(p.msg);return false;}
+ if(!teclado)vibra(15);pistaCerrar();DESDE_HOY=true;abrirMover(k);marcar(k,'mhok');return true;}
+
+/* ---------- el gesto ---------- */
+var M={el:null,t:0,t1:0,x:0,y:0,fue:false,hasta:0};
+function limpiar(){clearTimeout(M.t);clearTimeout(M.t1);M.t=M.t1=0;if(M.el)M.el.classList.remove('mhp');M.el=null;}
+document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.hsem .hs');limpiar();M.fue=false;
+ if(!b||!PANEL||U.hoja||(U.pila&&U.pila.length)||U.tab!=='hoy')return;if(e.pointerType==='mouse'&&e.button!==0)return;
+ M.el=b;M.x=e.clientX;M.y=e.clientY;
+ M.t1=setTimeout(function(){if(M.el===b)b.classList.add('mhp');},ARRANCA);   /* el anillo arranca un poco después: un toque corto no parpadea */
+ M.t=setTimeout(function(){if(M.el!==b)return;var el=b;limpiar();M.fue=true;disparar(el,false);},ESPERA);},true);
+document.addEventListener('pointermove',function(e){if(!M.el)return;var dx=e.clientX-M.x,dy=e.clientY-M.y;if(dx*dx+dy*dy>TOL*TOL)limpiar();},true);
+function soltar(){if(M.fue){M.fue=false;M.hasta=Date.now()+450;}limpiar();}
+document.addEventListener('pointerup',soltar,true);document.addEventListener('pointercancel',soltar,true);
+window.addEventListener('scroll',function(){if(M.el)limpiar();},{passive:true,capture:true});
+window.addEventListener('blur',limpiar);
+/* el clic que llega al soltar después de abrir la hoja no tiene que tocar nada (ni el día ni el velo de la hoja) */
+window.addEventListener('click',function(e){if(!e.isTrusted)return;if(M.fue||Date.now()<M.hasta){M.hasta=0;M.fue=false;e.preventDefault();e.stopImmediatePropagation();}},true);
+document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.hsem'))e.preventDefault();},true);
+document.addEventListener('selectstart',function(e){if(e.target.closest&&e.target.closest('.hsem'))e.preventDefault();},true);
+/* teclado: M, Mayús+F10 o la tecla de menú sobre un día */
+document.addEventListener('keydown',function(e){var b=e.target.closest&&e.target.closest('.hsem .hs');if(!b||U.hoja)return;
+ if(e.key==='m'||e.key==='M'||e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10')){if(e.ctrlKey||e.metaKey||e.altKey)return;e.preventDefault();disparar(b,true);}});
+/* pista: cerrar */
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mh="pista"]');if(!b)return;pistaCerrar();var p=b.closest('.mhpista');
+ if(p&&!MENOS()){p.classList.add('mhsale');setTimeout(function(){try{render();}catch(er){}},220);}else{try{render();}catch(er){}}});
+/* el botón del teclado también cuenta como «desde Hoy» */
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.mhbtn');if(b){DESDE_HOY=true;pistaCerrar();}},true);
+/* al confirmar: el día nuevo «aterriza» en la tira */
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-a="confMover"]');if(!b||!DESDE_HOY)return;DESDE_HOY=false;
+ setTimeout(function(){if(U.tab==='hoy'&&U.cal&&U.cal.sel)marcar(U.cal.sel,'mhlleg');},60);});
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-a="cerrar"]');if(b)DESDE_HOY=false;});
+
+var st=document.createElement('style');st.textContent=
+ '.hsem{position:relative}.hsem,.hsem .hs{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}'+
+ '.hsem .hs{position:relative;isolation:isolate;touch-action:manipulation;transition:transform .34s cubic-bezier(.2,.8,.3,1),box-shadow .34s ease}'+
+ '.hsem .hs::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:color-mix(in srgb,var(--a1) 30%,transparent);transform:scaleY(0);transform-origin:50% 100%;opacity:0;pointer-events:none}'+
+ '.hsem .hs.mhp{transform:translateY(-4px) scale(1.06);box-shadow:0 0 0 2px var(--a1),0 12px 20px -10px rgba(var(--a1rgb),.9);opacity:1;z-index:2}'+
+ '.hsem .hs.mhp::before{transform:none;opacity:1;transition:transform .34s linear,opacity .08s}'+
+ '.hsem .hs.mhno{animation:mhNo .36s ease}.hsem .hs.mhok{animation:mhOk .4s cubic-bezier(.3,1.6,.5,1)}.hsem .hs.mhlleg{animation:mhLleg .65s cubic-bezier(.3,1.5,.5,1)}'+
+ '@keyframes mhNo{0%,100%{transform:none}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}'+
+ '@keyframes mhOk{0%{transform:translateY(-4px) scale(1.06)}55%{transform:scale(.94)}100%{transform:none}}'+
+ '@keyframes mhLleg{0%{transform:translateY(-10px) scale(.88);box-shadow:0 0 0 0 rgba(var(--a1rgb),.85)}60%{transform:scale(1.07)}100%{transform:none;box-shadow:0 0 0 9px rgba(var(--a1rgb),0)}}'+
+ '.mhsr,.mhbtn{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}'+
+ '.mhbtn:focus,.mhbtn:focus-visible{right:0;top:calc(100% + 4px);width:auto;height:auto;margin:0;padding:8px 12px;clip:auto;clip-path:none;overflow:visible;border-radius:10px;border:1.5px solid var(--a1);background:var(--surf);color:var(--tx);font:inherit;font-size:13px;font-weight:700;z-index:5;box-shadow:var(--sh);white-space:normal;max-width:100%}'+
+ '.mhpista{display:flex;align-items:center;gap:7px;margin:0 2px 6px;font-size:12.5px;font-weight:600;color:var(--tx3);animation:mhPin .3s ease both}.mhpista svg{flex:none;color:var(--a1)}.mhpista span{flex:1;min-width:0}'+
+ '.mhpista button{position:relative;flex:none;width:28px;height:28px;border-radius:50%;border:0;background:transparent;color:var(--tx3);font:inherit;font-size:18px;line-height:1}.mhpista button::after{content:"";position:absolute;inset:-8px}'+
+ '.mhpista.mhsale{animation:mhPout .22s ease both}@keyframes mhPin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes mhPout{to{opacity:0;transform:translateY(-4px)}}'+
+ '@media (prefers-reduced-motion: reduce){.hsem .hs{transition:none}.hsem .hs.mhp{transform:none}.hsem .hs.mhp::before{transition:none}.hsem .hs.mhno,.hsem .hs.mhok,.hsem .hs.mhlleg,.mhpista,.mhpista.mhsale{animation:none}}';
+document.head.appendChild(st);
+})();
+
 /* 12 nov 2026 · Apple Watch (pedido de Ricky: «uso apple watch, armemos el atajo del reloj»).
    Los entrenos que registra el reloj llegan solos: el atajo de iOS «A medida · reloj» los manda al puente al terminar
    cada entreno y cada noche, el Monitor los guarda en la ficha (c.reloj) y la app los recibe con el resto de los datos.
