@@ -3191,10 +3191,23 @@ function movPendMarcas(c){var lun=+lunesCal(new Date());movPend().forEach(functi
   if(la<lun||(+a<+HOYC&&!m.fut))return;
   if(la===lun&&c&&(c.rutina||[]).some(function(d){return iDia(d.dia)===a.getDay()&&tieneDia(d);}))return;
   MOVS[m.aK]={g:m.g,rec:!m.fut,fut:!!m.fut,de:m.deK};});}
+/* 16 nov 2026 · arrastrar en «Hoy» a un día con entreno: intercambiar (cada día queda con lo del otro) o sumar (el destino
+   queda con los dos y el origen libre). Se ve al instante y se guarda hasta que la rutina del entrenador ya lo trae:
+   cada pendiente recuerda cómo estaban los dos días; si ya no están así (lo aplicó el Monitor o cambió algo), se borra solo. */
+function firmaMov(d){return d?JSON.stringify([d.grupo||'',(d.ejercicios||[]).filter(function(e){return e&&e.nombre;}).map(function(e){return e.nombre;}),(d.cardio||[]).filter(function(z){return z&&z.tipo;}).map(function(z){return z.tipo;})]):'';}
+function mezclaDia(base,de){var n={};Object.keys(de).forEach(function(k){if(k!=='dia'&&k!=='hora')n[k]=JSON.parse(JSON.stringify(de[k]));});n.dia=base.dia;if(base.hora)n.hora=base.hora;
+ n.estado=null;delete n.libre;delete n.avisoLibre;delete n.esfuerzo;delete n.parcial;return n;}
+function movPendModo(m,r,lun,queda,por){if(m.lun!==lun||Date.now()-m.t>8*864e5)return;var o=por(m.de),a=por(m.a);
+ if(!o||!a||firmaMov(o)!==m.sDe||firmaMov(a)!==m.sA)return;          /* ya lo aplicó el entrenador: no se aplica dos veces */
+ queda.push(m);var cO=JSON.parse(JSON.stringify(o)),cA=JSON.parse(JSON.stringify(a)),io=r.indexOf(o),ia=r.indexOf(a);
+ if(m.modo==='cambiar'){r[io]=mezclaDia(o,cA);r[ia]=mezclaDia(a,cO);return;}
+ var n=mezclaDia(a,cA);n.ejercicios=(cA.ejercicios||[]).concat(cO.ejercicios||[]);n.cardio=(cA.cardio||[]).concat(cO.cardio||[]);n.grupo=[cA.grupo,cO.grupo].filter(Boolean).join(' + ');r[ia]=n;
+ r[io]={dia:o.dia,grupo:'',estado:null,ejercicios:[],cardio:[]};if(o.hora)r[io].hora=o.hora;}
 function movPendAplicar(c){var L=movPend();if(!L.length||!c||!c.rutina)return c;var lun=+lunesCal(new Date()),queda=[];
  var r=c.rutina.map(function(d){return Object.assign({},d);});
  var por=function(n){return r.filter(function(d){return nrmP(d.dia)===nrmP(n);})[0];};
  L.forEach(function(m){
+  if(m.modo==='cambiar'||m.modo==='sumar')return movPendModo(m,r,lun,queda,por);
   if(m.fut){var aD=dk(m.aK);if(+aD<+HOYC||Date.now()-m.t>40*864e5)return;
    if(+lun0(aD)===lun){var a2=por(m.a);if(a2&&tieneDia(a2))return;}          /* llegó la semana y el entrenador ya lo puso */
    queda.push(m);
@@ -4119,7 +4132,13 @@ document.head.appendChild(st);
    - Mantener ~450 ms (dedo o mouse). Si el dedo se mueve (desplazamiento), se cancela. Sin menú ni selección de iOS.
    - Día hecho, libre, sin entreno o con la sesión en curso: un aviso corto que explica por qué, sin abrir nada.
    - Teclado y lector: en un día, la tecla M (o Mayús+F10 / tecla de menú) abre la hoja; además, el día elegido tiene un
-     botón «Mover … a otro día» que sólo se ve al llegar con el teclado. */
+     botón «Mover … a otro día» que sólo se ve al llegar con el teclado.
+   16 nov 2026 (2) · Ricky: «quiero poder arrastrar los días a un día libre o día con entreno y que se intercambien o se sumen».
+   - Tras mantener presionado, el día queda agarrado y sigue al dedo; los días posibles se marcan y los otros se apagan.
+   - Soltar en un día libre: se mueve directo (aviso con «Deshacer»). En un día con entreno: hoja con «Intercambiar» o «Sumar».
+   - Soltar afuera o sobre sí mismo: la hoja de mover de siempre (para llevarlo a otra semana).
+   - Mientras está agarrado, la página no se desplaza (se frena el touchmove; la tira mantiene touch-action:manipulation
+     para que deslizar sobre ella sin mantener siga desplazando la página). */
 (function(){
 var MENOS=function(){try{return window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){return false;}};
 var vibra=function(p){try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
@@ -4128,9 +4147,25 @@ function pistaVista(){try{return localStorage.getItem(CLAVE_PISTA)==='1';}catch(
 function pistaCerrar(){try{localStorage.setItem(CLAVE_PISTA,'1');}catch(e){}}
 function diasSem(){var lun=LUNH(),o=[];for(var i=0;i<7;i++){var f=new Date(lun);f.setDate(lun.getDate()+i);o.push(f);}return o;}
 function nomDia(f){return DSEM[f.getDay()].toLowerCase()+' '+f.getDate();}
+function dmF(f){return f.getDate()+'/'+(f.getMonth()+1);}
+function isoF(f){return f.getFullYear()+'-'+('0'+(f.getMonth()+1)).slice(-2)+'-'+('0'+f.getDate()).slice(-2);}
+function sesKey(){var s=null;if(PANEL&&PANEL.ses)try{s=kd(fechaDia(PANEL.ses,PANEL.lun));}catch(e){}return s;}
+/* el día de la rutina (tal como se ve ahora, con los cambios que todavía no confirmó el Monitor) y su grupo */
+function diaRut(k){var dd=diaDeFecha(dk(k));return dd&&tieneDia(dd)&&!dd.libre?dd:null;}
+function grupoDe(k){var dd=diaRut(k),g=dd?grupoDia(dd):'';if(g)return g;var di=diaInfo(dk(k));return (di.g&&GFULL[di.g])||di.g||'el entreno';}
+/* ¿puede ir a este día de la tira? {ok, libre} o {msg} con el porqué */
+function destinoOk(k,dst,rec){if(!PANEL||dst===k)return {msg:''};var f=dk(dst),di=diaInfo(f),t=+f,h=+HOYC;
+ if(diasSem().map(kd).indexOf(dst)<0)return {msg:'Ese día es de otra semana: soltalo afuera para elegirlo en la hoja.'};
+ if(t<h)return {msg:'Ese día ya pasó: elegí uno de hoy en adelante.'};
+ if(di.e==='cur'||(U.ses.on&&sesKey()===dst))return {msg:'Ese día tiene la sesión en curso: no se puede cambiar.'};
+ if(di.e==='ok'||(t===h&&U.ses.fin))return {msg:'Ese día ya está entrenado: no se puede cambiar.'};
+ if(di.movido)return {msg:'Ese día ya tiene un entreno que pasaste desde otro día.'};
+ if(!di.g)return {ok:true,libre:true};
+ if((di.e==='hoy'||di.e==='pl')&&diaRut(dst))return {ok:true,libre:false};
+ return {msg:'Ese día no se puede cambiar desde acá.'};}
+function destinos(k,rec){return diasSem().map(kd).map(function(x){var v=destinoOk(k,x,rec);v.k=x;return v;}).filter(function(v){return v.ok;});}
 /* ¿se puede mover este día? {ok, rec} o {msg} con el porqué */
-function puedeMover(k){if(!PANEL)return {msg:''};var f=dk(k),di=diaInfo(f),t=+f,h=+HOYC,sesK=null;
- if(PANEL.ses)try{sesK=kd(fechaDia(PANEL.ses,PANEL.lun));}catch(e){}
+function puedeMover(k){if(!PANEL)return {msg:''};var f=dk(k),di=diaInfo(f),t=+f,h=+HOYC,sesK=sesKey();
  if(!di.g)return {msg:di.libre?'Ese día quedó libre: no hay entreno para mover.':'Ese día no tenés entreno para mover.'};
  if(di.e==='cur'||(U.ses.on&&sesK===k))return {msg:'Tenés la sesión de ese día en curso: terminala antes de cambiarla de día.'};
  if(di.e==='ok'||(t===h&&U.ses.fin))return {msg:'Ese entreno ya está hecho: queda en su día.'};
@@ -4138,7 +4173,7 @@ function puedeMover(k){if(!PANEL)return {msg:''};var f=dk(k),di=diaInfo(f),t=+f,
  var rec=di.e==='fa'||di.e==='sm';
  if(!rec&&!((di.e==='hoy'||di.e==='pl')&&t>=h))return {msg:'Ese entreno no se puede cambiar de día desde acá.'};
  var op=[];try{op=opcionesMover(k);}catch(e){}
- if(!op.length)return {msg:'No quedan días libres para '+(rec?'recuperarlo':'moverlo')+'.'};
+ if(!op.length&&!(diaRut(k)&&destinos(k,rec).length))return {msg:'No quedan días libres para '+(rec?'recuperarlo':'moverlo')+'.'};
  return {ok:true,rec:rec};}
 window.puedeMoverHoy=puedeMover;
 
@@ -4148,39 +4183,167 @@ var semHoyMH=semHoy;
 semHoy=function(h){var r=semHoyMH(h);try{var i=r.indexOf('<div class="hsem"');if(i<0)return r;var j=r.indexOf('</div>',i);if(j<0)return r;
  var D=diasSem(),K=D.map(kd),hk=kd(HOYC),sel=U.hdia&&K.indexOf(U.hdia)>=0?U.hdia:hk,ps=puedeMover(sel),fs=dk(sel);
  var btn=ps.ok?'<button type="button" class="mhbtn" data-a="mover" data-v="'+sel+'">'+(ps.rec?'Recuperar':'Mover')+' el entreno del '+nomDia(fs)+' a otro día</button>':'';
- var ayuda='<span class="mhsr" id="mhAyuda">Mantené presionado un día, o presioná la tecla M, para cambiar su entreno de día.</span>';
- var pista=!pistaVista()&&K.some(function(k){return puedeMover(k).ok;})?'<p class="mhpista" role="note">'+IC_MANO+'<span>Mantené presionado un día para cambiarlo de día</span><button type="button" data-mh="pista" aria-label="Cerrar la pista">×</button></p>':'';
+ var ayuda='<span class="mhsr" id="mhAyuda">Mantené presionado un día y arrastralo a otro para cambiarlo. Con el teclado, presioná la tecla M sobre un día para ver las opciones.</span>';
+ var pista=!pistaVista()&&K.some(function(k){return puedeMover(k).ok;})?'<p class="mhpista" role="note">'+IC_MANO+'<span>Mantené presionado un día y arrastralo a otro para cambiarlo</span><button type="button" data-mh="pista" aria-label="Cerrar la pista">×</button></p>':'';
  var ini=r.slice(i,j).replace('<div class="hsem" role="group" aria-label="Tu semana"','<div class="hsem" role="group" aria-label="Tu semana" aria-describedby="mhAyuda"');
  return r.slice(0,i)+pista+ini+ayuda+btn+r.slice(j);}catch(e){return r;}};
 
 /* ---------- abrir la hoja: por la misma acción del Calendario ---------- */
 var DESDE_HOY=false;
-function abrirMover(k){var x=document.createElement('button');x.type='button';x.hidden=true;x.setAttribute('data-a','mover');x.setAttribute('data-v',k);
+function clicA(a,v){var x=document.createElement('button');x.type='button';x.hidden=true;x.setAttribute('data-a',a);if(v!=null)x.setAttribute('data-v',v);
  document.body.appendChild(x);try{x.click();}finally{x.remove();}}
-function marcar(k,cls){var e=document.querySelector('.hsem .hs[data-v="'+k+'"]');if(!e||MENOS())return;e.classList.remove(cls);void e.offsetWidth;e.classList.add(cls);setTimeout(function(){e.classList.remove(cls);},700);}
+function abrirMover(k){clicA('mover',k);}
+function hsEl(k){return document.querySelector('.hsem .hs[data-v="'+k+'"]');}
+function marcar(k,cls){var e=hsEl(k);if(!e||MENOS())return;e.classList.remove(cls);void e.offsetWidth;e.classList.add(cls);setTimeout(function(){e.classList.remove(cls);},700);}
 function disparar(b,teclado){var k=b.getAttribute('data-v'),p=puedeMover(k);
  if(!p.ok){vibra([12,50,12]);if(!MENOS()){b.classList.remove('mhno');void b.offsetWidth;b.classList.add('mhno');}if(p.msg)toast(p.msg);return false;}
  if(!teclado)vibra(15);pistaCerrar();DESDE_HOY=true;abrirMover(k);marcar(k,'mhok');return true;}
+/* lector de pantalla: lo que pasa mientras se arrastra */
+function anunciar(t){var v=document.getElementById('mhVivo');if(!v){v=document.createElement('div');v.id='mhVivo';v.className='mhsr';v.setAttribute('aria-live','polite');document.body.appendChild(v);}v.textContent='';setTimeout(function(){v.textContent=t;},30);}
+
+/* ---------- arrastrar ---------- */
+var A={k:null,el:null,fant:null,dst:null,x0:0,y0:0,movio:false,rec:false};
+function diaEn(x,y){var s=document.querySelector('.hsem');if(!s)return null;var r=s.getBoundingClientRect();if(y<r.top-40||y>r.bottom+40||x<r.left-6||x>r.right+6)return null;
+ var L=s.querySelectorAll('.hs'),best=null,bd=1e9;for(var i=0;i<L.length;i++){var q=L[i].getBoundingClientRect(),c=(q.left+q.right)/2,d=Math.abs(x-c);if(d<bd){bd=d;best=L[i];}}
+ return best?best.getAttribute('data-v'):null;}
+function pintarDestinos(){[].forEach.call(document.querySelectorAll('.hsem .hs'),function(e){var k=e.getAttribute('data-v');
+  if(!A.k){e.classList.remove('mhag','mhv','mhx','mhsobre');return;}
+  if(k===A.k){e.classList.add('mhag');return;}var v=destinoOk(A.k,k,A.rec);
+  e.classList.toggle('mhv',!!v.ok);e.classList.toggle('mhx',!v.ok);e.classList.toggle('mhsobre',k===A.dst&&!!v.ok);});}
+function etiqueta(){var g=A.fant;if(!g)return;var lb=g.querySelector('.mhfl'),t='',no=false;
+ if(A.dst&&A.dst!==A.k){var v=destinoOk(A.k,A.dst,A.rec);if(!v.ok){t='No se puede';no=true;}else t=v.libre?'Pasar acá':(A.rec?'Sumar acá':'Cambiar o sumar');}
+ if(lb)lb.textContent=t;g.classList.toggle('mhl',!!t);g.classList.toggle('mhlno',no);}
+function agarrar(el,k,x,y,p){A.k=k;A.el=el;A.x0=x;A.y0=y;A.movio=false;A.dst=null;A.rec=!!p.rec;
+ var r=el.getBoundingClientRect(),g=el.cloneNode(true);['data-a','data-v','aria-pressed','id'].forEach(function(n){g.removeAttribute(n);});
+ g.className=el.className.replace(/\b(sel|mhp|mhag|mhok|mhno|mhlleg|mhv|mhx|mhsobre)\b/g,' ')+' mhfant';g.setAttribute('aria-hidden','true');g.tabIndex=-1;
+ g.style.left=r.left+'px';g.style.top=r.top+'px';g.style.width=r.width+'px';g.style.height=r.height+'px';
+ var lb=document.createElement('span');lb.className='mhfl';g.appendChild(lb);document.body.appendChild(g);A.fant=g;
+ document.documentElement.classList.add('mharr');pintarDestinos();vibra(15);pistaCerrar();
+ if(!MENOS()){g.classList.add('mhsube');}
+ anunciar('Agarraste '+grupoDe(k)+' del '+nomDia(dk(k))+'. Llevalo a otro día y soltalo; soltalo afuera para ver más opciones.');}
+function arrastrar(x,y){if(!A.k)return;var dx=x-A.x0,dy=y-A.y0;if(dx*dx+dy*dy>TOL*TOL)A.movio=true;
+ if(A.fant)A.fant.style.transform='translate('+dx+'px,'+dy+'px)'+(MENOS()?'':' scale(1.08) rotate(-2deg)');
+ var k=diaEn(x,y);if(k===A.k)k=null;
+ if(k!==A.dst){A.dst=k;if(!hsEl(A.k)||!document.contains(A.el))A.el=hsEl(A.k);pintarDestinos();etiqueta();
+  if(k){var v=destinoOk(A.k,k,A.rec);anunciar(nomDia(dk(k))+(v.ok?(v.libre?': libre, soltá para pasarlo.':': con '+grupoDe(k)+', soltá para '+(A.rec?'sumarlo.':'intercambiar o sumar.')):': no se puede.'));if(v.ok)vibra(5);}}}
+function limpiarArr(){if(A.fant){var g=A.fant;A.fant=null;if(MENOS())g.remove();else{g.classList.add('mhsuelta');setTimeout(function(){g.remove();},160);}}
+ A.k=null;A.dst=null;document.documentElement.classList.remove('mharr');pintarDestinos();}
+function soltarArr(cancelar){if(!A.k)return;var k=A.k,dst=A.dst,rec=A.rec;limpiarArr();if(cancelar)return;
+ if(dst&&dst!==k){var v=destinoOk(k,dst,rec);
+  if(!v.ok){vibra([12,50,12]);var e=hsEl(dst);if(e&&!MENOS()){e.classList.remove('mhno');void e.offsetWidth;e.classList.add('mhno');setTimeout(function(){e.classList.remove('mhno');},400);}if(v.msg)toast(v.msg);return;}
+  vibra(12);if(v.libre)moverDirecto(k,dst);else abrirCS(k,dst);return;}
+ /* afuera o sobre sí mismo: la hoja de siempre (ahí también se elige otra semana) */
+ vibra(10);DESDE_HOY=true;abrirMover(k);marcar(k,'mhok');}
+
+/* ---------- las tres acciones ---------- */
+var DES=null;
+function ultimoEnv(fn){if(typeof ENV==='undefined'||!ENV)return null;for(var i=ENV.length-1;i>=0;i--){var x=ENV[i];if(x&&x.d&&fn(x.d))return x.uid;}return null;}
+function nuevasToasts(antes){[].forEach.call(document.querySelectorAll('.toast'),function(t){if(antes.indexOf(t)<0&&!t.classList.contains('mhdes'))t.remove();});}
+/* a un día libre: por la misma acción de la hoja (así sale igual al Monitor y queda guardado en el celular) */
+function moverDirecto(k,dst){var O=[];try{O=opcionesMover(k);}catch(e){}var j=-1;O.forEach(function(o,i){if(o.k===dst)j=i;});
+ if(j<0){toast('Ese día no está libre.');return;}
+ var g=grupoDe(k),antes=[].slice.call(document.querySelectorAll('.toast')),c0=COLA[0];
+ U.hoja={t:'mover',k:k,sel:j};clicA('confMover');if(U.hoja&&U.hoja.t==='mover'){U.hoja=null;}
+ nuevasToasts(antes);if(U.hdia===k)U.hdia=dst;try{render();}catch(e){}
+ var uid=ultimoEnv(function(d){return d.mover&&!d.mover.modo&&d.mover.a===dst&&d.mover.de===k;});
+ marcar(dst,'mhlleg');var f=dk(dst);
+ toastDes(g+' pasó al '+nomDia(f),{modo:'mover',k:k,dst:dst,g:g,uid:uid,cola:COLA[0]!==c0?COLA[0]:null});
+ anunciar(g+' pasó al '+nomDia(f)+'.');}
+/* a un día con entreno: intercambiar o sumar */
+function hacerModo(modo,k,dst){var p=puedeMover(k),v=destinoOk(k,dst,p.rec);if(!p.ok||!v.ok||v.libre){toast((!p.ok?p.msg:v.msg)||'Ya no se puede hacer ese cambio.');return;}
+ if(modo==='cambiar'&&p.rec)modo='sumar';
+ var f1=dk(k),f2=dk(dst),d1=diaRut(k),d2=diaRut(dst);if(!d1||!d2){toast('Ya no se puede hacer ese cambio.');return;}
+ var g1=grupoDia(d1)||'el entreno',g2=grupoDia(d2)||'el otro entreno';
+ var nm=function(d){return (d.ejercicios||[]).filter(function(e){return e&&e.nombre;}).map(function(e){return e.nombre;});},nc=function(d){return (d.cardio||[]).filter(function(z){return z&&z.tipo;}).length;};
+ var mv={modo:modo,de:k,a:dst,fechaDe:isoF(f1),fechaA:isoF(f2),grupo:g1,grupoA:g2,ejDe:nm(d1),ejA:nm(d2),cdDe:nc(d1),cdA:nc(d2)};
+ var txt=modo==='cambiar'?'Intercambió '+g1+' ('+nomDia(f1)+'/'+(f1.getMonth()+1)+') con '+g2+' ('+nomDia(f2)+'/'+(f2.getMonth()+1)+') (desde la app).':'Sumó '+g1+' del '+nomDia(f1)+'/'+(f1.getMonth()+1)+' al '+nomDia(f2)+'/'+(f2.getMonth()+1)+', con '+g2+' (desde la app).';
+ var r1=(hsEl(k)||{getBoundingClientRect:function(){return {left:0};}}).getBoundingClientRect(),r2=(hsEl(dst)||{getBoundingClientRect:function(){return {left:0};}}).getBoundingClientRect();
+ var dat=paq('obs',{texto:txt,mover:mv});
+ cola(modo==='cambiar'?'Entrenos intercambiados · '+g1+' ↔ '+g2:'Entrenos sumados · '+g2+' + '+g1+' el '+nomDia(f2),dat);var cref=COLA[0];
+ var uid=ultimoEnv(function(d){return d.mover&&d.mover.modo===modo&&d.mover.de===k&&d.mover.a===dst;}),id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+ var L=movPend();L.push({modo:modo,de:DSEM[f1.getDay()],a:DSEM[f2.getDay()],deK:k,aK:dst,sDe:firmaMov(d1),sA:firmaMov(d2),lun:+lunesCal(new Date()),t:Date.now(),id:id});movPendGuardar(L);
+ if(modo==='sumar'&&U.hdia===k)U.hdia=dst;
+ try{if(PANEL.crudo)AM_PANEL(PANEL.crudo,{silencio:true});}catch(e){}try{render();}catch(e){}
+ if(!MENOS()){var e1=hsEl(k),e2=hsEl(dst),dx=r2.left-r1.left;
+  if(modo==='cambiar'&&e1&&e2&&e1.animate){var ez={duration:460,easing:'cubic-bezier(.2,.8,.3,1)'};
+   e1.animate([{transform:'translateX('+dx+'px) translateY(-6px) scale(1.06)'},{transform:'none'}],ez);e2.animate([{transform:'translateX('+(-dx)+'px) translateY(6px)'},{transform:'none'}],ez);}
+  else if(modo==='sumar'){marcar(dst,'mhsum');marcar(k,'mhvac');}}
+ var t=modo==='cambiar'?'Listo: '+g1+' pasó al '+nomDia(f2)+' y '+g2+' al '+nomDia(f1):'Listo: el '+nomDia(f2)+' queda con '+g2+' y '+g1;
+ toastDes(t,{modo:modo,k:k,dst:dst,g:g1,uid:uid,id:id,mv:mv,cola:cref});anunciar(t+'.');}
+/* «Deshacer»: si todavía no salió al puente se saca de la cola; si ya salió, se manda el cambio al revés */
+function deshacer(op){if(!op)return;var i=-1;if(typeof ENV!=='undefined'&&ENV&&op.uid)ENV.forEach(function(x,j){if(x.uid===op.uid)i=j;});
+ var L=movPend(),q=-1;L.forEach(function(m,j){if(m.deK===op.k&&m.aK===op.dst&&(op.id?m.id===op.id:!m.modo))q=j;});if(q>=0){L.splice(q,1);movPendGuardar(L);}
+ if(i>=0){ENV.splice(i,1);try{guardarEnv();}catch(e){}var ci=COLA.indexOf(op.cola);if(ci>=0)COLA.splice(ci,1);}
+ else{var f1=dk(op.k),f2=dk(op.dst),mv=op.mv||{},m2,txt,ct;
+  if(op.modo==='mover'){m2={de:op.dst,a:op.k,fechaDe:isoF(f2),fechaA:isoF(f1),grupo:op.g,deshacer:true};txt='Volvió '+op.g+' al '+nomDia(f1)+' (deshizo el cambio, desde la app).';ct='Cambio deshecho · '+op.g+' vuelve al '+nomDia(f1);}
+  else if(op.modo==='cambiar'){m2={modo:'cambiar',de:op.k,a:op.dst,fechaDe:mv.fechaDe,fechaA:mv.fechaA,grupo:mv.grupoA,grupoA:mv.grupo,ejDe:mv.ejA,ejA:mv.ejDe,cdDe:mv.cdA,cdA:mv.cdDe,deshacer:true};
+   txt='Deshizo el intercambio: '+mv.grupo+' vuelve al '+nomDia(f1)+' y '+mv.grupoA+' al '+nomDia(f2)+' (desde la app).';ct='Intercambio deshecho';}
+  else{m2={modo:'separar',de:op.k,a:op.dst,fechaDe:mv.fechaDe,fechaA:mv.fechaA,grupo:mv.grupo,grupoA:mv.grupoA,ejDe:mv.ejDe,cdDe:mv.cdDe,deshacer:true};
+   txt='Deshizo la suma: '+mv.grupo+' vuelve al '+nomDia(f1)+' (desde la app).';ct='Suma deshecha · '+mv.grupo+' vuelve al '+nomDia(f1);}
+  cola(ct,paq('obs',{texto:txt,mover:m2}));}
+ if(op.modo!=='cambiar'&&U.hdia===op.dst)U.hdia=op.k;
+ try{if(PANEL.crudo)AM_PANEL(PANEL.crudo,{silencio:true});}catch(e){}try{render();}catch(e){}
+ marcar(op.k,'mhlleg');toast('Listo: quedó como estaba');anunciar('Listo: quedó como estaba.');}
+function quitarDes(d){if(!d||!d.parentNode)return;if(DES&&DES.el===d)DES=null;if(MENOS())d.remove();else{d.classList.add('mhsale');setTimeout(function(){d.remove();},200);}}
+function toastDes(t,op){[].forEach.call(document.querySelectorAll('.mhdes'),function(x){x.remove();});
+ var d=document.createElement('div');d.className='toast mhdes';d.setAttribute('role','status');d.innerHTML='<span></span><button type="button" data-mh="deshacer">Deshacer</button>';
+ d.firstChild.textContent=t;document.body.appendChild(d);DES={op:op,el:d};setTimeout(function(){quitarDes(d);},6000);}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mh="deshacer"]');if(!b)return;e.preventDefault();var D0=DES;if(!D0)return;DES=null;D0.el.remove();deshacer(D0.op);});
+
+/* ---------- la hoja chica: intercambiar o sumar ---------- */
+var IC_CAMB='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 7h12l-3.5-3.5M17 17H5l3.5 3.5"/></svg>';
+var IC_SUM='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
+function abrirCS(k,dst){U.hoja={t:'mhcs',de:k,a:dst};try{render();}catch(e){}
+ setTimeout(function(){var b=document.querySelector('.sheet .mhop');if(b)try{b.focus({preventScroll:true});}catch(e){}},60);}
+function hojaCS(h){var f1=dk(h.de),f2=dk(h.a),g1=grupoDe(h.de),g2=grupoDe(h.a),p=puedeMover(h.de),rec=!!p.rec;
+ var s='<h2 id="mhcsT">El '+nomDia(f2)+' ya tiene '+g2+'</h2><p class="sub">¿Qué hacés con '+g1+' del '+nomDia(f1)+'?</p><div class="mhops">';
+ if(!rec)s+='<button type="button" class="mhop" data-a="mhModo" data-v="cambiar"><span class="mhic">'+IC_CAMB+'</span><span><b>Intercambiar</b><span class="s">'+g1+' pasa al '+nomDia(f2)+' y '+g2+' al '+nomDia(f1)+'.</span></span></button>';
+ s+='<button type="button" class="mhop" data-a="mhModo" data-v="sumar"><span class="mhic">'+IC_SUM+'</span><span><b>Sumar</b><span class="s">'+(rec?'Recuperás '+g1+' el '+nomDia(f2)+': ese día hacés '+g2+' y '+g1+'.':'El '+nomDia(f2)+' queda con '+g2+' y '+g1+'. El '+nomDia(f1)+' queda libre.')+'</span></span></button></div>';
+ return s+'<button type="button" class="sec full" style="margin-top:12px" data-a="cerrar">Cancelar</button>';}
+var pintarHojaMH=pintarHoja;
+pintarHoja=function(){var h=U.hoja;
+ if(h&&h.t==='mhcs'&&PANEL){document.documentElement.classList.add('bloq');
+  document.getElementById('capa').innerHTML='<div class="velo" data-a="cerrar"></div><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mhcsT"><div class="shd"><div class="grab"></div><button type="button" class="shx" data-a="cerrar" aria-label="Cerrar">'+I.x+'</button></div>'+hojaCS(h)+'</div>';return;}
+ var r=pintarHojaMH.apply(this,arguments);
+ /* en la hoja de mover: también intercambiar o sumar con un día de esta semana que ya tiene entreno (sirve con teclado y lector) */
+ try{if(h&&h.t==='mover'&&PANEL&&diaRut(h.k)){var p=puedeMover(h.k),L=p.ok?destinos(h.k,p.rec).filter(function(v){return !v.libre;}):[],sh=document.querySelector('#capa .sheet');
+  if(L.length&&sh){var x=document.createElement('div');x.className='mhmas';
+   x.innerHTML='<h4>'+(p.rec?'O sumalo a un día de esta semana que ya tiene entreno':'O intercambialo o sumalo con un día de esta semana que ya tiene entreno')+'</h4><div class="mhlst">'+L.map(function(v){var f=dk(v.k),g=grupoDe(v.k);
+    return '<button type="button" class="mhmb" data-a="mhIr" data-v="'+v.k+'" style="--c:'+(typeof colG==='function'?colG(g):'var(--a1)')+'" aria-label="'+(p.rec?'Sumar a ':'Intercambiar con o sumar a ')+g+' del '+nomDia(f)+'"><i aria-hidden="true"></i>'+DSEM[f.getDay()].slice(0,3)+' '+f.getDate()+' · '+g+'</button>';}).join('')+'</div>';
+   sh.appendChild(x);}}}catch(e){}
+ return r;};
+window.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-a="mhModo"],[data-a="mhIr"]');if(!b)return;
+ e.preventDefault();e.stopImmediatePropagation();var h=U.hoja,v=b.getAttribute('data-v');
+ if(b.getAttribute('data-a')==='mhIr'){if(!h||h.t!=='mover')return;DESDE_HOY=false;abrirCS(h.k,v);return;}
+ if(!h||h.t!=='mhcs')return;U.hoja=null;hacerModo(v,h.de,h.a);},true);
 
 /* ---------- el gesto ---------- */
-var M={el:null,t:0,t1:0,x:0,y:0,fue:false,hasta:0};
+var M={el:null,t:0,t1:0,x:0,y:0,lx:0,ly:0,fue:false,hasta:0};
 function limpiar(){clearTimeout(M.t);clearTimeout(M.t1);M.t=M.t1=0;if(M.el)M.el.classList.remove('mhp');M.el=null;}
-document.addEventListener('pointerdown',function(e){var b=e.target.closest&&e.target.closest('.hsem .hs');limpiar();M.fue=false;
+document.addEventListener('pointerdown',function(e){if(A.k)return;var b=e.target.closest&&e.target.closest('.hsem .hs');limpiar();M.fue=false;
  if(!b||!PANEL||U.hoja||(U.pila&&U.pila.length)||U.tab!=='hoy')return;if(e.pointerType==='mouse'&&e.button!==0)return;
- M.el=b;M.x=e.clientX;M.y=e.clientY;
+ M.el=b;M.x=M.lx=e.clientX;M.y=M.ly=e.clientY;
  M.t1=setTimeout(function(){if(M.el===b)b.classList.add('mhp');},ARRANCA);   /* el anillo arranca un poco después: un toque corto no parpadea */
- M.t=setTimeout(function(){if(M.el!==b)return;var el=b;limpiar();M.fue=true;disparar(el,false);},ESPERA);},true);
-document.addEventListener('pointermove',function(e){if(!M.el)return;var dx=e.clientX-M.x,dy=e.clientY-M.y;if(dx*dx+dy*dy>TOL*TOL)limpiar();},true);
-function soltar(){if(M.fue){M.fue=false;M.hasta=Date.now()+450;}limpiar();}
+ M.t=setTimeout(function(){if(M.el!==b)return;var el=b,k=b.getAttribute('data-v'),p=puedeMover(k);limpiar();M.fue=true;
+  if(!p.ok){disparar(el,false);return;}
+  agarrar(el,k,M.lx,M.ly,p);},ESPERA);},true);
+document.addEventListener('pointermove',function(e){if(A.k){arrastrar(e.clientX,e.clientY);return;}if(!M.el)return;M.lx=e.clientX;M.ly=e.clientY;var dx=e.clientX-M.x,dy=e.clientY-M.y;if(dx*dx+dy*dy>TOL*TOL)limpiar();},true);
+/* mientras está agarrado, el dedo arrastra el día y no la página */
+document.addEventListener('touchmove',function(e){if(A.k&&e.cancelable)e.preventDefault();},{capture:true,passive:false});
+function soltar(e){if(A.k){M.fue=false;M.hasta=Date.now()+450;if(e&&e.type==='pointerup')arrastrar(e.clientX,e.clientY);
+  soltarArr(e&&e.type==='pointercancel'&&A.movio);return;}
+ if(M.fue){M.fue=false;M.hasta=Date.now()+450;}limpiar();}
 document.addEventListener('pointerup',soltar,true);document.addEventListener('pointercancel',soltar,true);
-window.addEventListener('scroll',function(){if(M.el)limpiar();},{passive:true,capture:true});
-window.addEventListener('blur',limpiar);
+window.addEventListener('scroll',function(){if(M.el&&!A.k)limpiar();},{passive:true,capture:true});
+window.addEventListener('blur',function(){limpiar();soltarArr(true);});
 /* el clic que llega al soltar después de abrir la hoja no tiene que tocar nada (ni el día ni el velo de la hoja) */
 window.addEventListener('click',function(e){if(!e.isTrusted)return;if(M.fue||Date.now()<M.hasta){M.hasta=0;M.fue=false;e.preventDefault();e.stopImmediatePropagation();}},true);
-document.addEventListener('contextmenu',function(e){if(e.target.closest&&e.target.closest('.hsem'))e.preventDefault();},true);
-document.addEventListener('selectstart',function(e){if(e.target.closest&&e.target.closest('.hsem'))e.preventDefault();},true);
-/* teclado: M, Mayús+F10 o la tecla de menú sobre un día */
-document.addEventListener('keydown',function(e){var b=e.target.closest&&e.target.closest('.hsem .hs');if(!b||U.hoja)return;
+document.addEventListener('contextmenu',function(e){if(A.k||(e.target.closest&&e.target.closest('.hsem')))e.preventDefault();},true);
+document.addEventListener('selectstart',function(e){if(A.k||(e.target.closest&&e.target.closest('.hsem')))e.preventDefault();},true);
+document.addEventListener('dragstart',function(e){if(e.target.closest&&e.target.closest('.hsem'))e.preventDefault();},true);
+/* teclado: M, Mayús+F10 o la tecla de menú sobre un día; Escape suelta sin hacer nada */
+document.addEventListener('keydown',function(e){if(A.k&&e.key==='Escape'){e.preventDefault();soltarArr(true);return;}
+ var b=e.target.closest&&e.target.closest('.hsem .hs');if(!b||U.hoja)return;
  if(e.key==='m'||e.key==='M'||e.key==='ContextMenu'||(e.shiftKey&&e.key==='F10')){if(e.ctrlKey||e.metaKey||e.altKey)return;e.preventDefault();disparar(b,true);}});
 /* pista: cerrar */
 document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-mh="pista"]');if(!b)return;pistaCerrar();var p=b.closest('.mhpista');
@@ -4194,7 +4357,7 @@ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.c
 
 var st=document.createElement('style');st.textContent=
  '.hsem{position:relative}.hsem,.hsem .hs{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}'+
- '.hsem .hs{position:relative;isolation:isolate;touch-action:manipulation;transition:transform .34s cubic-bezier(.2,.8,.3,1),box-shadow .34s ease}'+
+ '.hsem .hs{position:relative;isolation:isolate;touch-action:manipulation;transition:transform .34s cubic-bezier(.2,.8,.3,1),box-shadow .34s ease,opacity .2s ease,filter .2s ease}'+
  '.hsem .hs::before{content:"";position:absolute;inset:0;z-index:-1;border-radius:inherit;background:color-mix(in srgb,var(--a1) 30%,transparent);transform:scaleY(0);transform-origin:50% 100%;opacity:0;pointer-events:none}'+
  '.hsem .hs.mhp{transform:translateY(-4px) scale(1.06);box-shadow:0 0 0 2px var(--a1),0 12px 20px -10px rgba(var(--a1rgb),.9);opacity:1;z-index:2}'+
  '.hsem .hs.mhp::before{transform:none;opacity:1;transition:transform .34s linear,opacity .08s}'+
@@ -4202,12 +4365,33 @@ var st=document.createElement('style');st.textContent=
  '@keyframes mhNo{0%,100%{transform:none}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}'+
  '@keyframes mhOk{0%{transform:translateY(-4px) scale(1.06)}55%{transform:scale(.94)}100%{transform:none}}'+
  '@keyframes mhLleg{0%{transform:translateY(-10px) scale(.88);box-shadow:0 0 0 0 rgba(var(--a1rgb),.85)}60%{transform:scale(1.07)}100%{transform:none;box-shadow:0 0 0 9px rgba(var(--a1rgb),0)}}'+
+ /* arrastrar: el día agarrado deja su lugar marcado, los destinos posibles se marcan y los otros se apagan */
+ 'html.mharr,html.mharr body{overscroll-behavior:none;touch-action:none}html.mharr,html.mharr *{cursor:grabbing}'+
+ '.hsem .hs.mhag{opacity:.4;transform:scale(.92);border:1.5px dashed var(--a1);background:transparent;box-shadow:none}'+
+ '.hsem .hs.mhv{opacity:1;border-color:color-mix(in srgb,var(--a1) 55%,transparent)}.hsem .hs.mhx{opacity:.28;filter:saturate(.25)}'+
+ '.hsem .hs.mhsobre{transform:translateY(-3px) scale(1.07);opacity:1;background:color-mix(in srgb,var(--a1) 20%,var(--surf));box-shadow:0 0 0 2px var(--a1),0 10px 18px -10px rgba(var(--a1rgb),.9);z-index:2}'+
+ '.hs.mhfant{position:fixed;z-index:90;margin:0;pointer-events:none;box-sizing:border-box;opacity:.97;background:var(--surf);border:1px solid var(--line);box-shadow:0 0 0 2px var(--a1),0 18px 30px -12px rgba(0,0,0,.7);will-change:transform;transform-origin:50% 60%}'+
+ '.hs.mhfant.mhsube{animation:mhSube .18s ease-out}.hs.mhfant.mhsuelta{opacity:0;transition:opacity .15s ease}'+
+ '@keyframes mhSube{from{box-shadow:0 0 0 0 var(--a1),0 0 0 0 rgba(0,0,0,0)}}'+
+ '.mhfl{position:absolute;left:50%;top:calc(100% + 6px);transform:translateX(-50%);white-space:nowrap;font-size:11.5px;font-style:normal;font-weight:700;line-height:1;padding:5px 9px;border-radius:99px;background:var(--a1);color:#fff;opacity:0;transition:opacity .12s;box-shadow:0 6px 14px -8px rgba(0,0,0,.6)}'+
+ '.mhfant.mhl .mhfl{opacity:1}.mhfant.mhlno .mhfl{background:var(--surf3);color:var(--tx2)}'+
+ '.hsem .hs.mhsum{animation:mhSum .6s cubic-bezier(.3,1.5,.5,1)}.hsem .hs.mhvac{animation:mhVac .5s ease}'+
+ '@keyframes mhSum{0%{transform:scale(.86);box-shadow:0 0 0 0 rgba(var(--a1rgb),.8)}55%{transform:scale(1.1)}100%{transform:none;box-shadow:0 0 0 10px rgba(var(--a1rgb),0)}}@keyframes mhVac{from{opacity:.15;transform:scale(.86)}to{opacity:1;transform:none}}'+
+ /* aviso con «Deshacer» */
+ '.toast.mhdes{display:flex;align-items:center;gap:10px;padding:6px 6px 6px 16px;text-align:left}.mhdes span{min-width:0}.mhdes button{position:relative;flex:none;border:0;background:rgba(var(--a1rgb),.16);color:var(--a1);font:inherit;font-weight:800;font-size:13.5px;padding:7px 12px;border-radius:99px}.mhdes button::after{content:"";position:absolute;inset:-6px}'+
+ '.toast.mhdes.mhsale{opacity:0;transition:opacity .2s}'+
+ /* hoja: intercambiar o sumar */
+ '.mhops{display:grid;gap:10px;margin-top:14px}.mhop{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;padding:14px;border-radius:16px;border:1.5px solid var(--line);background:var(--surf2);color:var(--tx);font:inherit;cursor:pointer;transition:border-color .15s,transform .15s}'+
+ '.mhop b{display:block;font-size:16px;margin-bottom:3px}.mhop .s{display:block;font-size:13px;color:var(--tx3);line-height:1.35}.mhop .mhic{flex:none;width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(var(--a1rgb),.14);color:var(--a1)}'+
+ '.mhop:active{transform:scale(.98)}.mhop:focus-visible,.mhop:hover{border-color:var(--a1)}'+
+ '.mhmas{margin-top:16px}.mhmas h4{font-size:12.5px;font-weight:600;color:var(--tx2);margin:0 0 7px}.mhlst{display:flex;flex-wrap:wrap;gap:6px}'+
+ '.mhmb{display:inline-flex;align-items:center;min-height:40px;padding:6px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surf2);color:var(--tx);font:inherit;font-size:13px;font-weight:600;max-width:100%}.mhmb i{flex:none;width:7px;height:7px;border-radius:50%;margin-right:7px;background:var(--c)}'+
  '.mhsr,.mhbtn{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap}'+
  '.mhbtn:focus,.mhbtn:focus-visible{right:0;top:calc(100% + 4px);width:auto;height:auto;margin:0;padding:8px 12px;clip:auto;clip-path:none;overflow:visible;border-radius:10px;border:1.5px solid var(--a1);background:var(--surf);color:var(--tx);font:inherit;font-size:13px;font-weight:700;z-index:5;box-shadow:var(--sh);white-space:normal;max-width:100%}'+
  '.mhpista{display:flex;align-items:center;gap:7px;margin:0 2px 6px;font-size:12.5px;font-weight:600;color:var(--tx3);animation:mhPin .3s ease both}.mhpista svg{flex:none;color:var(--a1)}.mhpista span{flex:1;min-width:0}'+
  '.mhpista button{position:relative;flex:none;width:28px;height:28px;border-radius:50%;border:0;background:transparent;color:var(--tx3);font:inherit;font-size:18px;line-height:1}.mhpista button::after{content:"";position:absolute;inset:-8px}'+
  '.mhpista.mhsale{animation:mhPout .22s ease both}@keyframes mhPin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}@keyframes mhPout{to{opacity:0;transform:translateY(-4px)}}'+
- '@media (prefers-reduced-motion: reduce){.hsem .hs{transition:none}.hsem .hs.mhp{transform:none}.hsem .hs.mhp::before{transition:none}.hsem .hs.mhno,.hsem .hs.mhok,.hsem .hs.mhlleg,.mhpista,.mhpista.mhsale{animation:none}}';
+ '@media (prefers-reduced-motion: reduce){.hsem .hs{transition:none}.hsem .hs.mhp,.hsem .hs.mhag,.hsem .hs.mhsobre{transform:none}.hsem .hs.mhp::before{transition:none}.hsem .hs.mhno,.hsem .hs.mhok,.hsem .hs.mhlleg,.hsem .hs.mhsum,.hsem .hs.mhvac,.hs.mhfant.mhsube,.mhpista,.mhpista.mhsale{animation:none}.mhop{transition:none}}';
 document.head.appendChild(st);
 })();
 
