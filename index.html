@@ -1126,6 +1126,8 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .hdb{display:flex;width:100%;align-items:center;gap:12px;padding:13px 14px 13px 58px;border:0;border-top:1px solid var(--line2);background:transparent;color:inherit;text-align:left;font:inherit;cursor:pointer;min-height:56px}.hdb>span{flex:1}.hdb .hdch{width:18px;height:18px;color:var(--a1);flex:none}.hdb:active{background:rgba(var(--a1rgb),.08)}
 .dsl{margin-top:12px;display:flex;flex-direction:column;gap:10px}.dse{padding:12px 14px;border-radius:14px;background:var(--surf2);border:1px solid var(--line2)}.dst{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}.dst b{font-size:15px}
 .dsr{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;padding:5px 0;border-top:1px solid var(--line2);font-size:14px}.dsr:first-of-type{border-top:0}.dsr.ap{color:var(--tx3)}.dsn{font-size:12px;font-weight:700;color:var(--tx3)}.dsi{font-size:12.5px;color:var(--tx3);font-weight:600}.dsd:empty{display:none}.dsd{margin-top:4px;font-size:12.5px;color:var(--tx3)}
+/* 15 nov 2026 · en el iPhone el vidrio esmerilado de la barra de arriba dejaba borroso el logo y los botones: barra sólida */
+.top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
 .movb{display:flex;gap:8px;margin-top:12px}.movb .sec{flex:1;min-height:44px}
 .mvw{margin-top:14px}.mvw h4{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--tx2);margin:0 0 7px}.mvw h4 span{font-weight:500;color:var(--tx4)}.mvg{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.mvd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:52px;padding:4px 0;border-radius:12px;border:1px solid var(--line);background:var(--surf2);font-size:10.5px;color:var(--tx3);font-family:inherit}.mvd b{font-size:16px;color:var(--tx);line-height:1.1}.mvd i{width:5px;height:5px;border-radius:50%;display:block;margin-top:2px}.mvd[aria-pressed="true"]{border:2px solid var(--a1);background:rgba(var(--a1rgb),.14)}.mvd[aria-pressed="true"] b{color:var(--a1)}.mvd.off{background:transparent;border-color:transparent;opacity:.45}.mvd.org{opacity:1;border:1px dashed var(--a1)}.mvs{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:11px 13px;border-radius:14px;background:var(--surf2);border:1px solid var(--line)}.mvs b{display:block;font-size:14.5px}.mvs div span{font-size:12px;color:var(--tx3)}
 .fasep{margin:-6px 0 14px;font-size:14.5px;color:var(--tx3)}.fasep b{color:var(--tx);font-weight:700}.fasec.desc{border-color:rgba(79,209,230,.45)}.envc{opacity:.92}.envc.sin{border-color:rgba(239,183,78,.5)}
@@ -2657,7 +2659,7 @@ function musculoP(n){n=nrmP(n);var R=[[/aductor/,'Aductor'],[/abductor/,'Glúteo
 function uniP(p){p=String(p||'').toLowerCase();return /placa/.test(p)?'pl':/lb|libra/.test(p)?'lb':'kg';}
 function seriesP(e){return (e.series||[]).filter(function(s){return s&&s.tipo!=='aprox';});}
 function corto(n){n=String(n||'');return n.length>24?n.slice(0,22)+'…':n;}
-function SES_TIT(){return PANEL&&PANEL.ses?(titDia(PANEL.ses.grupo)||'Entreno'):'Brazos';}
+function SES_TIT(){return PANEL?(PANEL.ses?(titDia(PANEL.ses.grupo)||'Entreno'):'Entreno'):'Brazos';}
 function IMG_SES(){return PANEL&&PANEL.ses?imgG(PANEL.ses.grupo):'mapa_brazos';}
 function MODELO_SES(){return PANEL&&PANEL.ses?modeloHTML(PANEL.ses,PANEL.ses.grupo,'Músculos trabajados'):'<img src="cuerpo/mapa_brazos.webp" alt="Músculos trabajados">';}
 function HOY_TXT(){return HOYC.getDate()+' de '+MESES_L[HOYC.getMonth()];}
@@ -2781,6 +2783,11 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
  if(ds&&ds.hoy&&ses&&U.ses&&(ses.estado==='rojo'||(ses.estado==='verde'&&!ses.parcial))&&(U.ses.on||(U.ses.fin&&ses.estado==='rojo'))){
   U.ses.on=false;U.ses.t0=null;if(ses.estado==='rojo'){U.ses.fin=false;if(U.pila&&U.pila[U.pila.length-1]==='sesion')U.pila=[];}
   try{localStorage.removeItem('amedida-ses-v1');}catch(e){}}
+ /* 15 nov 2026 · Ricky: el domingo seguía «Brazos en curso · 0/0 series» (la sesión del viernes quedó abierta y hoy no hay
+    entreno). Una sesión abierta se cierra sola si hoy no hay nada para entrenar o si empezó otro día hace más de 6 h.
+    Lo que ya marcó se mandó serie por serie: no se pierde nada. */
+ if(U.ses&&U.ses.on){var t0s=U.ses.t0?new Date(U.ses.t0):null,vieja=t0s&&kd(t0s)!==kd(HOYC)&&Date.now()-t0s.getTime()>6*3600000;
+  if(!ses||vieja){U.ses.on=false;U.ses.t0=null;U.ses.b=0;if(U.pila&&U.pila.indexOf('sesion')>=0)U.pila=[];try{localStorage.removeItem('amedida-ses-v1');}catch(e){}try{guardar();}catch(e){}}}
  try{setModelo((c.datos&&c.datos.sexo)||(window.REAL&&REAL.g)||'');}catch(e){}
  if(primera&&U.cal){U.cal.sel=kd(HOYC);U.cal.mes=HOYC.getMonth();U.cal.mx=Math.max(U.cal.mx||0,HOYC.getMonth());}
  /* medidas */
