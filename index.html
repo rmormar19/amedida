@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#f3f5f9" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="A medida">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
@@ -1128,6 +1128,8 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .dsr{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:center;padding:5px 0;border-top:1px solid var(--line2);font-size:14px}.dsr:first-of-type{border-top:0}.dsr.ap{color:var(--tx3)}.dsn{font-size:12px;font-weight:700;color:var(--tx3)}.dsi{font-size:12.5px;color:var(--tx3);font-weight:600}.dsd:empty{display:none}.dsd{margin-top:4px;font-size:12.5px;color:var(--tx3)}
 /* 15 nov 2026 · en el iPhone el vidrio esmerilado de la barra de arriba dejaba borroso el logo y los botones: barra sólida */
 .top{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
+/* 16 nov 2026 · día de descanso: «Hoy descansás» arriba y el próximo entreno chico abajo */
+.card.ent.prox .proxd{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}.card.ent.prox .proxd h3{margin:4px 0 8px;font-size:19px}.card.ent.prox .proxd .meta{margin-bottom:6px}
 .movb{display:flex;gap:8px;margin-top:12px}.movb .sec{flex:1;min-height:44px}
 .mvw{margin-top:14px}.mvw h4{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--tx2);margin:0 0 7px}.mvw h4 span{font-weight:500;color:var(--tx4)}.mvg{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.mvd{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:52px;padding:4px 0;border-radius:12px;border:1px solid var(--line);background:var(--surf2);font-size:10.5px;color:var(--tx3);font-family:inherit}.mvd b{font-size:16px;color:var(--tx);line-height:1.1}.mvd i{width:5px;height:5px;border-radius:50%;display:block;margin-top:2px}.mvd[aria-pressed="true"]{border:2px solid var(--a1);background:rgba(var(--a1rgb),.14)}.mvd[aria-pressed="true"] b{color:var(--a1)}.mvd.off{background:transparent;border-color:transparent;opacity:.45}.mvd.org{opacity:1;border:1px dashed var(--a1)}.mvs{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;padding:11px 13px;border-radius:14px;background:var(--surf2);border:1px solid var(--line)}.mvs b{display:block;font-size:14.5px}.mvs div span{font-size:12px;color:var(--tx3)}
 .fasep{margin:-6px 0 14px;font-size:14.5px;color:var(--tx3)}.fasep b{color:var(--tx);font-weight:700}.fasec.desc{border-color:rgba(79,209,230,.45)}.envc{opacity:.92}.envc.sin{border-color:rgba(239,183,78,.5)}
@@ -2837,6 +2839,16 @@ vHoy=function(){if(!PANEL)return vHoy0();
    (U.ses.fin?'<button type="button" class="hdb" data-a="resumen"><span><b>Ver tu resumen</b><span class="s">Récords y comparación con la semana pasada</span></span>'+CH+'</button>':'')+
    (nej?'<button type="button" class="hdb" data-a="sesion"><span><b>Ver la sesión</b><span class="s">'+sDe+' con lo anotado</span></span>'+CH+'</button>':'')+'</div>';
   var eyT='<span class="ey prox">'+(PANEL.hoy?'Entreno de hoy':proxTxt(ses.dia))+'</span>';
+  /* 16 nov 2026 · Ricky: «el lunes está de descanso y aparece pecho, hombro y tríceps». Si hoy no hay entreno, primero
+     «Hoy descansás» y abajo, más chico, el próximo (sin el modelo grande, que es para el entreno del día). */
+  if(!PANEL.hoy&&!U.ses.on&&!U.ses.fin){var fPx=fechaDia(ses,lunApp()),dPx=String(ses.dia||'').toLowerCase().replace(/^sabado$/,'sábado').replace(/^miercoles$/,'miércoles'),manPx=(HOYC.getDay()+1)%7===fPx.getDay();
+   s+='<section class="card ent prox"><div class="fila" style="padding:0"><span class="ico">'+I.reloj+'</span><span><b>Hoy descansás</b><span class="s">Tu próximo entreno es '+(manPx?'mañana, ':'el ')+dPx+' '+fPx.getDate()+'.</span></span><span></span></div>'+
+    '<div class="proxd"><span class="ey prox">Próximo entreno · '+(manPx?'mañana':dPx+' '+fPx.getDate())+'</span><h3>'+(titDia(ses.grupo)||(sc?'Cardio':'Entreno'))+'</h3><div class="meta">'+
+    top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+'<span class="chip">~'+Math.round(ns*3+czMin)+' min</span></div>'+
+    ((nej||czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(nej?'los '+nej+' ejercicio'+(nej===1?'':'s'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
+    (U.verEj?'<div class="lista hoyl">'+(ses.ejercicios||[]).filter(function(e){return e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+(typeof dropsTxtEj==='function'?dropsTxtEj(e,ep.u):'')+'</b><span></span></div>';}).join('')+cardioLista(czL)+'</div>':'')+
+    '<button type="button" class="sec full" style="margin-top:10px" data-a="sesion">'+btn+'</button></div></section>';}
+  else
   s+='<section class="card ent'+(hecho?' hecho':'')+'"><div class="img">'+(sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(ses,ses.grupo,'Músculos de la sesión resaltados en azul'))+'</div><div class="in">'+(hecho?'<div class="hdtop">'+eyT+'<span class="hdok">'+I.chk+'Hecho</span></div>':eyT)+'<h2>'+(titDia(ses.grupo)||(sc?'Cardio':'Entreno'))+'</h2><div class="meta">'+
    top.map(function(g){return '<span class="chip ac">'+g+' · '+mus[g]+' series</span>';}).join('')+(nej&&!hecho?'<span class="chip">'+nej+' ejercicio'+(nej===1?'':'s')+'</span>':'')+(czL.length?'<span class="chip czc">♥ cardio</span>':'')+(hecho||regE==='rojo'?'':'<span class="chip">~'+Math.round(ns*3+czMin)+' min</span>')+'</div>'+
    /* desplegable de ejercicios (7 nov 2026): cerrado de entrada para que Hoy no quede tan largo */
