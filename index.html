@@ -1713,7 +1713,13 @@ function pedirPantalla(){try{if(navigator.wakeLock&&!WL)navigator.wakeLock.reque
 function soltarPantalla(){try{if(WL){WL.release();WL=null;}}catch(e){}}
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&U.ses.on&&U.pila[0]==='sesion')pedirPantalla();});
 var AC=null;
-document.addEventListener('pointerdown',function(){try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C();}else if(AC.state==='suspended')AC.resume();}catch(e){}},{passive:true});
+/* 18 nov 2026 · el sonido del fin del descanso se prepara unos segundos después de abrir la sesión, en un momento libre (crearlo tarda): antes se creaba con
+   el primer toque en cualquier pantalla y ese primer toque (o desplazamiento) quedaba trabado. Lo enciende el toque siguiente. */
+function prepAudio(){try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C();}else if(AC.state==='suspended')AC.resume();}catch(e){}}
+var prepAT=0;function prepAudioLuego(){if(AC||prepAT)return;prepAT=1;var f=function(){prepAT=0;if(!AC)prepAudio();};setTimeout(function(){if(window.requestIdleCallback)requestIdleCallback(f,{timeout:2000});else f();},3000);}   /* después de la entrada de la pantalla */
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('[data-a="sesion"],[data-a="irBlq"],[data-a="volverSes"],[data-a="blq"]'))prepAudioLuego();},true);
+if(typeof arrancar==='function')arrancar=(function(a0){return function(){prepAudio();return a0.apply(this,arguments);};})(arrancar);
+document.addEventListener('pointerdown',function(){try{if(AC&&AC.state==='suspended')AC.resume();}catch(e){}},{passive:true});
 function finDescanso(){try{if(navigator.vibrate)navigator.vibrate([220,120,220]);}catch(e){}
  try{if(AC){[0,.24].forEach(function(dl){var o=AC.createOscillator(),g=AC.createGain(),t0=AC.currentTime+dl;o.type='sine';o.frequency.value=880;g.gain.setValueAtTime(.0001,t0);g.gain.exponentialRampToValueAtTime(.22,t0+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+.18);o.connect(g);g.connect(AC.destination);o.start(t0);o.stop(t0+.2);});}}catch(e){}
  document.body.classList.remove('flash');void document.body.offsetWidth;document.body.classList.add('flash');setTimeout(function(){document.body.classList.remove('flash');},1100);
@@ -2123,9 +2129,9 @@ function render(){
  if(push==='toma') nav.hidden=true;
  v.className='main'+(nav.hidden?' sinnav':'')+(U.ses.on&&!push?' conmini':'');
  nav.innerHTML=[['pro','Progreso'],['cal','Calendario'],['hoy','Hoy'],['mac','Nutrición'],['med','Antropometría']].map(function(t){return '<button type="button" class="nv'+(U.tab===t[0]&&!push?' on':'')+'" data-a="tab" data-v="'+t[0]+'"'+(U.tab===t[0]?' aria-current="page"':'')+'>'+I[t[0]]+t[1]+(t[0]==='hoy'&&U.ses.on&&U.tab!=='hoy'?'<i class="pt"></i>':'')+'</button>';}).join('');
- v.innerHTML=push?({sesion:vSesion,resumen:vResumen2,toma:vToma2,rnueva:vRnueva}[push])():({hoy:vHoy,cal:vCal,pro:vPro,mac:vMac,med:vMed}[U.tab])();
+ var hv=push?({sesion:vSesion,resumen:vResumen2,toma:vToma2,rnueva:vRnueva}[push])():({hoy:vHoy,cal:vCal,pro:vPro,mac:vMac,med:vMed}[U.tab])();if(hv!==window.__vHtml||window.__forzar||!v.firstChild||v.firstChild!==window.__vPrim){v.innerHTML=hv;window.__vHtml=hv;window.__vPrim=v.firstChild;window.__vMismo=false;}else window.__vMismo=true;
  var clave=(push||'')+'|'+U.tab,prev=window.__pant;if(clave!==prev||window.__forzar){var pp=prev?prev.split('|')[0]:'';var dir=window.__forzar?'':(push&&!pp?'der':(!push&&pp?'izq':''));window.__pant=clave;window.__forzar=false;
-  v.classList.remove('entra','der','izq');nav.classList.remove('salta');void v.offsetWidth;v.classList.add('entra');if(dir)v.classList.add(dir);if(!push&&(!pp||dir===''))nav.classList.add('salta');
+  var yaE=v.classList.contains('entra')||v.classList.contains('der')||v.classList.contains('izq')||nav.classList.contains('salta');v.classList.remove('entra','der','izq');nav.classList.remove('salta');if(yaE)void v.offsetWidth;v.classList.add('entra');if(dir)v.classList.add(dir);if(!push&&(!pp||dir===''))nav.classList.add('salta');
   clearTimeout(window.__entT);window.__entT=setTimeout(function(){v.classList.remove('entra','der','izq');nav.classList.remove('salta');},1300);}
  pintarMini(); pintarTimer(); pintarHoja(); despues();
 }
@@ -2138,7 +2144,7 @@ function despues(){
  sincHist();
  guardarSes2();
  guardar();
- if(U.tab==='pro'&&!U.pila.length)PROG.contar();
+ if(U.tab==='pro'&&!U.pila.length&&!window.__vMismo)PROG.contar();
  var w=document.getElementById('rimg');
 }
 
@@ -3971,7 +3977,7 @@ function serieHecha(v){var u=ULT;ULT=null;if(!u||Date.now()-u.t>1500||u.antes)re
   setTimeout(function(){chispas(bt||rb,16,58);},90);aviso(bl.ss||bl.ej.length>1?'¡Bloque completo!':'¡Ejercicio completo!');}
  else if(bt)setTimeout(function(){chispas(bt,7,30);},60);}
 var BANT=null;
-function cambioBloque(v,entro){var b=U.ses.b;if(!entro&&BANT!=null&&b!==BANT&&!MENOS()){v.classList.remove('entra','der','izq');void v.offsetWidth;v.classList.add('entra',b>BANT?'der':'izq');
+function cambioBloque(v,entro){var b=U.ses.b;if(!entro&&BANT!=null&&b!==BANT&&!MENOS()){var yaE=v.classList.contains('entra')||v.classList.contains('der')||v.classList.contains('izq');v.classList.remove('entra','der','izq');if(yaE)void v.offsetWidth;v.classList.add('entra',b>BANT?'der':'izq');
   clearTimeout(window.__entT);window.__entT=setTimeout(function(){v.classList.remove('entra','der','izq');},900);}BANT=b;}
 
 /* ---------- 11 · calendario (15 nov 2026, Ricky: «que el calendario tenga más efectos al ingresar») ----------
@@ -3991,8 +3997,8 @@ function calendario(v,entro){var c=U.cal||{},mesAnt=CAL_MES,selAnt=CAL_SEL;CAL_M
   [].slice.call(v.querySelectorAll('.kgr .kpa b')).forEach(function(b,i){contar(b,800,150+i*110);});
   [].slice.call(v.querySelectorAll('#view > section.card, #view .card')).forEach(function(cd,i){if(cd.querySelector('.calx'))return;cd.style.animationDelay=(0.35+i*0.1)+'s';cd.classList.add('efsube');});
   return;}
- if(mesAnt!=null&&c.mes!==mesAnt){g.style.setProperty('--efdir',c.mes>mesAnt?1:-1);g.classList.remove('efmes');void g.offsetWidth;g.classList.add('efmes');}
- else if(selAnt!=null&&c.sel!==selAnt){var s=g.querySelector('.cd.sel');if(s){s.classList.add('efpick');setTimeout(function(){chispas(s,8,26);},40);}var det=v.querySelector('#calDet');if(det){det.classList.remove('efdet');void det.offsetWidth;det.classList.add('efdet');}}}
+ if(mesAnt!=null&&c.mes!==mesAnt){g.style.setProperty('--efdir',c.mes>mesAnt?1:-1);if(g.classList.contains('efmes')){g.classList.remove('efmes');void g.offsetWidth;}g.classList.add('efmes');}
+ else if(selAnt!=null&&c.sel!==selAnt){var s=g.querySelector('.cd.sel');if(s){s.classList.add('efpick');setTimeout(function(){chispas(s,8,26);},40);}var det=v.querySelector('#calDet');if(det){if(det.classList.contains('efdet')){det.classList.remove('efdet');void det.offsetWidth;}det.classList.add('efdet');}}}
 var st2=document.createElement('style');st2.textContent=
  '.efcal .calx .cd.efcd{animation:efCd .42s cubic-bezier(.3,1.45,.5,1) var(--efc,0s) both}'+
  '.efcal .calx .cd.efcok{animation:efCd .42s cubic-bezier(.3,1.45,.5,1) var(--efc,0s) both,efCok .6s ease var(--efo,.6s) both}'+
@@ -4155,7 +4161,7 @@ function diaModelo(v,capAnt){var s=v.querySelector('.hsem .hs.sel');if(!s){DIA_A
  var base=img.querySelector('img:not(.cp)');
  capAnt.filter(function(src){return ahora.indexOf(src)<0;}).forEach(function(src){var o=document.createElement('img');o.className='cp efvieja';o.src=src;o.alt='';o.setAttribute('aria-hidden','true');
   if(base&&base.nextSibling)img.insertBefore(o,base.nextSibling);else img.appendChild(o);setTimeout(function(){if(o.parentNode)o.parentNode.removeChild(o);},900);});}
-render=function(){var prev=window.__pant;try{CAP_ANT=capasVista();}catch(e){CAP_ANT=[];}var r=render0.apply(this,arguments);try{var v=document.getElementById('view'),entro=window.__pant!==prev,push=U.pila[U.pila.length-1];v.classList.remove('efanim');
+render=function(){var prev=window.__pant;try{CAP_ANT=capasVista();}catch(e){CAP_ANT=[];}var r=render0.apply(this,arguments);if(window.__vMismo)return r;/* 18 nov 2026: la pantalla quedó igual (fluidez): sin repetir efectos */try{var v=document.getElementById('view'),entro=window.__pant!==prev,push=U.pila[U.pila.length-1];v.classList.remove('efanim');
   if(push!=='sesion')BANT=null;if(push==='resumen')cierre(v,entro);else if(push==='sesion'){cambioBloque(v,entro);deslizar(v);serieHecha(v);}else if(!push&&U.tab==='hoy'){racha(v,entro);diaModelo(v,CAP_ANT);}else if(!push&&U.tab==='cal')calendario(v,entro);else if(!push&&U.tab==='pro')progreso(v,entro);if(push||U.tab!=='hoy')DIA_ANT=null;}catch(e){}
  return r;};
 
@@ -4502,7 +4508,11 @@ document.addEventListener('pointerdown',function(e){if(A.k)return;var sp=supDe(e
   agarrar(el,k,M.lx,M.ly,p,sp.s);},ESPERA);},true);
 document.addEventListener('pointermove',function(e){if(A.k){arrastrar(e.clientX,e.clientY);return;}if(!M.el)return;M.lx=e.clientX;M.ly=e.clientY;var dx=e.clientX-M.x,dy=e.clientY-M.y;if(dx*dx+dy*dy>TOL*TOL)limpiar();},true);
 /* mientras está agarrado, el dedo arrastra el día y no la página */
-document.addEventListener('touchmove',function(e){if(A.k&&e.cancelable)e.preventDefault();},{capture:true,passive:false});
+/* 18 nov 2026 · el freno va sólo en la tira de la semana y en la grilla del calendario (donde se agarra un día): puesto en todo el
+   documento, el iPhone esperaba al JavaScript en cada toque antes de desplazar la pantalla */
+function frenoTM(e){if(A.k&&e.cancelable)e.preventDefault();}
+function ponerFreno(){var L=document.querySelectorAll('.hsem,.calx');for(var i=0;i<L.length;i++)if(!L[i].__frenoTM){L[i].__frenoTM=1;L[i].addEventListener('touchmove',frenoTM,{passive:false});}}
+(function(r0){render=function(){var x=r0.apply(this,arguments);try{ponerFreno();}catch(e){}return x;};})(render);
 function soltar(e){if(A.k){M.fue=false;M.hasta=Date.now()+450;if(e&&e.type==='pointerup')arrastrar(e.clientX,e.clientY);
   soltarArr(e&&e.type==='pointercancel'&&A.movio);return;}
  if(M.fue){M.fue=false;M.hasta=Date.now()+450;}limpiar();}
@@ -4766,7 +4776,8 @@ pesoTxt=function(e,w){var t=PESOS.texto(w,UN[e.u]||'kg');if(e.u0&&e.u!==e.u0){va
 incDe=(function(i0){return function(e){if(!e)return i0(e);var S=PESOS.stacks();if(e.u==='lb')return e.fam?S[e.fam].paso:5;if(e.u==='kg'&&e.fam)return Math.round(S[e.fam].paso*PESOS.LB*10)/10;
  if(e.u==='kg'&&e.p&&e.p[0]&&PESOS.deLibras(e.p[0][0]))return 4.5;return i0(e);};})(incDe);
 sugerido=function(e,i){if(!alTope(e))return e.p[i][0];return PESOS.pasoUno(e.p[0][0],UN[e.u]||'kg',e.fam,1);};
-function uniLinea(e){if(!e||e.sinPeso)return '';var i=efIdx(e),w=e.p[i]&&e.p[i][0],eq=w?PESOS.equiv(PESOS.texto(w,UN[e.u]),e.n,e.g):'';
+function uniLinea(e){if(!e||e.sinPeso||!e.unis)return '';   /* 18 nov 2026: la sesión de muestra (sin link o dado de baja) no tiene unidades y «Empezar sesión» se colgaba */
+var i=efIdx(e),w=e.p[i]&&e.p[i][0],eq=w?PESOS.equiv(PESOS.texto(w,UN[e.u]),e.n,e.g):'';
  return '<span class="unl"><span class="uns" role="group" aria-label="Unidad del peso">'+e.unis.map(function(u){return '<button type="button" data-a="uniEj" data-v="'+e.id+'|'+u+'" aria-pressed="'+(e.u===u)+'">'+(u==='pl'?'Placas':u)+'</button>';}).join('')+'</span>'+
   (eq?'<span class="ueq">'+PESOS.texto(w,UN[e.u])+' '+eq+'</span>':'')+(e.u!==e.u0?'<span class="ueq">Tu entrenador lo carga en '+UN[e.u0]+': lo que anotás le llega así</span>':'')+'</span>';}
 chipSug=(function(){return function(e){if(!e||e.sinPeso)return '';var s=uniLinea(e);
@@ -4840,6 +4851,25 @@ var st=document.createElement('style');st.textContent=
  '.drl{display:block;margin-top:5px;font-size:12.5px;line-height:1.5;color:var(--vio,#8b6fe0);font-weight:700}';
 document.head.appendChild(st);
 })();
+
+/* ================= 18 nov 2026 · fluidez (Ricky: «quiero que hagas ambas apps más fluidas») =================
+   Una hoja abierta (notificaciones, perfil, mover, ficha, nota…) se redibujaba entera en cada render: volvía a subir desde
+   abajo, el video de la ficha arrancaba de nuevo, se iba arriba de todo y, en la nota, el bloque «¿Dónde?» volvía a entrar
+   con cada toque. Ahora, si sigue abierta la misma hoja, se cambia sólo el contenido: sin la animación de entrada, en el
+   mismo lugar y con el video sin cortarse. El diseño no cambia. */
+(function(){if(typeof pintarHoja!=='function')return;var p0=pintarHoja,ULT=null;
+ var st=document.createElement('style');st.textContent='.sheet.quieta,.velo.quieta,.ndol.quieta,.sheet.quieta .fpa li{animation:none}';document.head.appendChild(st);
+ pintarHoja=function(){var c=document.getElementById('capa'),h=U.hoja,sh0=c&&c.querySelector('.sheet'),mismo=!!(h&&sh0&&ULT===h);
+  var top=mismo?sh0.scrollTop:0,vid=mismo?sh0.querySelector('.fv video'):null,dol=mismo&&!!sh0.querySelector('.ndol');
+  var r=p0.apply(this,arguments);ULT=h||null;
+  if(mismo&&c){var sh=c.querySelector('.sheet');
+   if(sh&&sh!==sh0){sh.classList.add('quieta');var ve=c.querySelector('.velo');if(ve)ve.classList.add('quieta');
+    if(dol){var nd=sh.querySelector('.ndol');if(nd)nd.classList.add('quieta');}
+    if(vid){var nv=sh.querySelector('.fv video');if(nv&&nv.getAttribute('src')===vid.getAttribute('src')){nv.parentNode.replaceChild(vid,nv);
+     try{var bp=sh.querySelector('.fvb'),bl=sh.querySelector('.fvl');if(bp){bp.innerHTML=vid.paused?ICPLAY:ICPAUSA;bp.setAttribute('aria-label',vid.paused?'Reproducir':'Pausar');}if(bl)bl.setAttribute('aria-pressed',String(vid.playbackRate===.5));
+      var pi=sh.querySelector('.fvp i');if(pi&&vid.duration)pi.style.width=(vid.currentTime/vid.duration*100)+'%';}catch(e){}}}
+    if(top)sh.scrollTop=top;}}
+  return r;};})();
 
 render();
 (function(){var sp=document.getElementById('splash');if(!sp)return;var ya=false,salir=function(){if(ya)return;ya=true;sp.classList.add('out');window.__forzar=true;render();};sp.addEventListener('click',salir);setTimeout(salir,1700);})();
