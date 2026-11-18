@@ -1142,81 +1142,54 @@ html.bloq,html.bloq body{overflow:hidden;overscroll-behavior:none}
 .hq.sm,.hml i.sm{background:transparent;box-shadow:inset 0 0 0 1px rgba(var(--fg),.22);background-image:repeating-linear-gradient(135deg,rgba(var(--fg),.10) 0 2px,transparent 2px 4px)}
 .cd.smr small{color:var(--tx4)}
 .ent .in .ey.prox{display:block;margin:0 0 4px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--a1)}
-/* 17 nov 2026 · la tarjeta de Hoy con el estilo del boceto 5 (bocetos/descanso.html y bocetos/entreno_estilo5.html) */
-:root{--viorgb:169,154,214;--cyargb:79,209,230;--redrgb:229,96,74}
-html.claro{--viorgb:82,61,143;--cyargb:15,112,132;--redrgb:175,50,29}
-.card.ent.h5{padding:16px;overflow:hidden}
-.h5 .fila.h5c{padding:0}.h5 .h5c>.chip{align-self:start;margin-top:2px}
-.h5 .h5c b{font-size:16px;line-height:1.25}.h5 .h5c .s{font-size:12.5px}
-.h5 .ico svg{width:20px;height:20px}
-.h5 .ico.ac{background:rgba(var(--a1rgb),.14);color:var(--a1)}
-.h5 .ico.vi{background:rgba(var(--viorgb),.17);color:var(--vio)}
-.h5 .ico.ok{background:rgba(var(--grnrgb),.15);color:var(--grn)}
-.h5 .ico.cy{background:rgba(var(--cyargb),.15);color:var(--cya)}
-.h5 .ico.wa{background:rgba(var(--yelrgb),.16);color:var(--yel)}
-.h5 .ico.rd{background:rgba(var(--redrgb),.15);color:var(--red);font-weight:800;font-size:18px}
-.h5 .ico.nt{background:rgba(var(--fg),.08);color:var(--tx3);font-weight:800;font-size:18px}
-.h5 .chip svg{width:13px;height:13px}
-.h5 .chip.ok{background:rgba(var(--grnrgb),.15);color:var(--grn)}
-.h5 .chip.rd{background:rgba(var(--redrgb),.15);color:var(--red)}html:not(.claro) .h5 .chip.rd{color:#f28b78}
-.h5 .hdok{padding:3px 9px 3px 7px;font-size:12px}
-/* carrusel de mini-tarjetas */
-.h5 .tps{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 16px;margin:12px -16px 0;padding:2px 16px 4px;scrollbar-width:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
-.h5 .tps::-webkit-scrollbar{display:none}
-.h5 .tp{position:relative;flex:0 0 150px;min-width:0;scroll-snap-align:start;padding:12px;border-radius:16px;background:var(--surf2);border:1px solid var(--line);font:inherit;color:inherit;text-align:left;display:block}
-.h5 button.tp{cursor:pointer;transition:transform .15s}.h5 button.tp:active{transform:scale(.97)}
-.h5 .tp .ico{width:34px;height:34px;flex-basis:34px;border-radius:11px}.h5 .tp .ico svg{width:18px;height:18px}
-.h5 .tp>b{display:block;margin-top:9px;font-size:14px;line-height:1.25;font-weight:700}
-.h5 .tp>.s{display:block;margin-top:2px;font-size:12px;color:var(--tx3);line-height:1.35}
-.h5 .tp .pb{display:block;height:6px;border-radius:99px;background:rgba(var(--fg),.08);margin-top:8px;overflow:hidden}.h5 .tp .pb i{display:block;height:100%;border-radius:99px;background:var(--grn)}
-.h5 .tp.nut,.h5 .tp.okc{border-color:rgba(var(--grnrgb),.35)}.h5 .tp.ac{border-color:rgba(var(--a1rgb),.45)}
-.h5 .tp.cz{flex-basis:132px;border-style:dashed;border-color:rgba(var(--cyargb),.45);background:transparent}
-.h5 .tp.op{flex-basis:132px;border-style:dashed;background:transparent}.h5 .tp.cz>b,.h5 .tp.op>b{font-size:13px}
-.h5 .tp .lk{display:inline-flex;align-items:center;gap:2px;margin-top:6px;font-size:12px;font-weight:700;color:var(--a1)}.h5 .tp .lk svg{width:13px;height:13px}
-.h5 .tp .mini{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}.h5 .tp .mini .chip{font-size:11px;padding:2px 7px}
-/* el modelo como primera mini-tarjeta */
-.h5 .tp.mod{flex:0 0 236px;padding:8px}
-.h5 .tp.mod .img{position:relative;aspect-ratio:3/2;border-radius:10px;background:#fbfaf3;overflow:hidden}
-.h5 .tp.mod .img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.h5 .tp.mod .czhero{position:absolute;inset:0;min-height:0}
-.h5 .tp.mod>b{margin:7px 4px 0;font-size:13px}
-.h5 .tp.mod .tag{position:absolute;right:16px;top:16px;z-index:2;display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:#23764a;color:#fff;font-size:11.5px;font-weight:700}
-.h5 .tp.mod .tag svg{width:12px;height:12px}.h5 .tp.mod .tag.rd{background:#c8452f}
-.h5 .tp.mod.gris .img img{filter:grayscale(1);opacity:.55}
-.h5 .tp.mod:has(img.sin-modelo){display:none}
-.h5 .dots{display:flex;gap:5px;justify-content:center;margin-top:8px}
-.h5 .dots i{width:6px;height:6px;border-radius:50%;background:rgba(var(--fg),.2);transition:background .2s,width .2s}
-.h5 .dots i.on{width:16px;border-radius:3px;background:var(--a1)}
-.h5.vi .dots i.on{background:var(--vio)}.h5.ok .dots i.on{background:var(--grn)}.h5.fa .dots i.on{background:var(--red)}
-/* acciones, estados y el próximo entreno */
-.h5 .acc5{display:flex;flex-direction:column;gap:8px;margin-top:12px}.h5 .acc5 .sec,.h5 .acc5 .pri{margin-top:0}
-.h5 .hoyl{margin:10px 0 0}
-.h5 .hdb{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;width:100%;min-height:0;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surf2);text-align:left}
-.h5 .hdb b{display:block;font-size:14.5px}.h5 .hdb .s{display:block;font-size:12.5px;color:var(--tx3)}
-.h5 .est5{display:flex;gap:10px;align-items:center;margin-top:12px;padding:10px 12px;border-radius:14px;background:rgba(var(--grnrgb),.12)}
-.h5 .est5 .ck{width:28px;height:28px;border-radius:50%;flex:0 0 28px;display:grid;place-items:center;background:var(--grn);color:#fff;font-weight:800}
-.h5 .est5 .ck svg{width:15px;height:15px}
-.h5 .est5 b{display:block;font-size:14px;color:var(--grn)}html.claro .h5 .est5 b{color:#1c6540}
-.h5 .est5 .s{display:block;font-size:12.5px;color:var(--tx2)}
-.h5 .est5.no{background:rgba(var(--redrgb),.1)}.h5 .est5.no .ck{background:var(--red)}.h5 .est5.no b{color:var(--red)}html:not(.claro) .h5 .est5.no b{color:#f28b78}
-.h5 .est5.nt{background:rgba(var(--fg),.06)}.h5 .est5.nt .ck{background:rgba(var(--fg),.18);color:var(--tx)}.h5 .est5.nt b,html.claro .h5 .est5.nt b{color:var(--tx)}
-.h5 .anil{width:40px;height:40px;border-radius:50%;background:conic-gradient(var(--a1) calc(var(--p)*1%),rgba(var(--a1rgb),.16) 0);display:grid;place-items:center;flex:0 0 40px}
-.h5 .anil span{width:30px;height:30px;border-radius:50%;background:var(--surf);display:grid;place-items:center;font-size:10px;font-weight:800;color:var(--a1);letter-spacing:-.02em}
-.h5 .prgb{margin-top:12px}.h5 .prgb .tr{height:8px;border-radius:99px;background:rgba(var(--a1rgb),.14);overflow:hidden}
-.h5 .prgb .tr i{display:block;height:100%;border-radius:99px;background:var(--grad,var(--a1))}
-.h5 .prgb .lb{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;font-weight:600;color:var(--tx3)}.h5 .prgb .lb b{color:var(--tx)}
-.h5 .pxl{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--surf2);color:inherit;font:inherit;text-align:left;cursor:pointer}
-.h5 .pxl .dt{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:46px;height:46px;border-radius:13px;background:rgba(var(--a1rgb),.14);color:var(--a1);line-height:1}
-.h5 .pxl .dt small{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.h5 .pxl .dt b{font-size:19px;font-weight:700;margin-top:2px}
-.h5 .pxl .tx{flex:1;min-width:0}.h5 .pxl .tx small{display:block;font-size:12px;font-weight:700;color:var(--tx3);letter-spacing:.04em;text-transform:uppercase}
-.h5 .pxl .tx b{display:block;font-size:15.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.h5 .pxl>svg{width:20px;height:20px;color:var(--tx3);flex:0 0 20px;transition:transform .25s}.h5 .pxl[aria-expanded="true"]>svg{transform:rotate(90deg)}
-.h5 .pxa{padding:4px 2px 0}.h5 .pxa .meta{margin:8px 0 4px}.h5 .pxa>.sec{width:100%;margin-top:10px}
+/* 17 nov 2026 · la tarjeta de Hoy con el lenguaje del boceto 6 «Minimalista grande» (bocetos/descanso.html) */
+:root{--viorgb:169,154,214;--redrgb:229,96,74}
+html.claro{--viorgb:82,61,143;--redrgb:175,50,29}
+.card.ent.h6{padding:22px 18px 16px;overflow:hidden;--c6:var(--a1);--c6rgb:var(--a1rgb)}
+.card.ent.h6.vi{--c6:var(--vio);--c6rgb:var(--viorgb)}.card.ent.h6.ok{--c6:var(--grn);--c6rgb:var(--grnrgb)}.card.ent.h6.fa{--c6:var(--red);--c6rgb:var(--redrgb)}.card.ent.h6.nt{--c6:var(--tx3);--c6rgb:var(--fg)}
+.h6 .h6t{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.h6 .ic6{width:44px;height:44px;border-radius:50%;flex:0 0 44px;display:flex;align-items:center;justify-content:center;background:rgba(var(--c6rgb),.15);color:var(--c6);font-weight:800;font-size:20px}
+.h6 .ic6 svg{width:22px;height:22px}.h6 .ic6.anl{background:none}
+.h6 .grande{margin:14px 0 0;padding-bottom:.08em;font-size:64px;line-height:.92;letter-spacing:-.06em;font-weight:800;overflow-wrap:break-word;background:linear-gradient(100deg,var(--tx) 30%,var(--c6));-webkit-background-clip:text;background-clip:text;color:transparent}
+.h6 .sub6{margin:8px 0 16px;font-size:15px;color:var(--tx3)}
+.h6 .chip svg{width:13px;height:13px}
+.h6 .chip.ok{background:rgba(var(--grnrgb),.15);color:var(--grn)}
+.h6 .chip.rd{background:rgba(var(--redrgb),.15);color:var(--red)}html:not(.claro) .h6 .chip.rd{color:#f28b78}
+.h6 .hdok{padding:3px 9px 3px 7px;font-size:12px}
+.h6 .meta{margin:0}.h6 .est6+.meta,.h6 .prgb+.meta,.h6 .ahora6+.meta{margin-top:12px}
+.h6 .img{margin-top:12px;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#fbfaf3}
+.h6 .img .tag{position:absolute;right:10px;top:10px;z-index:2;display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:999px;background:#23764a;color:#fff;font-size:11.5px;font-weight:700}
+.h6 .img .tag svg{width:12px;height:12px}.h6 .img .tag.rd{background:#c8452f}
+.h6 .img.gris img{filter:grayscale(1);opacity:.55}
+.h6 .acc6{display:flex;flex-direction:column;gap:8px;margin-top:12px}.h6 .acc6 .sec,.h6 .acc6 .pri{margin-top:0}
+.h6 .hoyl{margin:6px 0 0}
+.h6 .hdb{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;width:100%;min-height:0;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surf2);text-align:left}
+.h6 .hdb b{display:block;font-size:14.5px}.h6 .hdb .s{display:block;font-size:12.5px;color:var(--tx3)}
+.h6 .est6{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:rgba(var(--grnrgb),.12)}
+.h6 .est6 .ck{width:28px;height:28px;border-radius:50%;flex:0 0 28px;display:grid;place-items:center;background:var(--grn);color:#fff;font-weight:800}
+.h6 .est6 .ck svg{width:15px;height:15px}
+.h6 .est6 b{display:block;font-size:14px;color:var(--grn)}html.claro .h6 .est6 b{color:#1c6540}
+.h6 .est6 .s{display:block;font-size:12.5px;color:var(--tx2)}
+.h6 .est6.no{background:rgba(var(--redrgb),.1)}.h6 .est6.no .ck{background:var(--red)}.h6 .est6.no b{color:var(--red)}html:not(.claro) .h6 .est6.no b{color:#f28b78}html.claro .h6 .est6.no b{color:var(--red)}
+.h6 .est6.nt{background:rgba(var(--fg),.06)}.h6 .est6.nt .ck{background:rgba(var(--fg),.18);color:var(--tx)}.h6 .est6.nt b,html.claro .h6 .est6.nt b{color:var(--tx)}
+.h6 .anil{width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--a1) calc(var(--p)*1%),rgba(var(--a1rgb),.16) 0);display:grid;place-items:center}
+.h6 .anil span{width:34px;height:34px;border-radius:50%;background:var(--surf);display:grid;place-items:center;font-size:10.5px;font-weight:800;color:var(--a1);letter-spacing:-.02em}
+.h6 .prgb .tr{height:8px;border-radius:99px;background:rgba(var(--a1rgb),.14);overflow:hidden}
+.h6 .prgb .tr i{display:block;height:100%;border-radius:99px;background:var(--grad,var(--a1))}
+.h6 .prgb .lb{display:flex;justify-content:space-between;margin-top:6px;font-size:12px;font-weight:600;color:var(--tx3)}.h6 .prgb .lb b{color:var(--tx)}
+.h6 .ahora6{margin:10px 0 0;font-size:13.5px;color:var(--tx2)}.h6 .ahora6 b{color:var(--a1)}
+.h6 .pxl{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:var(--surf2);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.h6 .pxl .dt{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;width:46px;height:46px;border-radius:13px;background:rgba(var(--a1rgb),.14);color:var(--a1);line-height:1}
+.h6 .pxl .dt small{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}.h6 .pxl .dt b{font-size:19px;font-weight:700;margin-top:2px}
+.h6 .pxl .tx{flex:1;min-width:0}.h6 .pxl .tx small{display:block;font-size:12px;font-weight:700;color:var(--tx3);letter-spacing:.04em;text-transform:uppercase}
+.h6 .pxl .tx b{display:block;font-size:15.5px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.h6 .pxl>svg{width:20px;height:20px;color:var(--tx3);flex:0 0 20px;transition:transform .25s}.h6 .pxl[aria-expanded="true"]>svg{transform:rotate(90deg)}
+.h6 .pxa{padding:10px 2px 0}.h6 .pxa>.sec{width:100%;margin-top:10px}
 /* la tira: el día libre dice «☾ Libre» y, elegido, va en violeta (descanso) */
 .hs em svg{width:10px;height:10px;vertical-align:-1px;margin-right:2px}
 .hs.de.sel{outline-color:var(--vio);background:rgba(var(--viorgb),.12)}.hs.de.sel em{color:var(--vio)}
-@media (prefers-reduced-motion:no-preference){.h5 .pri.late{animation:late5 2.6s ease-in-out infinite}@keyframes late5{0%,100%{box-shadow:0 12px 26px -14px rgba(var(--a1rgb),.95)}50%{box-shadow:0 14px 32px -10px rgba(var(--a1rgb),1)}}}
-@media (prefers-reduced-motion:reduce){.h5 .dots i,.h5 .pxl>svg,.h5 button.tp{transition:none}.h5 .pri.late{animation:none}}
+@media (prefers-reduced-motion:no-preference){.h6 .pri.late{animation:late6 2.6s ease-in-out infinite}@keyframes late6{0%,100%{box-shadow:0 12px 26px -14px rgba(var(--a1rgb),.95)}50%{box-shadow:0 14px 32px -10px rgba(var(--a1rgb),1)}}}
+@media (prefers-reduced-motion:reduce){.h6 .pxl>svg{transition:none}.h6 .pri.late{animation:none}}
 
 /* Hoy · la semana arriba del modelo (8 nov 2026) */
 .hsem{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:2px 0 8px}
@@ -2895,157 +2868,95 @@ function sumaPrev(){return MEDT?MEDT.sum[MEDT.sum.length-1]:90.5;}
 /* ---------- Hoy con los datos del panel ---------- */
 /* 12 nov 2026 · Ricky: el cartel «Próximo · …» ya no va arriba del modelo (le tapaba la cabeza): va abajo, arriba del título */
 function proxTxt(dia){var n=nrmP(dia),idx=['domingo','lunes','martes','miercoles','jueves','viernes','sabado'].indexOf(n),man=(HOYC.getDay()+1)%7;return 'Próximo entreno · '+(idx===man?'mañana, ':'')+String(dia||'').toLowerCase().replace(/^sabado$/,'sábado').replace(/^miercoles$/,'miércoles');}
-/* ================= 17 nov 2026 · la tarjeta de Hoy con el estilo del boceto 5 («Consejos para hoy») =================
-   Ricky: «yo quiero que el cartel de descanso como lo hiciste recién sea el cartel del entrenamiento de hoy». Todos los
-   estados de la tarjeta de Hoy (descanso, hoy sin empezar, en curso, hecho, registrada por el entrenador, falta) y la del día
-   que se toca en la tira tienen la misma estructura: encabezado compacto (ícono en círculo + título + línea chica), carrusel
-   de mini-tarjetas deslizables con puntitos y la acción principal debajo. Con entreno, el modelo del cuerpo es la primera
-   mini-tarjeta (boceto 2b). Colores: azul entreno, violeta descanso, verde hecho, rojo falta; el cardio celeste, chico y último.
-   Bocetos: app-cliente/bocetos/descanso.html (teléfono 5) y bocetos/entreno_estilo5.html. */
-var I5={
- cama:P('<path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="1.8"/>',1.8),
- huevo:P('<path d="M12 3.5c3.6 0 6.5 5.6 6.5 9.6a6.5 6.5 0 0 1-13 0c0-4 2.9-9.6 6.5-9.6z"/>',1.8),
- pie:P('<circle cx="13" cy="4.5" r="1.8"/><path d="m9 21 2.5-6.5L14 17v4M10 11l1.5-3.5 3 2 2.5 1.5M11.5 7.5 8 10l-1.5 3"/>',1.8),
- lista:P('<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>',2),
- rayo:P('<path d="M13 2.5 5 13.5h6l-1 8 8-11h-6z"/>',1.8),
- esf:P('<path d="M4 20V14M9 20V10M14 20V6M19 20V3"/>',2.2),
- corazon:P('<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',1.8)};
-var CH5='<svg class="hdch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
-function pl5(n,a,b){return n+' '+(n===1?a:b);}
+/* ================= 17 nov 2026 · la tarjeta de Hoy con el lenguaje del boceto 6 («Minimalista grande») =================
+   Ricky, tras ver publicado el estilo 5: «el día de descanso no quedó con el cartel que quería, hacelo de nuevo como estaba»
+   (el boceto 6 de app-cliente/bocetos/descanso.html) «y lo mismo para los días de entrenamiento pero con los músculos y el
+   modelo». Todos los estados de la tarjeta de Hoy y la del día que se toca en la tira: ícono en círculo, título GRANDE con
+   degradado del color del texto al color del estado, línea chica y, con entreno, chips de músculos, el modelo, «Ver los
+   ejercicios» y la acción. Colores: azul entreno, violeta descanso, verde hecho, rojo falta; el cardio chico y al final. */
+var CH6='<svg class="hdch" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+function pl6(n,a,b){return n+' '+(n===1?a:b);}
 /* lo que tiene un día: ejercicios, series por músculo, cardio y minutos estimados (3 min por serie + el cardio) */
-function stat5(dd){var mus={},nej=0,ns=0;((dd&&dd.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=grupoEjP(e);mus[g]=(mus[g]||0)+n;});
+function stat6(dd){var mus={},nej=0,ns=0;((dd&&dd.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;nej++;var n=seriesP(e).length;ns+=n;var g=grupoEjP(e);mus[g]=(mus[g]||0)+n;});
  var czL=((dd&&dd.cardio)||[]).filter(function(z){return z&&z.tipo;}),czMin=czL.reduce(function(a,z){return a+(z.modo==='km'?0:(numP(z.cant)||0));},0);
  return {mus:mus,top:Object.keys(mus).sort(function(a,b){return mus[b]-mus[a];}),nej:nej,ns:ns,czL:czL,czMin:czMin,sc:!nej&&czL.length>0,min:Math.round(ns*3+czMin)};}
-function sDe5(S){return pl5(S.nej,'ejercicio','ejercicios')+' · '+pl5(S.ns,'serie','series');}
-function cab5(ic,cls,b,s,der){return '<div class="fila h5c"><span class="ico '+cls+'">'+ic+'</span><span><b>'+b+'</b><span class="s">'+s+'</span></span>'+(der||'<span></span>')+'</div>';}
-function est5(cls,ic,b,s){return '<div class="est5 '+cls+'" role="status"><span class="ck">'+ic+'</span><span><b>'+b+'</b><span class="s">'+s+'</span></span></div>';}
-function tp5(o){var tag=o.a?'button type="button" data-a="'+o.a+'"'+(o.v?' data-v="'+o.v+'"':'')+(o.exp!=null?' aria-expanded="'+o.exp+'"':''):'div';
- return '<'+tag+' class="tp '+(o.cls||'')+'"><span class="ico '+(o.c||'')+'">'+o.i+'</span><b>'+o.b+'</b>'+(o.s?'<span class="s">'+o.s+'</span>':'')+(o.x||'')+'</'+(o.a?'button':'div')+'>';}
-function carr5(L,lbl){L=L.filter(Boolean);return '<div class="tps" role="group" aria-label="'+(lbl||'Detalle del día')+'">'+L.join('')+'</div>'+(L.length>1?'<div class="dots" aria-hidden="true">'+L.map(function(_,i){return '<i'+(i?'':' class="on"')+'></i>';}).join('')+'</div>':'');}
-function hdb5(a,v,b,s){return '<button type="button" class="hdb" data-a="'+a+'"'+(v?' data-v="'+v+'"':'')+'><span><b>'+b+'</b><span class="s">'+s+'</span></span>'+CH5+'</button>';}
-var OK5=function(){return '<span class="chip ok hdok">'+I.chk+'Hecho</span>';};
-/* el modelo (o el dibujo del cardio) como primera mini-tarjeta; .img como siempre, así efectos.js sigue animando las capas */
-function mod5(dd,S,o){o=o||{};var m=S.sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(dd,grupoDia(dd),'Músculos de la sesión resaltados en azul');
- var b=S.sc?'Cardio':S.top.slice(0,3).join(' · ')||titDia(grupoDia(dd))||'Entreno';
- return '<div class="tp mod'+(o.gris?' gris':'')+'"><div class="img">'+m+'</div>'+(o.tag||'')+'<b>'+b+'</b></div>';}
-function hora5(dd,min){var m=String(dd&&dd.hora||'').match(/^(\d{1,2}):(\d{2})/);if(!m)return null;var t=(+m[1])*60+(+m[2])+(min||0);
- return {ini:(+m[1])+':'+m[2],fin:(Math.floor(t/60)%24)+':'+('0'+(t%60)).slice(-2)};}
-function fase5(){var f=PANEL&&PANEL.c&&PANEL.c.fase;if(!f||f.pausa||!f.f)return null;
- if(f.desc)return {b:'Semana de descarga',s:'Baja la exigencia para que el cuerpo recupere.'};
- var FF={'acumulacion':'Etapa de base','progresion':'Etapa de progreso','intensificacion':'Etapa más exigente','reentrada':'Volviendo de a poco','realizacion':'Etapa más exigente'},nf=FF[nrmP(f.f)]||f.f,rr=(String(f.rir||'').match(/(\d+)(?:\s*[–-]\s*(\d+))?/)||[]);
- if(!rr[1])return null;
- return {b:rr[1]+(rr[2]?' a '+rr[2]:'')+(rr[1]==='1'&&!rr[2]?' repetición':' repeticiones')+' de resto',s:'Semana '+(f.s||'—')+' de 6: '+String(nf).toLowerCase()+'.'};}
-function czTxt5(z){return String(z.tipo).charAt(0).toUpperCase()+String(z.tipo).slice(1)+(z.cant?' '+z.cant+(z.modo==='km'?' km':' min'):'');}
-function czTp5(L){var an=L.some(function(z){return nrmP(z.cuando)==='antes';});
- return tp5({cls:'cz',c:'cy',i:I5.corazon,b:an?'Cardio antes':'Cardio al final',s:L.map(czTxt5).join(' + ')+(an?', antes de la fuerza.':', después de la fuerza.')});}
-function lista5(dd,S){if(!U.verEj)return '';
+function sDe6(S){return pl6(S.nej,'ejercicio','ejercicios')+' · '+pl6(S.ns,'serie','series');}
+function nomD6(f){return DIA_LG[f.getDay()]+' '+f.getDate();}
+/* el título grande: baja de tamaño con nombres largos (y parte en dos líneas) para no desbordar a 390 px */
+function tit6(t){t=String(t||'');var w=t.split(/\s+/).reduce(function(a,x){return Math.max(a,x.length);},0),n=t.length,l=Math.max(w,n<=12?n:Math.ceil(n/2)+2);
+ var fs=Math.max(30,Math.min(64,Math.floor(560/Math.max(l,1))));return '<h2 class="grande" style="font-size:'+fs+'px">'+t+'</h2>';}
+/* cabeza común: ícono en círculo (y el chip del estado a la derecha), título grande y línea chica */
+function cab6(ic,cls,t,sub,chip){return '<div class="h6t"><span class="ic6 '+cls+'">'+ic+'</span>'+(chip||'')+'</div>'+tit6(t)+'<p class="sub6">'+sub+'</p>';}
+function est6(cls,ic,b,s){return '<div class="est6 '+cls+'" role="status"><span class="ck">'+ic+'</span><span><b>'+b+'</b><span class="s">'+s+'</span></span></div>';}
+function hdb6(a,v,b,s){return '<button type="button" class="hdb" data-a="'+a+'"'+(v?' data-v="'+v+'"':'')+'><span><b>'+b+'</b><span class="s">'+s+'</span></span>'+CH6+'</button>';}
+var OK6=function(){return '<span class="chip ok hdok">'+I.chk+'Hecho</span>';},FA6='<span class="chip rd">Falta</span>';
+function czTxt6(z){return String(z.tipo).charAt(0).toUpperCase()+String(z.tipo).slice(1)+(z.cant?' '+z.cant+(z.modo==='km'?' km':' min'):'');}
+/* chips de músculos (las series de cada grupo) y el cardio chico al final */
+function chips6(S){return '<div class="meta">'+S.top.slice(0,4).map(function(g){return '<span class="chip ac">'+g+' · '+pl6(S.mus[g],'serie','series')+'</span>';}).join('')+S.czL.map(function(z){return '<span class="chip czc">♥ '+czTxt6(z)+'</span>';}).join('')+'</div>';}
+/* el modelo con los músculos del día (las capas de siempre: efectos.js las anima al cambiar de día) */
+function mod6(dd,S,o){o=o||{};return '<div class="img'+(o.gris?' gris':'')+'">'+(S.sc?'<div class="czhero" aria-hidden="true">'+czHero()+'</div>':modeloHTML(dd,grupoDia(dd),o.alt||'Músculos de la sesión resaltados en azul'))+(o.tag||'')+'</div>';}
+var TAGOK6=function(){return '<span class="tag">'+I.chk+'Hecho</span>';},TAGFA6='<span class="tag rd">Falta</span>';
+function verEj6(S){return (S.nej||S.czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(S.nej?'los '+pl6(S.nej,'ejercicio','ejercicios'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'';}
+function lista6(dd,S){if(!U.verEj)return '';
  return '<div class="lista hoyl">'+((dd&&dd.ejercicios)||[]).filter(function(e){return e&&e.nombre;}).map(function(e){var ep=ejP(e);return '<div class="sx"><span>'+e.nombre+'</span><b>'+humO(ep.o.replace(/ · drop en la última/,''))+(typeof dropsTxtEj==='function'?dropsTxtEj(e,ep.u):'')+'</b><span></span></div>';}).join('')+cardioLista(S.czL)+'</div>';}
-function verTp5(S,b,s){return tp5({a:'verEj',exp:!!U.verEj,cls:'ac',c:'ac',i:I5.lista,b:b||(S.nej?sDe5(S):'Cardio · '+S.czMin+' min'),s:s||'Lo que te toca',x:'<span class="lk">'+(U.verEj?'Ocultar lista':'Ver la lista')+I.der+'</span>'});}
-function musTp5(S){return S.top.length?tp5({c:'ac',i:I5.rayo,b:'Músculos',s:'Series por grupo',x:'<div class="mini">'+S.top.slice(0,4).map(function(g){return '<span class="chip ac">'+g+' · '+S.mus[g]+'</span>';}).join('')+'</div>'}):'';}
-/* mini-tarjetas de un día con entreno sin empezar (hoy o el que se toca en la tira) */
-function tpsPlan5(dd,S){var L=[mod5(dd,S)];
- if(S.nej||S.czL.length)L.push(verTp5(S));
- L.push(musTp5(S));
- if(S.min){var hh=hora5(dd,S.min);L.push(tp5({c:'vi',i:I.reloj,b:'~'+S.min+' min',s:hh?'Si arrancás a las '+hh.ini+', terminás a las '+hh.fin+'.':'Tiempo estimado con los descansos.'}));}
- var F=fase5();if(F&&S.nej)L.push(tp5({c:'wa',i:I5.esf,b:F.b,s:F.s}));
- if(S.nej&&S.czL.length)L.push(czTp5(S.czL));
- return L;}
-/* el día de descanso: los consejos del boceto 5 (la proteína con números sólo si hay plan de comidas cargado) */
-function descTps5(){var L=[tp5({c:'vi',i:I5.cama,b:'Dormí 7 a 9 h',s:'Es cuando más se recupera el músculo.'})];
- if(PANEL&&PANEL.macros){var t=tot(),f=Math.round(NUT.obj.p-t.p),p=Math.max(0,Math.min(100,Math.round(t.p/NUT.obj.p*100)));
-  L.push(tp5({a:'tab',v:'mac',cls:'nut',c:'ok',i:I5.huevo,b:'Proteína · '+Math.round(t.p)+' de '+NUT.obj.p+' g',s:f>0?'Te faltan '+f+' g: sumá una comida con proteína.':'Ya llegaste a la proteína de hoy.',x:'<span class="pb"><i style="width:'+p+'%"></i></span>'}));}
- else L.push(tp5({c:'ok',i:I5.huevo,b:'Proteína en cada comida',s:'Ayuda a que el músculo se recupere.'}));
- L.push(tp5({c:'cy',i:I.gota,b:'Tomá agua',s:'Repartila a lo largo del día.'}));
- L.push(tp5({cls:'op',c:'wa',i:I5.pie,b:'Caminá si querés',s:'20 a 30 min suave, opcional. No reemplaza la fuerza.'}));
- return L;}
-/* el primer día libre que queda esta semana (para recuperar una falta) y cuántos entrenos lleva hechos */
-function libre5(){var lun=LUNH();for(var i=0;i<7;i++){var f=new Date(lun);f.setDate(lun.getDate()+i);if(+f<=+HOYC)continue;if(!diaInfo(f).g)return DSEM[f.getDay()].toLowerCase()+' '+f.getDate();}return '';}
-function sem5(){var lun=LUNH(),p=0,h=0;for(var i=0;i<7;i++){var f=new Date(lun);f.setDate(lun.getDate()+i);var di=diaInfo(f);if(!di.g)continue;p++;if(di.e==='ok'||(+f===+HOYC&&U.ses.fin))h++;}return p?{p:p,h:h}:null;}
-/* Hoy de descanso: «Hoy descansás», los consejos y el próximo entreno en una fila compacta que se abre */
-function descanso5(ses,btn){var x='';
- if(ses){var S=stat5(ses),f=fechaDia(ses,lunApp()),man=(HOYC.getDay()+1)%7===f.getDay(),dl=DSEM[f.getDay()].toLowerCase(),hh=String(ses.hora||'').slice(0,5),ab=!!U.h5px,tit=titDia(grupoDia(ses))||(S.sc?'Cardio':'Entreno');
-  var sub='Tu próximo entreno es '+(man?'mañana, ':'el ')+dl+' '+f.getDate()+'.';
-  x='<div class="acc5"><button type="button" class="pxl" data-h5="px" aria-expanded="'+ab+'"><span class="dt"><small>'+DSEM[f.getDay()].slice(0,3)+'</small><b>'+f.getDate()+'</b></span><span class="tx"><small>Próximo'+(man?' · mañana':'')+(hh?(man?' ':' · ')+hh:'')+'</small><b>'+tit+'</b></span>'+I.der+'</button>'+
-   (ab?'<div class="pxa"><div class="meta">'+S.top.slice(0,2).map(function(g){return '<span class="chip ac">'+g+' · '+S.mus[g]+' series</span>';}).join('')+(S.nej?'<span class="chip">'+pl5(S.nej,'ejercicio','ejercicios')+'</span>':'')+(S.czL.length?'<span class="chip czc">♥ cardio</span>':'')+'<span class="chip">~'+S.min+' min</span></div>'+
-    ((S.nej||S.czL.length)?'<button type="button" class="hoyt" data-a="verEj" aria-expanded="'+(!!U.verEj)+'"><span>'+(U.verEj?'Ocultar ejercicios':'Ver '+(S.nej?'los '+pl5(S.nej,'ejercicio','ejercicios'):'el cardio'))+'</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(U.verEj?'M6 15l6-6 6 6':'M6 9l6 6 6-6')+'"/></svg></button>':'')+
-    lista5(ses,S)+'<button type="button" class="sec full" data-a="sesion">'+btn+'</button></div>':'')+'</div>';
-  return '<section class="card ent prox h5 vi" data-hoy="1" data-k="'+kd(HOYC)+':de">'+cab5(I.luna,'vi','Hoy descansás',sub)+carr5(descTps5(),'Consejos para hoy')+x+'</section>';}
- return '<section class="card ent prox h5 vi" data-hoy="1" data-k="'+kd(HOYC)+':de0">'+cab5(I.luna,'vi','Hoy descansás','No tenés más entrenos pendientes esta semana.')+carr5(descTps5(),'Consejos para hoy')+'</section>';}
+function acc6(x){return x?'<div class="acc6">'+x+'</div>':'';}
+/* el primer día libre que queda esta semana (para recuperar una falta) */
+function libre6(){var lun=LUNH();for(var i=0;i<7;i++){var f=new Date(lun);f.setDate(lun.getDate()+i);if(+f<=+HOYC)continue;if(!diaInfo(f).g)return DSEM[f.getDay()].toLowerCase()+' '+f.getDate();}return '';}
+/* el próximo entreno después de un día (dentro de la semana que muestra la tira) */
+function proxDe6(f){for(var k=1;k<7;k++){var x=new Date(f);x.setDate(f.getDate()+k);if(+lun0(x)!==+LUNH())break;if(+x<+HOYC)continue;var dd=diaDeFecha(x);
+  if(dd&&tieneDia(dd)&&!dd.libre&&dd.estado!=='verde'&&dd.estado!=='rojo')return {dd:dd,f:x};}return null;}
+/* la fila compacta del próximo entreno: se abre con los datos, «Ver los ejercicios» y (si es la sesión que viene) «Adelantar» */
+function pxl6(dd,f){var S=stat6(dd),man=(HOYC.getDay()+1)%7===f.getDay()&&+f-+HOYC<2*864e5,hh=String(dd.hora||'').slice(0,5),ab=!!U.h6px,tit=titDia(grupoDia(dd))||(S.sc?'Cardio':'Entreno');
+ var ses=PANEL.ses,adel=ses&&!PANEL.hoy&&!U.ses.on&&!U.ses.fin&&nrmP(ses.dia)===nrmP(dd.dia)&&+fechaDia(ses,lunApp())===+f;
+ return '<button type="button" class="pxl" data-h6="px" aria-expanded="'+ab+'"><span class="dt"><small>'+DSEM[f.getDay()].slice(0,3)+'</small><b>'+f.getDate()+'</b></span><span class="tx"><small>Próximo'+(man?' · mañana':'')+(hh?(man?' ':' · ')+hh:'')+'</small><b>'+tit+'</b></span>'+I.der+'</button>'+
+  (ab?'<div class="pxa">'+chips6(S)+verEj6(S)+lista6(dd,S)+(adel?'<button type="button" class="sec full" data-a="sesion">'+(S.sc?'Adelantar cardio':'Adelantar sesión')+'</button>':'')+'</div>':'');}
+/* día de descanso (hoy o el que se toca en la tira) */
+function descanso6(f,hoy){var px=hoy?(PANEL.ses&&!PANEL.hoy?{dd:PANEL.ses,f:fechaDia(PANEL.ses,lunApp())}:null):proxDe6(f);
+ var sub=nomD6(f)+' · '+(hoy?(px||PANEL.ses?'hoy no tenés entreno.':'no tenés más entrenos esta semana.'):'ese día no tenés entreno.');
+ return '<section class="card ent h6 vi'+(hoy?' prox':'')+'"'+(hoy?' data-hoy="1"':'')+'>'+cab6(I.luna,'vi','Descanso',sub)+(px?pxl6(px.dd,px.f):'')+
+  (hoy?'':acc6('<button type="button" class="sec full" data-a="hdia" data-v="'+kd(HOYC)+'">Volver a hoy</button>'))+'</section>';}
 /* la tarjeta de Hoy: descanso, sin empezar, en curso, hecho (cliente o entrenador), solo cardio y falta */
-function hoy5(ses,h){var S=stat5(ses),tit=titDia(ses.grupo)||(S.sc?'Cardio':'Entreno'),hk=kd(HOYC);
+function hoy6(ses,h){var S=stat6(ses),tit=titDia(ses.grupo)||(S.sc?'Cardio':'Entreno'),nm=nomD6(HOYC);
  /* la marcó el entrenador (desde el Monitor o su celular): no se ofrece empezarla */
  var regE=PANEL.hoy&&!U.ses.on&&!U.ses.fin&&(ses.estado==='verde'||ses.estado==='rojo')?ses.estado:null;
- var btn=U.ses.on?(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1]):(S.sc?(PANEL.hoy?'Empezar cardio':'Adelantar cardio'):(PANEL.hoy?'Empezar sesión':'Adelantar sesión'));
- /* 16 nov 2026 · Ricky: «el lunes está de descanso y aparece pecho, hombro y tríceps»: si hoy no hay entreno, «Hoy descansás» */
- if(!PANEL.hoy&&!U.ses.on&&!U.ses.fin)return descanso5(ses,btn);
- var sec=function(cls,st,body){return '<section class="card ent h5 '+cls+'" data-hoy="1" data-k="'+hk+':'+st+'">'+body+'</section>';};
- var hecho=(regE==='verde'&&!ses.soloCardio)||!!U.ses.fin,L;
+ /* 16 nov 2026 · Ricky: «el lunes está de descanso y aparece pecho, hombro y tríceps»: si hoy no hay entreno, «Descanso» */
+ if(!PANEL.hoy&&!U.ses.on&&!U.ses.fin)return descanso6(HOYC,true);
+ var sec=function(cls,body){return '<section class="card ent h6 '+cls+'" data-hoy="1">'+body+'</section>';};
+ var hecho=(regE==='verde'&&!ses.soloCardio)||!!U.ses.fin;
  /* hoy hizo sólo cardio en vez de la fuerza */
  if(regE==='verde'&&ses.soloCardio){var so=ses.soloCardio;
-  return sec('ok','sc',cab5(I.chk,'ok',tit,'Hoy · cuenta como entrenado',OK5())+
-   est5('',I.chk,'Hoy hiciste solo cardio','Cuenta como entrenado.'+(so.g?(so.a?' '+so.g+' pasó al '+String(so.a).toLowerCase()+'.':' '+so.g+' no se recupera esta semana.'):''))+
-   carr5([mod5(ses,S,{tag:'<span class="tag">'+I.chk+'Hecho</span>'}),S.czL.length?tp5({cls:'okc',c:'cy',i:I5.corazon,b:S.czL.map(czTxt5).join(' + '),s:'Lo que anotaste.'}):'']));}
+  return sec('ok',cab6(I.chk,'ok',tit,nm+' · hiciste solo cardio',OK6())+
+   est6('',I.chk,'Hoy hiciste solo cardio','Cuenta como entrenado.'+(so.g?(so.a?' '+so.g+' pasó al '+String(so.a).toLowerCase()+'.':' '+so.g+' no se recupera esta semana.'):''))+chips6(S)+mod6(ses,S,{tag:TAGOK6()}));}
  /* 14 nov 2026 · ya hecha (la terminó el cliente o la marcó el entrenador): «Hecho», sin desplegable ni minutos estimados */
- if(hecho){L=[mod5(ses,S,{tag:'<span class="tag">'+I.chk+'Hecho</span>'})];
-  if(U.ses.fin){var R=null;try{R=ultimoRecordP();}catch(e){}
-   if(R&&R.f&&+R.f===+HOYC)L.push(tp5({cls:'okc',c:'ok',i:I.trofeo,b:'Récord: '+escP(R.n),s:co(R.v)+' '+(R.u==='pl'?'placas':R.u)+(R.r?' × '+R.r:'')+'.'}));
-   if(h[1])L.push(tp5({c:'ac',i:I5.lista,b:pl5(h[0],'serie hecha','series hechas'),s:'De '+h[1]+' planificadas.'}));
-   if(U.esf)L.push(tp5({c:'wa',i:I5.esf,b:'Esfuerzo '+U.esf+' de 10',s:'Lo que anotaste al terminar.'}));}
-  else{L.push(tp5({cls:'okc',c:'ok',i:I5.lista,b:S.nej?sDe5(S):'Cardio',s:'Lo anotó tu entrenador.'}));
-   if(numP(ses.esfuerzo))L.push(tp5({c:'wa',i:I5.esf,b:'Esfuerzo '+co(numP(ses.esfuerzo))+' de 10',s:'Lo que quedó anotado.'}));}
-  L.push(musTp5(S));
-  if(S.czL.length&&S.nej)L.push(tp5({cls:'cz',c:'cy',i:I5.corazon,b:'Cardio',s:S.czL.map(czTxt5).join(' + ')+'.'}));
-  var ac=(U.ses.fin?hdb5('resumen','','Ver tu resumen','Récords y comparación con la semana pasada'):'')+(S.nej?hdb5('sesion','','Ver la sesión',sDe5(S)+' con lo anotado'):'');
-  return sec('ok hecho','ok',cab5(I.chk,'ok',tit,U.ses.fin?'Hoy'+(U.esf?' · esfuerzo '+U.esf+' de 10':' · terminada'):'Hoy · la anotó tu entrenador',OK5())+
-   est5('',I.chk,U.ses.fin?'Terminaste la sesión':'Registrada por tu entrenador','Ya cuenta en tu semana y en tu progreso')+carr5(L)+(ac?'<div class="acc5">'+ac+'</div>':''));}
+ if(hecho)return sec('ok hecho',cab6(I.chk,'ok',tit,nm+' · '+(U.ses.fin?(U.esf?'esfuerzo '+U.esf+' de 10':'terminada'):'la anotó tu entrenador'),OK6())+
+  est6('',I.chk,U.ses.fin?'Terminaste la sesión':'Registrada por tu entrenador','Ya cuenta en tu semana y en tu progreso')+chips6(S)+mod6(ses,S,{tag:TAGOK6()})+
+  acc6((U.ses.fin?hdb6('resumen','','Ver tu resumen','Récords y comparación con la semana pasada'):'')+(S.nej?hdb6('sesion','','Ver la sesión',sDe6(S)+' con lo anotado'):'')));
  /* la marcó como falta */
- if(regE==='rojo'){var lb=libre5(),sm=sem5();
-  L=[mod5(ses,S,{gris:1,tag:'<span class="tag rd">Falta</span>'}),
-   lb?tp5({c:'vi',i:I.cal,b:'El '+lb+' está libre',s:'Podés recuperarla ahí desde el calendario.'}):'',
-   tp5({c:'ac',i:I5.lista,b:'Lo que era',s:S.nej?sDe5(S):'Cardio'}),
-   sm?tp5({c:'ok',i:I.chk,b:'Tu semana',s:sm.h+' de '+sm.p+(sm.p===1?' entreno hecho.':' entrenos hechos.')}):''];
-  return sec('fa','fa',cab5('!','rd',tit,'Hoy · era tu entreno','<span class="chip rd">Falta</span>')+
-   est5('no','!','Tu entrenador la marcó como falta','Si querés, recuperala otro día desde el calendario.')+carr5(L)+
-   '<div class="acc5"><button type="button" class="sec full" data-a="tab" data-v="cal">Ir al calendario</button></div>');}
+ if(regE==='rojo'){var lb=libre6();
+  return sec('fa',cab6('!','rd',tit,nm+' · era tu entreno',FA6)+est6('no','!','Tu entrenador la marcó como falta','Si querés, recuperala '+(lb?'el '+lb+' ':'otro día ')+'desde el calendario.')+
+   chips6(S)+mod6(ses,S,{gris:1,tag:TAGFA6})+acc6('<button type="button" class="sec full" data-a="tab" data-v="cal">Ir al calendario</button>'));}
  /* en curso: anillo con las series, barra de progreso y qué toca ahora */
- if(U.ses.on){var b=BLQ[U.ses.b]||BLQ[0],p=h[1]?Math.round(h[0]/h[1]*100):0,rest=Math.max(0,h[1]-h[0]),rej=0,ult=null;L=[mod5(ses,S)];
-  if(b){var ri=-1;b.h.some(function(r,i){if(r.some(function(x){return !x;})){ri=i;return true;}return false;});
-   if(ri>=0)L.push(tp5({cls:'ac',c:'ac',i:I.hoy,b:'Ahora: '+escP(b.ss?b.n:b.ej[0].n),s:(b.ss?'Vuelta ':'Serie ')+(ri+1)+' de '+b.h.length}));}
-  BLQ.forEach(function(x,i){if(i!==U.ses.b&&x.h.every(function(r){return r.every(Boolean);}))ult=x;x.ej.forEach(function(e,k){if(x.h.some(function(r){return !r[k];}))rej++;});});
-  if(ult)L.push(tp5({cls:'okc',c:'ok',i:I.chk,b:escP(ult.ss?ult.n:ult.ej[0].n),s:'Hecho · '+pl5(ult.h.length,'serie','series')}));
-  if(rest)L.push(tp5({c:'vi',i:I.reloj,b:rej===1?'Te queda 1 ejercicio':'Te quedan '+rej+' ejercicios',s:pl5(rest,'serie','series')+' · unos '+rest*3+' min más.'}));
-  if(S.nej||S.czL.length)L.push(verTp5(S,'La sesión entera',sDe5(S)));
-  if(S.nej&&S.czL.length)L.push(czTp5(S.czL));
+ if(U.ses.on){var b=BLQ[U.ses.b]||BLQ[0],p=h[1]?Math.round(h[0]/h[1]*100):0,rest=Math.max(0,h[1]-h[0]),ri=-1;
+  if(b)b.h.some(function(r,i){if(r.some(function(x){return !x;})){ri=i;return true;}return false;});
   var t0=U.ses.t0?new Date(U.ses.t0):null,hi=t0&&!isNaN(t0)?t0.getHours()+':'+('0'+t0.getMinutes()).slice(-2):'';
-  var ic=h[1]?'<span class="anil" style="--p:'+p+'" role="img" aria-label="'+h[0]+' de '+h[1]+' series"><span>'+h[0]+'/'+h[1]+'</span></span>':'<span class="ico">'+I.hoy+'</span>';
-  return sec('az cur','cur','<div class="fila h5c">'+ic+'<span><b>'+tit+'</b><span class="s">En curso'+(hi?' · empezaste a las '+hi:'')+'</span></span><span></span></div>'+
+  var ic=h[1]?'<span class="anil" style="--p:'+p+'" role="img" aria-label="'+h[0]+' de '+h[1]+' series"><span>'+h[0]+'/'+h[1]+'</span></span>':I.hoy;
+  return sec('az cur',cab6(ic,h[1]?'ac anl':'ac',tit,'En curso'+(hi?' · empezaste a las '+hi:''))+
    (h[1]?'<div class="prgb"><div class="tr"><i style="width:'+p+'%"></i></div><div class="lb"><span><b>'+h[0]+' de '+h[1]+'</b> series</span><span>'+(rest?'~'+rest*3+' min más':'¡Terminaste!')+'</span></div></div>':'')+
-   carr5(L)+lista5(ses,S)+'<div class="acc5"><button type="button" class="pri full" data-a="'+(h[0]===h[1]?'resumen':'sesion')+'">'+btn+'</button></div>');}
+   (b&&ri>=0?'<p class="ahora6"><b>Ahora:</b> '+escP(b.ss?b.n:b.ej[0].n)+' · '+(b.ss?'vuelta ':'serie ')+(ri+1)+' de '+b.h.length+'</p>':'')+
+   chips6(S)+mod6(ses,S)+verEj6(S)+lista6(ses,S)+acc6('<button type="button" class="pri full" data-a="'+(h[0]===h[1]?'resumen':'sesion')+'">'+(h[0]===h[1]?'Ver resumen':'Seguir sesión · '+h[0]+'/'+h[1])+'</button>'));}
  /* hoy con entreno, sin empezar */
- return sec('az','hoy',cab5(I.hoy,'ac',tit,'Hoy entrenás'+(S.nej?' · '+pl5(S.nej,'ejercicio','ejercicios'):'')+(S.min?' · ~'+S.min+' min':''))+carr5(tpsPlan5(ses,S))+lista5(ses,S)+
-  '<div class="acc5"><button type="button" class="pri full late" data-a="sesion">'+btn+'</button>'+
-  (S.nej&&PANEL.crudo&&PANEL.crudo.regionesEj?'<button type="button" class="sec full" data-a="soloC">Hoy solo hice cardio</button>':'')+'</div>');}
-/* carrusel: puntitos según lo que se ve, y no vuelve al principio cada vez que se redibuja la misma tarjeta */
-function dots5(sc){var d=sc&&sc.nextElementSibling;if(!d||!d.classList.contains('dots'))return;var C=sc.children,k=0,best=1e9,r0=sc.getBoundingClientRect().left+16;
- for(var i=0;i<C.length;i++){var dx=Math.abs(C[i].getBoundingClientRect().left-r0);if(dx<best){best=dx;k=i;}}
- if(sc.scrollLeft+sc.clientWidth>=sc.scrollWidth-4)k=C.length-1;
- [].forEach.call(d.children,function(e,j){e.classList.toggle('on',j===k);});}
-var render5=render;
-render=function(){var v=document.getElementById('view'),sc=v&&v.querySelector('.h5 .tps'),k0=sc?sc.closest('.h5').getAttribute('data-k'):null,x0=sc?sc.scrollLeft:0;
- if(U.hdia!==U.h5d){U.h5d=U.hdia;U.h5px=false;}
- var r=render5.apply(this,arguments);
- try{var n=v&&v.querySelector('.h5 .tps');if(n){if(n!==sc&&n.closest('.h5').getAttribute('data-k')===k0)n.scrollLeft=x0;dots5(n);}}catch(e){}
- return r;};
-var dots5t=0;
-document.addEventListener('scroll',function(e){var t=e.target;if(!t||!t.classList||!t.classList.contains('tps')||!t.closest('.h5'))return;if(dots5t)return;
- dots5t=requestAnimationFrame(function(){dots5t=0;dots5(t);});},true);
-/* la fila del próximo entreno (día de descanso) se abre y se cierra */
-document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-h5="px"]');if(!b)return;U.h5px=!U.h5px;if(!U.h5px)U.verEj=false;try{render();}catch(x){}});
+ return sec('az',cab6(I.hoy,'ac',tit,nm+(S.nej?' · '+pl6(S.nej,'ejercicio','ejercicios'):'')+(S.min?' · ~'+S.min+' min':''))+chips6(S)+mod6(ses,S)+verEj6(S)+lista6(ses,S)+
+  acc6('<button type="button" class="pri full late" data-a="sesion">'+(S.sc?'Empezar cardio':'Empezar sesión')+'</button>'+
+   (S.nej&&PANEL.crudo&&PANEL.crudo.regionesEj?'<button type="button" class="sec full" data-a="soloC">Hoy solo hice cardio</button>':'')));}
+/* la fila del próximo entreno se abre y se cierra; al cambiar de día en la tira vuelve a cerrarse */
+var render6=render;
+render=function(){if(U.hdia!==U.h6d){U.h6d=U.hdia;U.h6px=false;}return render6.apply(this,arguments);};
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-h6="px"]');if(!b)return;U.h6px=!U.h6px;if(!U.h6px)U.verEj=false;try{render();}catch(x){}});
 var vHoy0=vHoy;
 vHoy=function(){if(!PANEL)return vHoy0();
  var t=tot(),h=hechas(),fal={p:NUT.obj.p-t.p},ses=PANEL.ses,c=PANEL.c;
  var s='<div class="hd"><span class="ey">'+DSEM[HOYC.getDay()]+' '+HOY_TXT()+'</span><h1>Hola, '+NOMBRE+'</h1></div>'+avisoHoy()+faseCard()+(window.envioCard?envioCard():'');
- if(ses)s+=hoy5(ses,h);else s+=descanso5(null);
+ if(ses)s+=hoy6(ses,h);else s+=descanso6(HOYC,true);
  /* semana */
  var lun=LUNH(),dots=[],pl=0,he=0;for(var i=0;i<7;i++){var f=new Date(lun);f.setDate(lun.getDate()+i);var di=diaInfo(f),cls='';
   if(di.g){pl++;if(di.e==='ok'&&+f<+HOYC){cls='ok';he++;}else if(+f===+HOYC)cls=(U.ses.fin||di.e==='ok')?'ok':'hoy';else if(+f>+HOYC)cls='pl';}
@@ -3315,22 +3226,16 @@ function semHoy(h){var lun=LUNH(),hk=kd(HOYC),dias=[],sesK=null;
  if(sel===hk||(sel===sesK&&PANEL.hoy))return h.slice(0,a)+tira+h.slice(a);
  var f0=dias.filter(function(f){return kd(f)===sel;})[0];
  return h.slice(0,a)+tira+diaCardP(f0)+h.slice(b);}
-/* 17 nov 2026 · el día que se toca en la tira, con la misma estructura que la tarjeta de Hoy */
-function diaCardP(f){var dd=diaDeFecha(f),di=diaInfo(f),k=kd(f),nm=DIA_LG[f.getDay()]+' '+f.getDate(),volver='<button type="button" class="sec full" data-a="hdia" data-v="'+kd(HOYC)+'">Volver a hoy</button>';
- var sec=function(cls,st,body,acc){return '<section class="card ent h5 '+cls+'" data-k="'+k+':'+st+'">'+body+'<div class="acc5">'+(acc||'')+volver+'</div></section>';};
- if(!dd||!tieneDia(dd))return sec('vi','de',cab5(I.luna,'vi',nm+' · descanso','Ese día no tenés entreno.'));
- var S=stat5(dd),tit=titDia(grupoDia(dd))||(S.sc?'Cardio':'Entreno'),pas=+f<+HOYC,ok=di.e==='ok'||dd.estado==='verde',fa=di.e==='fa'||dd.estado==='rojo',hh=String(dd.hora||'').slice(0,5);
- if(pas&&ok)return sec('ok','ok',cab5(I.chk,'ok',tit,nm+' · hecho',OK5())+
-  carr5([mod5(dd,S,{tag:'<span class="tag">'+I.chk+'Hecho</span>'}),tp5({cls:'okc',c:'ok',i:I5.lista,b:S.nej?sDe5(S):'Cardio',s:'Ya cuenta en tu semana y en tu progreso.'}),musTp5(S)]),
-  S.nej?hdb5('verSes',k,'Ver la sesión',sDe5(S)+' con lo anotado'):'');
- if(pas&&fa)return sec('fa','fa',cab5('!','rd',tit,nm+' · faltaste','<span class="chip rd">Falta</span>')+
-  est5('no','!','Ese día faltaste','Si querés, recuperalo otro día desde el calendario.')+
-  carr5([mod5(dd,S,{gris:1,tag:'<span class="tag rd">Falta</span>'}),tp5({c:'ac',i:I5.lista,b:'Lo que era',s:S.nej?sDe5(S):'Cardio'}),musTp5(S)]));
- if(pas)return sec('nt','sm',cab5('?','nt',tit,nm+' · sin registrar')+
-  est5('nt','?','No quedó registrado','Si lo hiciste, avisale a tu entrenador.')+
-  carr5([mod5(dd,S,{gris:1}),tp5({c:'ac',i:I5.lista,b:'Lo que era',s:S.nej?sDe5(S):'Cardio'}),musTp5(S)]));
+/* 17 nov 2026 · el día que se toca en la tira, con el mismo esquema que la tarjeta de Hoy (boceto 6) */
+function diaCardP(f){var dd=diaDeFecha(f),di=diaInfo(f),k=kd(f),nm=nomD6(f),volver='<button type="button" class="sec full" data-a="hdia" data-v="'+kd(HOYC)+'">Volver a hoy</button>';
+ if(!dd||!tieneDia(dd))return descanso6(f,false);
+ var S=stat6(dd),tit=titDia(grupoDia(dd))||(S.sc?'Cardio':'Entreno'),pas=+f<+HOYC,ok=di.e==='ok'||dd.estado==='verde',fa=di.e==='fa'||dd.estado==='rojo',hh=String(dd.hora||'').slice(0,5);
+ var sec=function(cls,body,acc){return '<section class="card ent h6 '+cls+'">'+body+acc6((acc||'')+volver)+'</section>';},alt='Músculos de ese día resaltados en azul';
+ if(pas&&ok)return sec('ok',cab6(I.chk,'ok',tit,nm+' · hecho',OK6())+chips6(S)+mod6(dd,S,{tag:TAGOK6(),alt:alt}),S.nej?hdb6('verSes',k,'Ver la sesión',sDe6(S)+' con lo anotado'):'');
+ if(pas&&fa)return sec('fa',cab6('!','rd',tit,nm+' · faltaste',FA6)+est6('no','!','Ese día faltaste','Si querés, recuperalo otro día desde el calendario.')+chips6(S)+mod6(dd,S,{gris:1,tag:TAGFA6,alt:alt}));
+ if(pas)return sec('nt',cab6('?','nt',tit,nm+' · sin registrar')+est6('nt','?','No quedó registrado','Si lo hiciste, avisale a tu entrenador.')+chips6(S)+mod6(dd,S,{gris:1,alt:alt}));
  var adel=PANEL.ses&&!PANEL.hoy&&nrmP(PANEL.ses.dia)===nrmP(dd.dia);
- return sec('az','pl',cab5(I.cal,'ac',tit,nm+' · planificado'+(hh?' · '+hh:''))+carr5(tpsPlan5(dd,S))+lista5(dd,S),
+ return sec('az',cab6(I.cal,'ac',tit,nm+' · planificado'+(hh?' · '+hh:''))+chips6(S)+mod6(dd,S,{alt:alt})+verEj6(S)+lista6(dd,S),
   adel?'<button type="button" class="pri full" data-a="sesion">'+(S.sc?'Adelantar cardio':'Adelantar sesión')+'</button>':'');}
 function seriesTile(){var S=semanasP(),w=S.filter(function(x){return x.hoy;})[0],hechas=w?w.ser:0,tot=0;(PANEL.c.rutina||[]).forEach(function(d){if(d.libre)return;(d.ejercicios||[]).forEach(function(e){if(e&&e.nombre)tot+=seriesP(e).length;});});
  var C=2*Math.PI*24,p=tot?Math.min(1,hechas/tot):0;
@@ -4235,8 +4140,8 @@ document.head.appendChild(st3);
 /* ---------- después de cada render ---------- */
 var render0=render;
 /* ---------- 10 · Hoy: al cambiar de día, fundido de los músculos ---------- */
-/* 17 nov 2026 · con el estilo 5 el modelo es la primera mini-tarjeta del carrusel (.tp.mod .img): los selectores
-   «.hsem + .card.ent .img» la siguen encontrando (es el primer .img de la tarjeta). */
+/* 17 nov 2026 · tarjeta de Hoy con el boceto 6: el modelo va en .img dentro de la tarjeta (.card.ent.h6), así que los
+   selectores «.hsem + .card.ent .img» lo siguen encontrando. */
 var DIA_ANT=null,CAP_ANT=[];
 function tsDia(k){var m=String(k||'').split('-');return m.length===3?+new Date(+m[0],+m[1],+m[2]):0;}
 function capasVista(){var v=document.getElementById('view'),i=v&&v.querySelector('.hsem + .card.ent .img');return i?[].map.call(i.querySelectorAll('img.cp:not(.efvieja)'),function(c){return c.getAttribute('src');}):[];}   /* las que se están yendo no cuentan */
@@ -4258,14 +4163,14 @@ var st=document.createElement('style');st.textContent=
  '.efdia{overflow:hidden}.efdia>img:not(.cp){animation:efRespira .75s ease both}'+
  '.efdia>img.cp.efvieja{animation:efSale .62s ease both}.efdia>img.cp.efsigue{animation:efSigue .95s ease .12s both}'+
  '.efdia>img.cp.efnueva{animation:efEntra 1.15s cubic-bezier(.2,.75,.25,1) calc(.2s + var(--efi,0)*.15s) both}'+
- '.hs.efdsel{animation:efDsel .42s cubic-bezier(.3,1.7,.5,1)}.efdcard .in,.efdcard.h5>:not(.tps):not(.dots),.efdcard.h5 .tp:not(.mod){animation:efDin .38s ease both}'+
+ '.hs.efdsel{animation:efDsel .42s cubic-bezier(.3,1.7,.5,1)}.efdcard .in,.efdcard.h6>:not(.img){animation:efDin .38s ease both}'+
  '@keyframes efRespira{0%,100%{filter:none}40%{filter:brightness(.9) saturate(.82)}}'+
  '@keyframes efSale{0%{opacity:1;filter:none}100%{opacity:0;filter:blur(5px) grayscale(1) brightness(1.15)}}'+
  '@keyframes efSigue{0%,100%{filter:none}45%{filter:brightness(1.28) drop-shadow(0 0 6px rgba(var(--a1rgb),.7))}}'+
  '@keyframes efEntra{0%{opacity:0;transform:scale(1.025);filter:blur(9px) brightness(1.9)}45%{opacity:1;transform:none;filter:blur(0) brightness(1.45) drop-shadow(0 0 12px rgba(var(--a1rgb),.9))}100%{opacity:1;transform:none;filter:none}}'+
  '@keyframes efDsel{0%{transform:scale(.88)}60%{transform:scale(1.08)}100%{transform:none}}'+
  '@keyframes efDin{from{opacity:0;transform:translateX(calc(var(--efdir,1)*18px))}to{opacity:1;transform:none}}'+
- '@media (prefers-reduced-motion: reduce){.efdia>img,.hs.efdsel,.efdcard .in,.efdcard.h5>*,.efdcard.h5 .tp{animation:none!important}.efdia>img.efvieja{display:none}}'+
+ '@media (prefers-reduced-motion: reduce){.efdia>img,.hs.efdsel,.efdcard .in,.efdcard.h6>*{animation:none!important}.efdia>img.efvieja{display:none}}'+
  '.hero .img{position:relative}.hero .img .efchip{position:absolute;left:10px;top:10px;margin:0;background:rgba(255,255,255,.92);color:#0e1a2b}.hero .img .efley{position:absolute;right:10px;bottom:8px;display:flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;color:#5b6475;background:rgba(255,255,255,.75);padding:3px 7px;border-radius:8px}'+
  '.hero .img .efchip2{position:absolute;left:10px;top:10px;display:flex;align-items:center;gap:9px;padding:7px 12px 7px 9px;border-radius:14px;background:rgba(14,22,40,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(120,160,255,.35);color:#fff;box-shadow:0 8px 22px -10px rgba(40,80,200,.8);overflow:hidden;z-index:3}'+
  '.efchip2>i{width:10px;height:10px;border-radius:50%;flex:none;background:#6e9bff;box-shadow:0 0 0 0 rgba(110,155,255,.7);animation:efDot 1.8s ease-out infinite}.efchip2 b{display:block;font-size:13.5px;font-weight:800;line-height:1.15;letter-spacing:-.01em}.efchip2 small{display:block;font-size:11.5px;font-weight:600;color:#a9bfff;margin-top:1px}'+
