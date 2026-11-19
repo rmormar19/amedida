@@ -3342,7 +3342,11 @@ function movPendBorrar(m,r,lun,queda,por){if(m.lun!==lun||Date.now()-m.t>8*864e5
 function movPendAplicar(c){var L=movPend();if(!L.length||!c||!c.rutina)return c;var lun=+lunesCal(new Date()),queda=[];
  var r=c.rutina.map(function(d){return Object.assign({},d);});
  var por=function(n){return r.filter(function(d){return nrmP(d.dia)===nrmP(n);})[0];};
+ /* 19 nov 2026 · un cambio guardado en el celular (mover, intercambiar, sumar, borrar) nunca pisa un día que ya figura hecho o
+    falta: se descarta (en el banco el miércoles hecho volvía a verse sin hacer). */
+ var fijo=function(d){return !!d&&(d.estado==='verde'||d.estado==='rojo');};
  L.forEach(function(m){
+  if(!m.fut&&(fijo(por(m.de))||(m.a&&m.a!==m.de&&fijo(por(m.a)))))return;
   if(m.modo==='cambiar'||m.modo==='sumar')return movPendModo(m,r,lun,queda,por);
   if(m.modo==='borrar')return movPendBorrar(m,r,lun,queda,por);
   if(m.fut){var aD=dk(m.aK);if(+aD<+HOYC||Date.now()-m.t>40*864e5)return;
