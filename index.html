@@ -4852,6 +4852,23 @@ var st=document.createElement('style');st.textContent=
 document.head.appendChild(st);
 })();
 
+/* 18 nov 2026 · láminas (pedido de Ricky: app más liviana). La app ya no baja las 81 láminas al instalar (~15 MB). Cuando
+   llega la rutina, baja en segundo plano y de a una solo las de sus ejercicios, para que se vean aunque no haya internet;
+   el service worker las guarda y no las vuelve a pedir. Las demás se guardan la primera vez que se abren. */
+(function(a0){
+ var hechas={},cola=[],andando=false,ult=null;
+ function sig(){if(!cola.length){andando=false;return;}var u=cola.shift();
+  caches.match(u).then(function(h){if(!h)return fetch(u);}).catch(function(){}).then(function(){setTimeout(sig,150);});}
+ function juntar(){try{var c=ult;ult=null;if(!c||navigator.onLine===false)return;
+  var ks={};(c.rutina||[]).forEach(function(d){((d&&d.ejercicios)||[]).forEach(function(e){if(e&&e.nombre){var k=lamDe(String(e.nombre));if(k)ks[k]=1;}});});
+  Object.keys(ks).forEach(function(k){var u='laminas/'+k+'.webp';if(!hechas[u]){hechas[u]=1;cola.push(u);}});
+  if(cola.length&&!andando){andando=true;sig();}}catch(e){andando=false;}}
+ function pedir(c){if(!('caches' in window)||!navigator.serviceWorker||!navigator.serviceWorker.controller)return;
+  var pr=!ult;ult=c;if(pr)setTimeout(juntar,4000);}
+ window.AM_PANEL=function(c){var r=a0.apply(this,arguments);try{if(c)pedir(c);}catch(e){}return r;};
+ window.__lamCola=function(){return {hechas:Object.keys(hechas),cola:cola.slice(),andando:andando};};
+})(window.AM_PANEL);
+
 /* ================= 18 nov 2026 · fluidez (Ricky: «quiero que hagas ambas apps más fluidas») =================
    Una hoja abierta (notificaciones, perfil, mover, ficha, nota…) se redibujaba entera en cada render: volvía a subir desde
    abajo, el video de la ficha arrancaba de nuevo, se iba arriba de todo y, en la nota, el bloque «¿Dónde?» volvía a entrar
