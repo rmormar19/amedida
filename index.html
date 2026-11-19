@@ -2547,7 +2547,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  case 'objetivos':U.hoja={t:'obj'};break;
  case 'perfil':U.hoja={t:'perfil'};break;
  case 'modo':U.hoja=null;var tm=document.getElementById('tMod');if(tm)tm.click();break;
- case 'notifs':U.hoja={t:'notifs'};break;
+ case 'notifs':U.hoja={t:'notifs'};NOTIFS.forEach(function(n){n.leida=true;});try{guardar();}catch(e){}break;
  case 'ficha':U.hoja={t:'ficha',v:v};break;
  case 'nota':var nr=v.split('-'),ne=BLQ[+nr[0]].ej[+nr[1]],nx=NOTAS[ne.id],nt={};if(nx)nx.tags.forEach(function(k){nt[k]=true;});U.hoja={t:'nota',b:+nr[0],k:+nr[1],tags:nt,zona:nx?nx.zona:'',int:nx?nx.int:'',txt:nx?nx.txt:''};break;
  case 'ntag':U.hoja.tags[v]=!U.hoja.tags[v];if(v==='pesado'&&U.hoja.tags.pesado)U.hoja.tags.liviano=false;if(v==='liviano'&&U.hoja.tags.liviano)U.hoja.tags.pesado=false;break;
@@ -2845,6 +2845,12 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
  if(ds&&ds.hoy&&ses&&U.ses&&(ses.estado==='rojo'||(ses.estado==='verde'&&!ses.parcial))&&(U.ses.on||(U.ses.fin&&ses.estado==='rojo'))){
   U.ses.on=false;U.ses.t0=null;if(ses.estado==='rojo'){U.ses.fin=false;if(U.pila&&U.pila[U.pila.length-1]==='sesion')U.pila=[];}
   try{localStorage.removeItem('amedida-ses-v1');}catch(e){}}
+ /* 18 nov 2026 · Ricky registró la sesión de hoy en su celular y en el otro (el banco) seguía «en curso · 0 de 15 series»: la
+    sesión vacía de ese celular no se cerraba porque el día llega «verde» con «parcial» (series mandadas una por una desde otro
+    lado). Si en ESTE celular no se anotó ninguna serie y el día ya tiene series registradas, la sesión vacía se cierra sola. */
+ if(ds&&ds.hoy&&ses&&U.ses&&U.ses.on&&ses.estado==='verde'&&ses.parcial&&!BLQ.some(function(b){return b.h.some(function(r){return r.some(function(x){return x&&!x.na;});});})){
+  U.ses.on=false;U.ses.t0=null;U.ses.b=0;if(U.pila&&U.pila[U.pila.length-1]==='sesion')U.pila=[];
+  try{localStorage.removeItem('amedida-ses-v1');}catch(e){}try{guardar();}catch(e){}}
  /* 15 nov 2026 · Ricky: el domingo seguía «Brazos en curso · 0/0 series» (la sesión del viernes quedó abierta y hoy no hay
     entreno). Una sesión abierta se cierra sola si hoy no hay nada para entrenar o si empezó otro día hace más de 6 h.
     Lo que ya marcó se mandó serie por serie: no se pierde nada. */
