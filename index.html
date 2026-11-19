@@ -2102,8 +2102,14 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
 }
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();PWA.evt=e;if(U.tab==='hoy'&&!U.pila.length)render();});
 window.addEventListener('appinstalled',function(){PWA.evt=null;PWA.sola=true;toast('A medida quedó instalada');render();});
-function avisoVersion(){if(document.getElementById('nver'))return;document.body.insertAdjacentHTML('beforeend','<div class="nver" id="nver" role="status"><span><b>Hay una versión nueva</b>Se actualiza en un segundo.</span><button type="button" id="nverOk">Actualizar</button></div>');
- document.getElementById('nverOk').addEventListener('click',function(){if(PWA.nueva)PWA.nueva.postMessage('saltar');});}
+function avisoVersion(){if(document.getElementById('nver'))return;document.body.insertAdjacentHTML('beforeend','<div class="nver" id="nver" role="status"><span><b>Hay una versión nueva</b><i id="nverTx" style="font-style:normal">Se actualiza en un segundo.</i></span><button type="button" id="nverOk">Actualizar</button></div>');
+ document.getElementById('nverOk').addEventListener('click',function(){if(PWA.nueva)PWA.nueva.postMessage('saltar');});
+ /* 18 nov 2026 · Ricky: que se actualice sola de verdad (antes decía «en un segundo» pero esperaba el toque). Salvo en medio
+    de una sesión o escribiendo: ahí espera a que termine, para no recargarle la pantalla mientras anota. */
+ var t=document.getElementById('nverTx');
+ (function intentar(){if(!PWA.nueva)return;var ae=document.activeElement,ocup=(typeof U!=='undefined'&&U.ses&&U.ses.on)||(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
+  if(ocup){if(t)t.textContent=(typeof U!=='undefined'&&U.ses&&U.ses.on)?'Se actualiza cuando termines la sesión.':'Se actualiza en un momento.';setTimeout(intentar,4000);return;}
+  if(t)t.textContent='Se actualiza en un segundo.';setTimeout(function(){var ae2=document.activeElement;if(PWA.nueva&&!(typeof U!=='undefined'&&U.ses&&U.ses.on)&&!(ae2&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae2.tagName)))PWA.nueva.postMessage('saltar');else intentar();},1200);})();}
 /* tarjeta en Hoy: sólo si todavía no está instalada */
 function instalarCard(){if(PWA.sola||noInst())return '';if(!PWA.evt&&!PWA.ios)return '';
  return '<div class="inst"><span class="ii">'+LOGO+'</span><span><b>Instalá A medida en tu celular</b><span class="s">Queda con su ícono en el inicio, se abre a pantalla completa y funciona sin internet.</span></span><div class="ib2"><button type="button" class="pri" data-a="instalar">Instalar</button><button type="button" class="sec" data-a="instNo">Ahora no</button></div></div>';}
