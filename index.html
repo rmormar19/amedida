@@ -1702,7 +1702,11 @@ function cargar(){if(!GUARDA)return;try{var d=JSON.parse(localStorage.getItem(CL
  if(d.com)d.com.forEach(function(it,i){if(NUT.com[i])NUT.com[i].it=it;});
  if(d.sit)d.sit.forEach(function(v,i){if(SITIOS[i])SITIOS[i].v=v;});
  if(d.mov)Object.keys(d.mov).forEach(function(k){MOVS[k]=d.mov[k];});
- COLA=d.cola||[];NOTIFS=d.notifs||[];if(d.mis)MISCOM=d.mis;if(d.esf)U.esf=d.esf;if(d.ses)U.ses.on=true;}catch(e){}}
+ COLA=d.cola||[];NOTIFS=d.notifs||[];if(d.mis)MISCOM=d.mis;if(d.esf)U.esf=d.esf;if(d.ses){var g=null;try{g=JSON.parse(localStorage.getItem('amedida-ses-v1')||'null');}catch(e){}
+  /* 19 nov 2026 · Ricky: «Espalda… en curso · 0 de 22» sin haber empezado nada. Una sesión quedaba abierta en este guardado pero sin
+     su registro de inicio (hora): una «fantasma» que nunca contaba como vieja y frenaba las actualizaciones. Sólo se restaura si
+     tiene hora de inicio guardada o alguna serie anotada en este celular. */
+  if((g&&g.t0)||(d.h||[]).some(function(h){return (h||[]).some(function(r){return (r||[]).some(function(x){return x&&!x.na;});});}))U.ses.on=true;}}catch(e){}}
 function cola(txt){COLA.unshift({t:Date.now(),txt:txt});if(COLA.length>60)COLA.length=60;}
 var hhmm=function(t){var d=new Date(t);return d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');};
 var noLeidas=function(){return NOTIFS.filter(function(n){return !n.leida;}).length;};
@@ -2098,7 +2102,9 @@ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostnam
   reg.addEventListener('updatefound',function(){var w=reg.installing;if(!w)return;w.addEventListener('statechange',function(){if(w.state==='installed'&&navigator.serviceWorker.controller)esperando(w);});});
   setInterval(function(){reg.update().catch(function(){});},60*60*1000);
  }).catch(function(){});
- var recargado=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(recargado)return;recargado=true;location.reload();});});
+ var recargado=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(recargado)return;recargado=true;location.reload();});
+ /* 19 nov 2026 · la versión nueva pregunta si hay una sesión en curso (o se está escribiendo): si nadie contesta (página vieja) se pone sola */
+ navigator.serviceWorker.addEventListener('message',function(e){if(e.data!=='am-ocupado?'||!e.ports||!e.ports[0]||window.__amNoResponder)return;var ae=document.activeElement;e.ports[0].postMessage({ocupado:!!((typeof U!=='undefined'&&U.ses&&U.ses.on)||(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)))});});});
 }
 window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();PWA.evt=e;if(U.tab==='hoy'&&!U.pila.length)render();});
 window.addEventListener('appinstalled',function(){PWA.evt=null;PWA.sola=true;toast('A medida quedó instalada');render();});
@@ -2844,7 +2850,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
     se arma solo mientras él carga series) también. Lo que el cliente ya anotó no se borra. */
  if(ds&&ds.hoy&&ses&&U.ses&&(ses.estado==='rojo'||(ses.estado==='verde'&&!ses.parcial))&&(U.ses.on||(U.ses.fin&&ses.estado==='rojo'))){
   U.ses.on=false;U.ses.t0=null;if(ses.estado==='rojo'){U.ses.fin=false;if(U.pila&&U.pila[U.pila.length-1]==='sesion')U.pila=[];}
-  try{localStorage.removeItem('amedida-ses-v1');}catch(e){}}
+  try{localStorage.removeItem('amedida-ses-v1');}catch(e){}try{guardar();}catch(e){}}   /* 19 nov 2026: guardar el cierre (si no, al recargar volvía como sesión «fantasma» sin hora) */
  /* 18 nov 2026 · Ricky registró la sesión de hoy en su celular y en el otro (el banco) seguía «en curso · 0 de 15 series»: la
     sesión vacía de ese celular no se cerraba porque el día llega «verde» con «parcial» (series mandadas una por una desde otro
     lado). Si en ESTE celular no se anotó ninguna serie y el día ya tiene series registradas, la sesión vacía se cierra sola. */

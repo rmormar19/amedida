@@ -1,5 +1,5 @@
 /* AMedida · service worker: abre sin internet y se actualiza solo */
-const V = 'amedida-202611182307';
+const V = 'amedida-202611190945';
 const BASE = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 const EXTRA = ["./cuerpo/capa_abductor.webp", "./cuerpo/capa_biceps.webp", "./cuerpo/capa_core.webp", "./cuerpo/capa_espalda.webp", "./cuerpo/capa_gluteo.webp", "./cuerpo/capa_hombro.webp", "./cuerpo/capa_pecho.webp", "./cuerpo/capa_piernas.webp", "./cuerpo/capa_triceps.webp", "./cuerpo/mapa_brazos.webp", "./cuerpo/mapa_espalda.webp", "./cuerpo/mapa_pecho.webp", "./cuerpo/mapa_pierna.webp", "./cuerpo/modelo_base.webp", "./cuerpo/pecho2.webp", "./cuerpo/pierna.webp", "./cuerpo/mujer/capa_abductor.webp", "./cuerpo/mujer/capa_biceps.webp", "./cuerpo/mujer/capa_core.webp", "./cuerpo/mujer/capa_espalda.webp", "./cuerpo/mujer/capa_gluteo.webp", "./cuerpo/mujer/capa_hombro.webp", "./cuerpo/mujer/capa_pecho.webp", "./cuerpo/mujer/capa_piernas.webp", "./cuerpo/mujer/capa_triceps.webp", "./cuerpo/mujer/mapa_brazos.webp", "./cuerpo/mujer/mapa_espalda.webp", "./cuerpo/mujer/mapa_pecho.webp", "./cuerpo/mujer/mapa_pierna.webp", "./cuerpo/mujer/modelo_base.webp"];
 // 18 nov 2026 · huella de cada imagen: al publicar una versión nueva sólo se bajan las que cambiaron (antes se volvían a
@@ -27,6 +27,20 @@ self.addEventListener('install', e => {
       try { if (HASH[u] && hv[u] === HASH[u]) { const r = await viejo.match(u); if (r) await c.put(u, r); } } catch (x) {}
     }));
     await c.put('./__huellas.json', new Response(JSON.stringify(HASH), { headers: { 'content-type': 'application/json' } }));
+    // 19 nov 2026 · se pregunta a las ventanas abiertas si hay una sesión en curso. Una página vieja no contesta (la del banco quedó
+    // trabada esperando una sesión «fantasma» que nunca terminaba): si ninguna dice que está ocupada, la versión nueva se pone sola.
+    // Si alguna está en plena sesión, espera: esa página la pone cuando termina (aviso «Se actualiza cuando termines la sesión»).
+    try {
+      const ws = self.registration.active ? await self.clients.matchAll({ type: 'window', includeUncontrolled: true }) : [];   // primera instalación: no se pregunta (ni se recarga)
+      if (ws.length) {
+        const rs = await Promise.all(ws.map(w => new Promise(ok => {
+          const ch = new MessageChannel(), t = setTimeout(() => ok(null), 2500);
+          ch.port1.onmessage = ev => { clearTimeout(t); ok(ev.data || {}); };
+          try { w.postMessage('am-ocupado?', [ch.port2]); } catch (x) { clearTimeout(t); ok(null); }
+        })));
+        if (!rs.some(r => r && r.ocupado)) self.skipWaiting();
+      }
+    } catch (x) {}
   }));
 });
 self.addEventListener('activate', e => {
