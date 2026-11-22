@@ -1749,7 +1749,7 @@ document.addEventListener('click',function(e){var cs=e.target.closest&&e.target.
  if(best&&bd<500)best.click();});
 
 /* ----- notificación de rutina nueva (la manda el panel cuando cargás una rutina) ----- */
-window.AM_NOTIF=function(d){d=d||{};var ej=d.ejercicios||[],n={t:Date.now(),titulo:(d.cambio?'Rutina actualizada':'Nueva rutina')+' de '+(d.quien||'tu entrenador'),cuerpo:(d.grupo||'Tu entreno')+' · '+ej.length+' ejercicios'+(d.cambio?'':'. Tocá para verla.'),grupo:d.grupo||'',dia:d.dia||'hoy',ejercicios:ej,cambio:!!d.cambio,leida:false};
+window.AM_NOTIF=function(d){d=d||{};var ej=d.ejercicios||[],n={t:Date.now(),titulo:(d.cambio?'Rutina actualizada':'Nueva rutina')+' de '+(d.quien||'tu entrenador'),cuerpo:(d.grupo||'Tu entreno')+' · '+ej.length+' ejercicios'+(d.cambio?'':'. Tocá para verla.'),grupo:d.grupo||'',dia:d.dia||'hoy',fecha:d.fecha||null,ejercicios:ej,cambio:!!d.cambio,leida:false};
  NOTIFS.unshift(n);if(NOTIFS.length>20)NOTIFS.length=20;guardar();
  var b=document.getElementById('notifB');
  if(!b){document.body.insertAdjacentHTML('beforeend','<button type="button" class="notifb" id="notifB" aria-live="polite"></button>');b=document.getElementById('notifB');
@@ -1758,6 +1758,7 @@ window.AM_NOTIF=function(d){d=d||{};var ej=d.ejercicios||[],n={t:Date.now(),titu
  b.classList.remove('on');void b.offsetWidth;b.classList.add('on');try{if(navigator.vibrate)navigator.vibrate(60);}catch(e){}
  clearTimeout(window.__nbT);window.__nbT=setTimeout(function(){b.classList.remove('on');},7000);render();};
 function vRnueva(){var n=NOTIFS[U.rn]||NOTIFS[0];if(!n)return '<p class="sub">Sin notificaciones.</p>';
+ var nv=notifVigente(n);n=Object.assign({},n,{dia:nv?nv.dia:n.dia});   /* 22 nov 2026 · el día de ahora, no el de cuando llegó */
  return '<div class="hd"><span class="ey">'+hhmm(n.t)+' · de tu entrenador</span><h1>'+(n.cambio?'Rutina actualizada':'Rutina nueva')+'</h1><p>'+(n.grupo||'Entreno')+' · '+n.ejercicios.length+' ejercicios · para '+n.dia+'</p></div>'+
   '<section class="card"><div class="ct"><h3>'+(n.grupo||'Entreno')+'</h3><span class="chip ac">'+n.dia+'</span></div><div class="lista" style="margin-top:6px">'+
   n.ejercicios.map(function(e,i){var lf=lamDe(e.n),nk=NOTIFS.indexOf(n);return '<'+(lf?'button type="button" data-a="ficha" data-v="'+lf+'|n'+nk+'-'+i+'"':'div')+' class="rnx'+(lf?' tq':'')+'" style="animation-delay:'+(i*70)+'ms">'+(lf?'<span class="rnl">'+lamina(lf,e.n)+(esAnim(lf)?'<i>'+ICPLAY+'</i>':'')+'</span>':'<span class="rnn">'+(i+1)+'</span>')+'<span><b>'+e.n+'</b><span class="s">'+(txtEj(e)||(e.s+' × '+e.r+' · '+co(e.kg)+' '+(e.u||'kg')+' · RIR '+e.rir))+'</span></span>'+(lf?I.der:'')+'</'+(lf?'button':'div')+'>';}).join('')+'</div></section>'+
@@ -1780,7 +1781,17 @@ function anotar(ev){var b=ev.target.closest&&ev.target.closest('[data-a]');if(!b
 function extrasInit(){cargar();
  document.body.insertAdjacentHTML('beforeend','<div class="acc" id="acc" hidden><button type="button" data-d="-1">−</button><span id="accV"></span><button type="button" data-d="1">+</button><button type="button" class="ant" data-d="0">= semana pasada</button></div>');
  document.addEventListener('click',anotarDato);}
-function avisoHoy(){var n=NOTIFS[0];if(!n||n.vista)return '';return '<button type="button" class="aviso" data-a="abrirNotif" data-v="0"><span class="ico">'+I.campana+'</span><span><b>'+(n.cambio?'Tu rutina cambió':'Tenés una rutina nueva')+'</b><span class="s">'+n.grupo+' · '+n.ejercicios.length+' ejercicios · para '+n.dia+'</span></span><span class="ir">Ver</span></button>';}
+/* 22 nov 2026 · el aviso de rutina nueva quedaba congelado con el día con que llegó («para sábado») aunque después el entreno se
+   moviera, se hiciera o empezara otra semana. Ahora se mira la rutina de hoy: el día sale de dónde está ese entreno ahora, y el
+   aviso no se muestra si es de otra semana, si ese entreno ya se hizo o faltó, si su día ya pasó o si ya no está en la rutina. */
+function notifVigente(n){if(!n)return null;var P=window.PANEL,R=P&&(P.crudo||P.c)&&(P.crudo||P.c).rutina;if(!R)return {dia:n.dia};
+ var L=LUNH(),hoy=window.HOYC||new Date();if(+n.t<+L)return null;
+ var d0=n.dia==='hoy'?nrmP(DSEM[new Date(n.fecha||n.t).getDay()]):nrmP(n.dia),g=nrmP(n.grupo);
+ var cand=R.filter(function(d){return d&&nrmP(d.grupo)===g&&(d.ejercicios||[]).some(function(e){return e&&e.nombre;});});
+ var d=cand.filter(function(x){return nrmP(x.dia)===d0;})[0]||cand.filter(function(x){return x.estado!=='verde'&&x.estado!=='rojo';})[0];if(!d)return null;
+ if(d.estado==='verde'||d.estado==='rojo'||d.libre)return null;var f=fechaDia(d,L);if(+f<+new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate()))return null;
+ return {dia:+f===+new Date(hoy.getFullYear(),hoy.getMonth(),hoy.getDate())?'hoy':String(d.dia).toLowerCase()};}
+function avisoHoy(){var n=NOTIFS[0];if(!n||n.vista)return '';var nv=notifVigente(n);if(!nv)return '';return '<button type="button" class="aviso" data-a="abrirNotif" data-v="0"><span class="ico">'+I.campana+'</span><span><b>'+(n.cambio?'Tu rutina cambió':'Tenés una rutina nueva')+'</b><span class="s">'+n.grupo+' · '+n.ejercicios.length+' ejercicios · para '+nv.dia+'</span></span><span class="ir">Ver</span></button>';}
 function listaMis(h){var ok=h.okm||{};return '<div class="lista">'+MISCOM.map(function(r,k){return '<div class="it"><div><b>'+r[0]+'</b><span class="s"><u>P '+r[1]+'</u> · C '+r[2]+' · G '+r[3]+' · '+kf(kc(r[1],r[2],r[3]))+' kcal</span></div><button type="button" class="'+(ok[k]?'hecho':'')+'" data-a="sumarMis" data-v="'+k+'" aria-label="Agregar '+r[0]+'">'+(ok[k]?I.chk:I.mas)+'</button></div>';}).join('')+'</div>'+
  '<span class="lbl" style="display:block;margin-top:14px">Guardar una comida nueva</span><div class="nmf"><input id="nmN" placeholder="Nombre (ej.: Tarta de atún, 1 porción)" aria-label="Nombre de la comida"><input id="nmP" inputmode="decimal" placeholder="Prot. g" aria-label="Proteína en gramos"><input id="nmC" inputmode="decimal" placeholder="Carb. g" aria-label="Carbohidratos en gramos"><input id="nmG" inputmode="decimal" placeholder="Grasa g" aria-label="Grasa en gramos"><button type="button" class="sec" data-a="nuevaMis">Guardar en Mis comidas</button></div>';}
 
@@ -1992,7 +2003,7 @@ function rutinaDesdePanel(d){var ej=(d.ejercicios||[]).map(function(e){var ss=(e
   var lo=Math.min.apply(null,reps.map(Number)),hi=Math.max.apply(null,reps.map(Number));
   return {n:e.nombre,s:ss.length,r:reps.length?(lo===hi?String(lo):lo+'–'+hi):'—',kg:pmax==null?0:pmax,u:uni,rir:(ss[0]&&ss[0].rir)||'—',ss:e.ss||null};});
  var cd=(d.cardio||[]).map(function(c){return {tipo:c.tipo,cant:c.cant,modo:c.modo,zona:c.zona,cuando:c.cuando,inclinacion:c.inclinacion,velocidad:c.velocidad,nota:c.nota};});
- return {quien:d.quien,grupo:d.grupo||d.dia,dia:d.diaTxt||d.dia,cambio:!!d.cambio,ejercicios:ej,cardio:cd};}
+ return {quien:d.quien,grupo:d.grupo||d.dia,dia:d.diaTxt||d.dia,fecha:d.fecha||null,cambio:!!d.cambio,ejercicios:ej,cardio:cd};}
 (function(){var _n=window.AM_NOTIF;window.AM_NOTIF=function(d){d=d||{};if(d.ejercicios&&d.ejercicios[0]&&d.ejercicios[0].nombre)d=rutinaDesdePanel(d);_n(d);if(d.cardio&&d.cardio.length&&NOTIFS[0])NOTIFS[0].cardio=d.cardio;};})();
 /* cardio de la sesión: lo programa el panel; el cliente anota minutos reales y FC promedio (alimenta FATMAX en el Monitor) */
 var CARDIO=[{tipo:'Caminata en cinta',modo:'min',cant:15,zona:2,inclinacion:'8 %',cuando:'al final',minReal:'',fc:'',estado:''}];
@@ -2704,19 +2715,20 @@ function gKey(g){var w=String(g||'').trim().split(/[\s,:;]+/)[0]||'Entreno';   /
    Sin ejercicios reconocidos queda la imagen de siempre. Con una clienta, modelo.js cambia solo cuerpo/X por cuerpo/mujer/X
    (modelo mujer dibujado con app-cliente/cuerpo_mujer.js, mismas capas y mismos nombres). */
 var CAPA_G={espalda:'espalda',core:'core',abdomen:'core',biceps:'biceps',triceps:'triceps',brazos:'biceps triceps',pecho:'pecho',hombro:'hombro',hombros:'hombro',
- cuadriceps:'piernas',femoral:'piernas',gluteo:'gluteo',gluteos:'gluteo',aductor:'piernas',pantorrilla:'piernas',pierna:'piernas',piernas:'piernas'};
+ cuadriceps:'piernas',femoral:'piernas',gluteo:'gluteo',gluteos:'gluteo',aductor:'piernas',pantorrilla:'gemelos',pierna:'piernas',piernas:'piernas'};   /* 22 nov 2026 · gemelos: su propia capa (sólo debajo de la rodilla), no la pierna entera */
 /* 11 nov 2026 · glúteos: con sus ejercicios, con los compuestos de pierna que los trabajan fuerte, y si el día se llama «glúteo» */
 var GLU_COMP=/sentadilla|prensa|zancada|estocada|bulgara|hack|peso muerto|rumano|step|subida al cajon|hip thrust|puente/;
 /* 11 nov 2026 · abductores (glúteo medio y tensor de la fascia lata): son parte del glúteo, así que siempre van juntos (Ricky) */
 var ABD_RE=/abductor|abduccion/;
-function capasDia(d){var o={};((d&&d.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;if(ABD_RE.test(nrmP(e.nombre))){o.abductor=1;return;}var c=CAPA_G[nrmP(grupoEjP(e))];if(c)c.split(' ').forEach(function(x){o[x]=1;});if(GLU_COMP.test(nrmP(e.nombre)))o.gluteo=1;});
+function capasDia(d){var o={};((d&&d.ejercicios)||[]).forEach(function(e){if(!e||!e.nombre)return;if(ABD_RE.test(nrmP(e.nombre))){o.abductor=1;return;}var c=CAPA_G[nrmP(grupoEjP(e))];if(c)c.split(' ').forEach(function(x){o[x]=1;});if(GLU_COMP.test(nrmP(e.nombre))&&!/gemel|pantorr/.test(nrmP(e.nombre)))o.gluteo=1;});   /* «Gemelos en prensa» no es prensa de piernas: no marca glúteo */
  if(o.piernas&&/glute/.test(nrmP(d&&d.grupo)))o.gluteo=1;
  if(o.gluteo||o.abductor){o.gluteo=1;o.abductor=1;}
- return ['piernas','gluteo','abductor','espalda','core','pecho','hombro','biceps','triceps'].filter(function(k){return o[k];});}
+ if(o.piernas)delete o.gemelos;   /* la capa de piernas ya trae los gemelos */
+ return ['piernas','gemelos','gluteo','abductor','espalda','core','pecho','hombro','biceps','triceps'].filter(function(k){return o[k];});}
 function modeloHTML(d,g,alt){var L=capasDia(d);
  if(!L.length)return '<img src="cuerpo/'+imgG(g)+'.webp" alt="'+alt+'">';
  return '<img src="cuerpo/modelo_base.webp" alt="'+alt+'">'+L.map(function(k){return '<img class="cp" src="cuerpo/capa_'+k+'.webp" alt="" aria-hidden="true">';}).join('');}
-function imgG(g){var n=nrmP(g);return /pierna|cuadri|glute|femoral|lower|inferior|gemel|aductor/.test(n)?'mapa_pierna':/espalda|dorsal/.test(n)?'mapa_espalda':/pecho|hombro/.test(n)?'mapa_pecho':'mapa_brazos';}
+function imgG(g){var n=nrmP(g);return /pierna|cuadri|glute|femoral|lower|inferior|aductor/.test(n)?'mapa_pierna':/espalda|dorsal/.test(n)?'mapa_espalda':/gemel|pantorr/.test(n)?'mapa_pierna':/pecho|hombro/.test(n)?'mapa_pecho':'mapa_brazos';}
 /* músculo por el nombre del ejercicio, cuando el panel no lo trae */
 /* el mismo músculo con o sin tilde (el Monitor guarda 'Biceps', la app 'Bíceps') → un solo nombre (4 nov 2026) */
 var CANON_G={biceps:'Bíceps',triceps:'Tríceps',cuadriceps:'Cuádriceps',gluteo:'Glúteo',gluteos:'Glúteo',aductor:'Aductor',aductores:'Aductor',femoral:'Femoral',femorales:'Femoral',espalda:'Espalda',hombro:'Hombro',hombros:'Hombro',pecho:'Pecho',core:'Core',abdomen:'Core',pantorrilla:'Pantorrilla',pantorrillas:'Pantorrilla',otros:'Otros'};
@@ -2869,7 +2881,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
  /* aviso de rutina cambiada (no en la primera carga ni en días que ya pasaron) */
  if(!primera&&!opt.silencio){dias.forEach(function(d){var k=nrmP(d.dia),i=iDia(d.dia);if(antes[k]===firmas[k])return;
   var f=fechaDia(d,lunH);if(+f<+HOYC||d.estado==='verde')return;
-  try{AM_NOTIF({quien:'tu entrenador',grupo:d.grupo,dia:+f===+HOYC?'hoy':d.dia.toLowerCase(),cambio:!!antes[k],ejercicios:JSON.parse(JSON.stringify(d.ejercicios)),cardio:d.cardio||[]});}catch(e){}});}
+  try{AM_NOTIF({quien:'tu entrenador',grupo:d.grupo,dia:+f===+HOYC?'hoy':d.dia.toLowerCase(),fecha:+f,cambio:!!antes[k],ejercicios:JSON.parse(JSON.stringify(d.ejercicios)),cardio:d.cardio||[]});}catch(e){}});}
  try{render();}catch(e){}};
 
 /* medidas del panel: tabla, tarjetas, gráficos y valores previos de la toma guiada */
@@ -3898,7 +3910,7 @@ function diasSemana(){var hoy=+HOYC,o=[];try{semDias(lunes(HOYC)).forEach(functi
   if(t===hoy){if(window.PANEL&&PANEL.ses)o.push(PANEL.ses);return;}if(t>hoy)return;var x=diaInfo(d)||{};if(x.e!=='ok')return;var dd=diaDeFecha(d);if(dd)o.push(dd);});}catch(e){}return o;}
 function modeloSemana(hero){var img=hero.querySelector('.img');if(!img||typeof capasDia!=='function')return;var D=diasSemana(),n={},orden=[];
  D.forEach(function(d){var L=[];try{L=capasDia(d)||[];}catch(e){}L.forEach(function(k){if(!n[k]){n[k]=0;orden.push(k);}n[k]++;});});
- if(!orden.length)return;var base=['piernas','gluteo','abductor','espalda','core','pecho','hombro','biceps','triceps'];orden.sort(function(a,b){return base.indexOf(a)-base.indexOf(b);});
+ if(!orden.length)return;var base=['piernas','gemelos','gluteo','abductor','espalda','core','pecho','hombro','biceps','triceps'];orden.sort(function(a,b){return base.indexOf(a)-base.indexOf(b);});
  var chip=img.querySelector('.chip');img.innerHTML='<img src="cuerpo/modelo_base.webp" alt="Músculos que trabajaste esta semana: '+orden.join(', ')+'">'+orden.map(function(k){return '<img class="cp efv'+Math.min(3,n[k])+'" src="cuerpo/capa_'+k+'.webp" alt="" aria-hidden="true">';}).join('')+
   /* 14 nov 2026 · Ricky: «arreglá el cartel de tus músculos de la semana, debe haber más efectos» */
   '<span class="efchip2"><i aria-hidden="true"></i><span><b>Tus músculos de la semana</b><small>'+orden.length+' grupo'+(orden.length===1?'':'s')+' · '+D.length+' entreno'+(D.length===1?'':'s')+'</small></span></span><span class="efscan" aria-hidden="true"></span>'+
