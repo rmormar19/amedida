@@ -1784,7 +1784,7 @@ function extrasInit(){cargar();
 /* 22 nov 2026 · el aviso de rutina nueva quedaba congelado con el día con que llegó («para sábado») aunque después el entreno se
    moviera, se hiciera o empezara otra semana. Ahora se mira la rutina de hoy: el día sale de dónde está ese entreno ahora, y el
    aviso no se muestra si es de otra semana, si ese entreno ya se hizo o faltó, si su día ya pasó o si ya no está en la rutina. */
-function notifVigente(n){if(!n)return null;var P=window.PANEL,R=P&&(P.crudo||P.c)&&(P.crudo||P.c).rutina;if(!R)return {dia:n.dia};
+function notifVigente(n){if(!n)return null;var P=window.PANEL,R=P&&(P.c||P.crudo)&&(P.c||P.crudo).rutina;   /* la rutina como la ve el cliente (con sus cambios de día todavía sin aplicar) */if(!R)return {dia:n.dia};
  var L=LUNH(),hoy=window.HOYC||new Date();if(+n.t<+L)return null;
  var d0=n.dia==='hoy'?nrmP(DSEM[new Date(n.fecha||n.t).getDay()]):nrmP(n.dia),g=nrmP(n.grupo);
  var cand=R.filter(function(d){return d&&nrmP(d.grupo)===g&&(d.ejercicios||[]).some(function(e){return e&&e.nombre;});});
