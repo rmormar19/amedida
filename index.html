@@ -1915,8 +1915,11 @@ function bajoSesion(ult){var nx=BLQ[U.ses.b+1];
  if(ult)return '<div class="bajo"><button type="button" class="pri full" data-a="terminar">'+I.chk+'Terminar sesión</button></div>';
  return '<div class="bajo"><button type="button" class="sec" data-a="terminar">Terminar</button><button type="button" class="pri" data-a="blq" data-v="'+(U.ses.b+1)+'">Siguiente: '+nx.n+' '+I.der+'</button></div>';}
 /* resumen con lo que hizo de verdad hoy */
+/* 24 nov 2026 · Ricky: el resumen sumaba las series de aproximación (volumen, reps, «Subiste de 40 a 62,5 kg» tomando la
+   aproximación como punto de partida). Ahora cuentan sólo las efectivas, igual que la tarjeta para compartir; el peso de la
+   semana pasada es el más alto de esas mismas series. */
 function vResumen2(){var hp=hechas(),hec=[],ej={},volH=0,volA=0,repH=0,repA=0,dur=0,durA=0;
- BLQ.forEach(function(b){b.ej.forEach(function(e,k){b.h.forEach(function(r,i){var x=r[k];if(!x)return;var a=e.p[i];hec.push(x);volH+=x[0]*x[1];volA+=a[0]*a[1];repH+=x[1];repA+=a[1];if(x[2]<=1)dur++;if(a[2]<=1)durA++;
+ BLQ.forEach(function(b){b.ej.forEach(function(e,k){b.h.forEach(function(r,i){var x=r[k];if(!x||x.na)return;var fr=typeof filaDe==='function'?filaDe(e,i):null;if(fr&&(fr.t==='ap'||fr.t==='na'))return;var a=e.p[i];hec.push(x);volH+=x[0]*x[1];volA+=a[0]*a[1];repH+=x[1];repA+=a[1];if(x[2]<=1)dur++;if(a[2]<=1)durA++;
   (ej[e.id]=ej[e.id]||{e:e,x:[]}).x.push([x,a]);});});});
  /* 14 nov 2026 · Ricky: «el RIR queda mal» (salía 238095248148095,3): el RIR llegaba como texto y se pegaba en vez de sumarse.
     Ahora se suman sólo los números. Y si la sesión duró menos de 2 minutos (la registró el entrenador y sólo se abrió para verla) no se inventan minutos. */
@@ -1927,7 +1930,7 @@ function vResumen2(){var hp=hechas(),hec=[],ej={},volH=0,volA=0,repH=0,repA=0,du
   '<div class="k4"><div><b>'+(min==null?'—':min)+'</b><span>min</span></div><div><b>'+hp[0]+'/'+hp[1]+'</b><span>series</span></div><div><b>'+(rir==null?'—':co(rir.toFixed(1)))+'</b><span>RIR medio</span></div><div><b>'+(hec.length?pct(volH,volA):'—')+'</b><span>volumen</span></div></div></div></section>';
  if(hec.length){var C=[['Volumen',volA,volH,pct(volH,volA)],['Reps totales',repA,repH,dif(repH,repA)],['Series RIR 0–1',durA,dur,dif(dur,durA)]];
   s+='<section class="card"><h3>Contra la semana pasada</h3><p class="sub">Las mismas series que hiciste hoy. Gris: viernes 23 · azul: hoy.</p><div class="cmp">'+C.map(function(r){var m=Math.max(r[1],r[2])*1.05||1,neg=String(r[3]).charAt(0)==='-';return '<div class="r"><span>'+r[0]+'</span><span class="br"><i class="a" style="width:'+(r[1]/m*100)+'%"></i><i class="b" style="width:'+(r[2]/m*100)+'%"></i></span><b class="'+(neg?'dn':'up')+'">'+r[3]+'</b></div>';}).join('')+'</div></section>';
-  var L=[];Object.keys(ej).forEach(function(id){var o=ej[id],e=o.e,u=e.u==='pl'?' pl':' kg',mw=Math.max.apply(null,o.x.map(function(z){return z[0][0];})),aw=e.p[0][0],rH=o.x.reduce(function(s,z){return s+z[0][1];},0),rA=o.x.reduce(function(s,z){return s+z[1][1];},0);
+  var L=[];Object.keys(ej).forEach(function(id){var o=ej[id],e=o.e,u=e.u==='pl'?' pl':' kg',mw=Math.max.apply(null,o.x.map(function(z){return z[0][0];})),aw=Math.max.apply(null,o.x.map(function(z){return z[1][0];})),rH=o.x.reduce(function(s,z){return s+z[0][1];},0),rA=o.x.reduce(function(s,z){return s+z[1][1];},0);
    if(mw>aw)L.push([I.trofeo,'wa',e.n+' · '+co(mw)+u,'Subiste de '+co(aw)+' a '+co(mw)+u+'.']);
    else if(rH>rA)L.push([I.trofeo,'wa',e.n+' · +'+(rH-rA)+' reps','Mismo peso y más repeticiones que la semana pasada.']);
    var top=topReps(e);if(o.x.length===e.p.length&&o.x.every(function(z){return z[0][1]>=top;}))L.push([I.flecha,'','La próxima: '+e.n.toLowerCase()+' a '+co(Math.round((mw+incDe(e))*100)/100)+u,'Llegaste al tope del rango ('+top+' reps) en todas las series.']);});
