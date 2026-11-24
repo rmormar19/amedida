@@ -2560,7 +2560,7 @@ document.addEventListener('click',function(ev){var b=ev.target.closest('[data-a]
  case 'copiaDia':var nc=0;AYER.forEach(function(ay,i){if(ay&&!NUT.com[i].it.length){NUT.com[i].it.push(ay.slice());nc++;cola('Comida · '+ay[0],paq('comida',{comida:NUT.com[i].n,texto:ay[0],p:ay[1],c:ay[2],g:ay[3]}));}});toast(nc?'Copiado: '+nc+' comidas de ayer':'Ya tenés esas comidas anotadas');U.hoja=null;break;
  case 'pesoHoy':U.hoja={t:'peso',v:PANEL?pesoUlt():78.5};break;
  case 'pesoD':var pi=document.getElementById('pIn'),pv=num(pi.value)||U.hoja.v;U.hoja.v=Math.round((pv+(+v)*0.1)*10)/10;break;
- case 'pesoOk':var pv2=num(document.getElementById('pIn').value);if(!(pv2>30&&pv2<300)){toast('Revisá el peso');return;}cola('Peso · '+co(pv2)+' kg',paq('medidas',{filas:[{nombre:'Masa corporal',valor:co(pv2),u:'kg'}]}));toast('Peso anotado: '+co(pv2)+' kg');U.hoja=null;break;
+ case 'pesoOk':var pv2=num(document.getElementById('pIn').value);if(!(pv2>30&&pv2<300)){toast('Revisá el peso');return;}cola('Peso · '+co(pv2)+' kg',paq('medidas',{filas:[{nombre:'Masa corporal',valor:co(pv2),u:'kg'}]}));try{pesoPend(pv2);}catch(e){}toast('Peso anotado: '+co(pv2)+' kg');U.hoja=null;break;
  case 'objetivos':U.hoja={t:'obj'};break;
  case 'perfil':U.hoja={t:'perfil'};break;
  case 'modo':U.hoja=null;var tm=document.getElementById('tMod');if(tm)tm.click();break;
@@ -2877,7 +2877,7 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
  try{setModelo((c.datos&&c.datos.sexo)||(window.REAL&&REAL.g)||'');}catch(e){}
  if(primera&&U.cal){U.cal.sel=kd(HOYC);U.cal.mes=HOYC.getMonth();U.cal.mx=Math.max(U.cal.mx||0,HOYC.getMonth());}
  /* medidas */
- medP(c.medidas);
+ MED_RAW=c.medidas;medP(medConPend(c.medidas));
  /* aviso de rutina cambiada (no en la primera carga ni en días que ya pasaron) */
  if(!primera&&!opt.silencio){dias.forEach(function(d){var k=nrmP(d.dia),i=iDia(d.dia);if(antes[k]===firmas[k])return;
   var f=fechaDia(d,lunH);if(+f<+HOYC||d.estado==='verde')return;
@@ -2886,8 +2886,25 @@ window.AM_PANEL=function(c,opt){opt=opt||{};if(!c)return;var primera=!PANEL,crud
 
 /* medidas del panel: tabla, tarjetas, gráficos y valores previos de la toma guiada */
 var MEDT=null;
+/* 23 nov 2026 · Ricky anotó su segundo peso y el gráfico no apareció: el peso viaja al Monitor y sólo vuelve a la app cuando un
+   Monitor abierto lo aplica. Ahora el peso anotado se ve enseguida (queda guardado en el celular) y se borra solo cuando la
+   Base ya trae ese día con peso, o a los 14 días. */
+var MED_RAW=null,PESO_PEND='amedida-peso-pend';
+function pesoPendL(){try{var L=JSON.parse(localStorage.getItem(PESO_PEND)||'[]');return Array.isArray(L)?L:[];}catch(e){return [];}}
+function pesoPend(v){var f=hoyISO(),L=pesoPendL().filter(function(p){return p.f!==f;});L.push({f:f,v:v,t:Date.now()});try{localStorage.setItem(PESO_PEND,JSON.stringify(L));}catch(e){}
+ if(PANEL)medP(medConPend(MED_RAW));}
+function medConPend(m){var L=pesoPendL();if(!L.length)return m;var esP=function(f){return /^(masa corporal|peso)/.test(nrmP(f.nombre||''));};
+ var M={fechas:((m&&m.fechas)||[]).slice(),filas:((m&&m.filas)||[]).map(function(f){return {nombre:f.nombre,unidad:f.unidad,valores:(f.valores||[]).slice()};})};
+ var fp=M.filas.filter(esP)[0],quedan=[];
+ L.forEach(function(p){if(!p||!/^\d{4}-\d{2}-\d{2}$/.test(String(p.f))||Date.now()-(+p.t||0)>14*864e5)return;var i=M.fechas.map(function(x){return String(x).slice(0,10);}).indexOf(p.f);
+  if(i>=0&&fp&&fp.valores[i]!=null&&fp.valores[i]!=='')return;quedan.push(p);
+  if(!fp){fp={nombre:'Masa corporal',unidad:'kg',valores:M.fechas.map(function(){return null;})};M.filas.unshift(fp);}
+  if(i<0){var k=0;while(k<M.fechas.length&&String(M.fechas[k]).slice(0,10)<p.f)k++;M.fechas.splice(k,0,p.f);M.filas.forEach(function(f){while(f.valores.length<M.fechas.length-1)f.valores.push(null);f.valores.splice(k,0,null);});i=k;}
+  fp.valores[i]=p.v;});
+ if(quedan.length!==L.length)try{if(quedan.length)localStorage.setItem(PESO_PEND,JSON.stringify(quedan));else localStorage.removeItem(PESO_PEND);}catch(e){}
+ return quedan.length?M:m;}
 function medP(m){var vacio=function(){MEDT=null;TOMAS=[];SERIE={s6:[],peso:[],cint:[],brazo:[]};};if(!m||!m.fechas||!m.fechas.length||!m.filas){vacio();return;}
- var F=m.filas.map(function(f){return {n:f.nombre,u:f.unidad||'',v:(f.valores||[]).map(numP)};});
+ var F=m.filas.map(function(f){return {n:f.nombre,u:f.unidad||(/^(masa corporal|peso)/.test(nrmP(f.nombre||''))?'kg':''),v:(f.valores||[]).map(numP)};});   /* 23 nov 2026: el peso anotado desde la app llega sin unidad */
  var col=m.fechas.map(function(_,i){return F.some(function(f){return f.v[i]!=null;});}),idx=[];col.forEach(function(ok,i){if(ok)idx.push(i);});
  if(!idx.length){vacio();return;}
  var fila=function(re){return F.filter(function(f){return re.test(nrmP(f.n));})[0];};
@@ -3515,14 +3532,14 @@ vMed=function(){if(!MEDT&&PANEL)return '<div class="hd"><span class="ey">Tu cuer
  var s='<div class="hd"><span class="ey">Tu cuerpo</span><h1>Antropometría</h1><p>'+T.n+' toma'+(T.n===1?'':'s')+' · última el '+MED_ULT+' · próxima el '+T.prox+'</p></div>';
  s+='<div class="bajo" style="margin:0 0 14px"><button type="button" class="pri" data-a="pesoHoy">'+I.mas+'Anotar mi peso</button>'+(window.REAL?'':'<button type="button" class="sec" data-a="toma">'+I.regla+'Toma completa</button>')+'</div>';
  if(sel){var a=uv(sel.v),d1=a.length>1?Math.round((a[a.length-1]-a[a.length-2])*10)/10:null,d0=a.length>1?Math.round((a[a.length-1]-a[0])*10)/10:null,un=sel.u||'';
-  s+='<section class="card"><div class="ct"><div><h3>'+sel.n+'</h3><p class="sub">'+(a.length?co(a[a.length-1])+' '+un:'sin dato')+(d1!=null?' · '+(d1>0?'+':d1<0?'−':'')+co(Math.abs(d1))+' vs. la anterior':'')+(d0!=null&&a.length>2?' · '+(d0>0?'+':d0<0?'−':'')+co(Math.abs(d0))+' desde '+lab[0]:'')+'</p></div></div>'+lineaP(sel.v,lab,{col:sel.u==='mm'?'var(--cya)':'var(--a1)',aria:'Evolución de '+sel.n,uni:sel.u||'',mejor:medBaja(sel)?'baja':'',tit:labL.map(function(x){return 'Toma del '+x;}),una:'Una sola toma: el gráfico aparece desde la segunda.'})+(sel.sum?'<p class="sub">La suma de los pliegues sigue la grasa debajo de la piel. Suma '+T.nPl+' pliegues: '+T.F.filter(function(f){return f.u==='mm'&&f.v[T.idx[T.idx.length-1]]!=null;}).map(function(f){return f.n;}).join(', ')+'.</p>':'')+'</section>';
+  s+='<section class="card"><div class="ct"><div><h3>'+sel.n+'</h3><p class="sub">'+(a.length?co(a[a.length-1])+' '+un:'sin dato')+(d1!=null?' · '+(d1?(d1>0?'+':'−')+co(Math.abs(d1))+' '+un+' vs. la anterior':'igual que la anterior'):'')+(d0!=null&&a.length>2?' · '+(d0>0?'+':d0<0?'−':'')+co(Math.abs(d0))+' desde '+lab[0]:'')+'</p></div></div>'+lineaP(sel.v,lab,{col:sel.u==='mm'?'var(--cya)':'var(--a1)',aria:'Evolución de '+sel.n,uni:sel.u||'',mejor:medBaja(sel)?'baja':'',tit:labL.map(function(x){return 'Toma del '+x;}),una:'Una sola toma: el gráfico aparece desde la segunda.'})+(sel.sum?'<p class="sub">La suma de los pliegues sigue la grasa debajo de la piel. Suma '+T.nPl+' pliegues: '+T.F.filter(function(f){return f.u==='mm'&&f.v[T.idx[T.idx.length-1]]!=null;}).map(function(f){return f.n;}).join(', ')+'.</p>':'')+'</section>';
   /* 22 nov 2026 · las tomas de la medida elegida, de la más nueva a la más vieja (como en Mi panel) */
   var tk=[];sel.v.forEach(function(v,i){if(v!=null)tk.push({v:v,l:labL[i]});});
   if(tk.length>1)s+='<section class="card lista medtk" style="padding:2px 16px;margin-top:10px"><span class="lbl" style="display:block;padding:12px 0 2px">Tus tomas de '+sel.n+'</span>'+tk.map(function(x,k){var d=k?Math.round((x.v-tk[k-1].v)*10)/10:null,cl=d==null||!d||!medBaja(sel)?'':(d<0?' ok':' wa');return '<div class="fila" style="padding:9px 0;grid-template-columns:1fr auto auto;gap:10px"><span>'+x.l+'</span><b>'+co(x.v)+' '+(sel.u||'')+'</b><span class="chip'+cl+'">'+(d==null?'primera':(d>0?'+':d<0?'−':'')+(d?co(Math.abs(d)):'igual'))+'</span></div>';}).reverse().join('')+'</section>';}
  var usados={};s+='<div class="sh"><h2>Todas tus medidas</h2></div>';
  GMED.forEach(function(g){var L=filas.filter(function(f){return !usados[f.n]&&(f.sum?g[0]==='Pliegues (mm)':g[1](f));});if(!L.length)return;L.forEach(function(f){usados[f.n]=1;});
   s+='<section class="card lista" style="padding:2px 16px;margin-bottom:10px"><span class="lbl" style="display:block;padding:12px 0 2px">'+g[0]+'</span>'+L.map(function(f){var a=uv(f.v),d=a.length>1?Math.round((a[a.length-1]-a[a.length-2])*10)/10:null;
-   return '<button type="button" class="ppx'+(f.n===PM.sel?' on':'')+'" data-pm="'+f.n.replace(/"/g,'&quot;')+'"><span><b>'+f.n+'</b><span class="s">'+(a.length?co(a[a.length-1])+' '+(f.u||''):'—')+'</span></span>'+(d!=null?'<span class="chip">'+(d>0?'+':d<0?'−':'')+co(Math.abs(d))+'</span>':'<span></span>')+(a.length>1?spark(a,f.u==='mm'?'var(--cya)':'var(--a1)',64,24):'<span></span>')+'</button>';}).join('')+'</section>';});
+   return '<button type="button" class="ppx'+(f.n===PM.sel?' on':'')+'" data-pm="'+f.n.replace(/"/g,'&quot;')+'"><span><b>'+f.n+'</b><span class="s">'+(a.length?co(a[a.length-1])+' '+(f.u||''):'—')+'</span></span>'+(d!=null?'<span class="chip">'+(d?(d>0?'+':'−')+co(Math.abs(d)):'igual')+'</span>':'<span></span>')+(a.length>1?spark(a,f.u==='mm'?'var(--cya)':'var(--a1)',64,24):'<span></span>')+'</button>';}).join('')+'</section>';});
  s+='<div class="sh"><h2>Tabla completa</h2><button type="button" data-a="medT">'+(U.med.tabla?'Ocultar':'Ver')+'</button></div>';
  if(U.med.tabla)s+='<section class="card" style="padding:6px 0 10px"><div style="overflow-x:auto;padding:0 16px"><table class="tabla" style="min-width:'+(140+lab.length*64)+'px"><thead><tr><th>Medida</th>'+lab.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr></thead><tbody>'+filas.map(function(f){return '<tr'+(f.sum?' class="t"':'')+'><td>'+f.n+'</td>'+f.v.map(function(v){return '<td>'+(v==null?'—':co(v))+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div></section>';
  return s;};
